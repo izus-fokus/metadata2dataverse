@@ -1,6 +1,7 @@
 description: menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstützt)
 
 format: text
+scheme: Harvester
 
 mapping:
 - target_key: title
@@ -434,7 +435,7 @@ mapping:
 - source_key: provenance.processingStep.environment.name
   target_key: processStepEnvironment
 
-# rules
+rules:
 - source_key: contact.role
   type: rule
   priority: 1

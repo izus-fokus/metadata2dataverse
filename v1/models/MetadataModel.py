@@ -5,7 +5,6 @@ from marshmallow_oneofschema import OneOfSchema
 class DatasetSchema(Schema):
     metadataBlocks = fields.List(fields.Nested(MetadataBlockSchema))
 
-
 class MetadataBlockSchema(Schema):
     id = fields.Str()
     displayName = fields.Str()
