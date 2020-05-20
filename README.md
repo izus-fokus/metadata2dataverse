@@ -1,23 +1,39 @@
-# Aufgaben
-- Konvertierung von strukturiert vorliegenden Metadaten in Dataverse-konforme JSON-Datei
-  - Input: Metadaten in strukturiertem Format
-  - Output: Dataverse-konforme JSON-Datei, die Metadaten anhand der aktuell vorliegenden Metadatenkonfiguration (tsv-files) der Dataverse-Installation beinhaltet
+# MetadataMapper
 
-- Strukturierte Metadatenformate registrieren und Mapping definieren
-- Inkonsistenzen von Mappings zu aktueller Dataverse-Metadaten-Konfiguration testen
+## How to run
 
-# Endpoints
-## Metadatenkonvertierung
+### Requirements
+```
+pip install flask
+pip install python-dotenv
+pip install marshmellow
+pip install marshmellow-oneofschema
+```
 
-### POST /metadata/<string:scheme>
-- Path-Parameter scheme (string, default='update'): Identifizierung das Schemas, in dem die gepostete Metadatendatei vorliegt
-- Query-Parameter method: Gibt das Output-Format an. 
-  - edit:kompatibel zum Edit-Metadata-Endpoint, 
-  - update:kompatibel zum Update-Metadata-Endpoint (Standard), 
-  - create:kompatibel zum Anlegen eines neuen Datensatzes auf Dataverse 
-- Query-Parameter verbose (boolean, default=False): Gibt an, ob zusätzliche Informationen zum Erfolg gegeben werden sollen
-- Body: Metadatendatei, die zu konvertieren ist mit Content-Type: text/plain, application/xml oder application/json
-- Output: Dataverse-kompatibles JSON (verbose=False) oder 
+Run server (in the folder v1): ```flask run```  or ```python __init__.py```
+
+Run tests (in the folder test): ```python -m unittest ```
+
+## Tasks
+- Conversion of structured metadata into a Dataverse-compliant JSON file
+  - Input: Metadata in structured format
+  - Output: Dataverse-compliant JSON file containing metadata based on the current metadata configuration (tsv files) of the Dataverse installation
+
+- Register structured metadata formats and define mapping
+- Test inconsistencies of mappings to current dataverse metadata configuration
+
+## Endpoints
+### Metadatenconversion
+
+#### POST /metadata/<string:scheme>
+Identification of the scheme in which the posted metadata file is stored.
+- Query parameter method: Specifies the output format. 
+  - edit:compatible with the edit metadata endpoint, 
+  - update:compatible with the update metadata endpoint (default), 
+  - create:compatible to create a new record on Dataverse 
+- Query parameter verbose (boolean, default=False): Specifies whether additional information about the success should be given
+- Body: Metadata file to be converted with Content-Type: text/plain, application/xml or application/json
+- Output: Dataverse-compatible JSON (verbose=false) or 
   ```
   {
    'success': <True|False>,
