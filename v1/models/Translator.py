@@ -1,8 +1,3 @@
-'''
-Created on 17.03.2020
-
-@author: annekreuter
-'''
 from abc import abstractstaticmethod, ABCMeta
 
 class Translator(metaclass=ABCMeta):

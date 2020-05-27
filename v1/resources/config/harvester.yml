@@ -1,6 +1,6 @@
 description: menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstützt)
 
-format: text
+format: text/plain
 scheme: Harvester
 
 mapping:

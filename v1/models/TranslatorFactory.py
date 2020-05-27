@@ -1,8 +1,6 @@
-from . import Translator
-from . import Rules
+from models.Translator import Translator
 
-
-class Config(object):
+class TranslatorFactory(object):
     ''' Gets a config file and creates translators. '''
 
     def __init__(self):
@@ -10,11 +8,11 @@ class Config(object):
         pass
                 
                    
-    @staticmethod        
-    def create_translator(self, translator_yaml, source_format):   
+    @staticmethod      
+    def create_translator(translator_yaml, format):   
         """ returns a translator object out of the yaml mapping """
         
-        if (source_format_ == 'text'):     
+        if (format == 'text/plain'):     
             source_key = translator_yaml.get('source_key',None) 
             target_key = translator_yaml.get('target_key',None)
             priority = translator_yaml.get('priority',None) 
