@@ -7,6 +7,7 @@ class Config(object):
         self.description = description
         self.format = format
         self.translators = translators
-        self.rules = rules
+        self.rules_dict = rules_dict
+        print(rules_dict)
                    
     

@@ -12,7 +12,7 @@ def read_config(data):
     scheme = yaml_file["scheme"]   
     format = yaml_file["format"]   
     mapping = yaml_file["mapping"]
-    rules = yaml_file["rules"]  
+    rules = yaml_file["rules"]
                         
     # Create list of unfilled translators out of the mapping.                                
     translators = []            
@@ -20,10 +20,10 @@ def read_config(data):
         translators.append(TranslatorFactory.create_translator(translator_yaml, format))
             
     # Return rules dictionary for trigger source keys (key) and associated translators (value).        
-    rules = TranslatorFactory.create_rules(rules)            
+    rules_dict = TranslatorFactory.create_rules(rules)            
     
     # Return config Object for MAPPINGS dictionary.
-    config = Config(scheme, description, format, translators, rules)        
+    config = Config(scheme, description, format, translators, rules_dict)        
     return config                # global variable for the rules dictionary
         
 
@@ -42,12 +42,12 @@ def read_all_config_files():
 
 def read_all_tsv_files():
     #for file in resources/tsv
-    # mb = read_tsv(file)
-    # DV_CONFIG[mb.name] = mb
+    #     read_tsv(file)
     pass
     
         
 def read_tsv(data):
-    # metadataBlock = MetadataBlock(dict_with_data)
-    # return metadataBlock    
+    # for row in data:
+    #     field = Field(dict_with_data)
+    # DV_FIELD[target_name] = field
     pass

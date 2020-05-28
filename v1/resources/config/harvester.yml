@@ -436,33 +436,38 @@ mapping:
   target_key: processStepEnvironment
 
 rules:
-- source_key: contact.role
+- trigger: contact.role
   type: rule
   priority: 1
+  trigger_values: [Producer, Distributor]
   Producer: [{source_key: contact.name, target_key: producerName}, {source_key: contact.affiliation.name, target_key: producerAffiliation}, {source_key: contact.affiliation.id, target_key: producerAbbreviation}]
   Distributor: [{source_key: contact.name, target_key: distributorName}, {source_key: contact.affiliation.name, target_key: distributorAffiliation}, {source_key: contact.affiliation.id, target_key: distributorAbbreviation}]
 
-- source_key: title.titleType
+- trigger: title.titleType
   type: rule
   priority: 1
+  trigger_values: [Title, AlternativeTitle, Subtitle]
   Title: [{target_key: title}]
   AlternativeTitle: [{source_key: title, target_key: alternativeTitle}]
   Subtitle: [{source_key: title, target_key: subtitle}]
 
-- source_key: contributor.role
+- trigger: contributor.role
   type: rule
   priority: 1
+  trigger_values: [Producer, Distributor]
   Producer: [{source_key: contributor.name, target_key: producerName}, {source_key: contributor.affiliation.name, target_key: producerAffiliation}, {source_key: contributor.affiliation.id, target_key: producerAbbreviation}]
   Distributor: [{source_key: contributor.name, target_key: distributorName}, {source_key: contributor.affiliation.name, target_key: distributorAffiliation}, {source_key: contributor.affiliation.id, target_key: distributorAbbreviation}]
 
-- source_key: description.descriptionType
+- trigger: description.descriptionType
   type: rule
   priority: 1
+  trigger_values: [SeriesInformation]
   SeriesInformation: [{source_key: description, targetKey: seriesInformation}]
 
-- source_key: dates.date.dateType
+- trigger: dates.date.dateType
   type: rule
   priority: 1
+  trigger_values: [Collected, Available]
   Collected: [{source_key: dates.date, target_key: productionDate}]
   Available: [{source_key: dates.date, target_key: distributionDate}]
 

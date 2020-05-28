@@ -3,38 +3,37 @@ from abc import abstractstaticmethod, ABCMeta
 class Translator(metaclass=ABCMeta):
     """ Factory-Class """
 
-    def getSourceKey():
+    def get_source_key():
         """ Translator Interface """ 
         
         
-class Base_Translator(Translator):    
+class BaseTranslator(Translator):    
 
     def __init__(self, source_key, target_key, priority = 1):        
         self.source_key = source_key
         self.target_key = target_key 
         self.priority = priority 
         
-    def getSourceKey(self):
+    def get_source_key(self):
         return self.source_key
     
         
-class AdditionTranslator(Base_Translator):
-    
+class AdditionTranslator(BaseTranslator):    
     def __init__(self, class_name, translator_type="addition",  *args, **kwargs):
         super(AdditionTranslator, self).__init__(*args, **kwargs)
         self.class_name = class_name
         self.translator_type = translator_type
     
-    def getSourceKey(self):
+    def get_source_key(self):
         return self.source_key
         
         
-class MergeTranslator(Base_Translator):
+class MergeTranslator(BaseTranslator):
     
     def __init__(self, translator_type = "merge", join_symbol = " ", *args, **kwargs):
         super(AdditionTranslator, self).__init__(*args, **kwargs)
         self.translator_type = translator_type
         self.join_symbol = join_symbol
         
-    def getSourceKey(self):
+    def get_source_key(self):
         return self.source_key
