@@ -3,7 +3,7 @@ from api.resources import read_all_config_files
 
 MAPPINGS = {} # dict of Config-Objects 
 
-DV_CONFIG = {} # dict of MetadataBlock-Objects
+DV_FIELDS = {} # dict of MetadataBlock-Objects
 
 app = create_app()
 

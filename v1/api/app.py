@@ -1,23 +1,21 @@
 from flask import Flask, request, abort, jsonify, send_file
-#from flask_cors import CORS
-
+# from flask_cors import CORS
 
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
 
-    #helper functions
+    # helper functions
 
     def verbose(response, warnings=[]):
         return {'success': True,
                 'warnings': warnings,
                 'response': response
                 }
-    
+
     def gen_message(warnings):
         return '. '.join(warnings)
-
 
     @app.route('/metadata/<string:scheme>', methods=["POST"])
     def mapMetadata(scheme):
@@ -26,9 +24,8 @@ def create_app(test_config=None):
                                   default='update')
         warnings = []
 
-        # mapping = mappings.get('scheme')
+        # mapping = MAPPINGS.get(scheme)
         # if mapping is None:
-        #if mapping is None:
         #    abort(404,
         #          '''Scheme {} not found. 
         #             Check GET /mapping for available schemes.'''

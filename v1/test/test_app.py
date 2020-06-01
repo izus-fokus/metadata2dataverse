@@ -5,6 +5,7 @@ sys.path.append('..')
 
 from api.app import create_app
 
+
 class TestMetadataMapperEndpoints(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
