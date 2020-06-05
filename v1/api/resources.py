@@ -49,5 +49,8 @@ def read_all_tsv_files():
 def read_tsv(data):
     # for row in data:
     #     field = Field(dict_with_data)
+    # DV_MB[id] = display_name
     # DV_FIELD[target_name] = field
+    # hier auch informationen über controlled vocabulary ergänzen
+    # DV_CHILDREN[parent_name] = list of children field names ? 
     pass

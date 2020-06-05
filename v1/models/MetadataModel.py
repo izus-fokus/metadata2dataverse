@@ -39,7 +39,8 @@ class MultipleCompoundField(Field):
 
     def add_value(self, value):
         if not isinstance(self.value, list):
-            self.value.append(value)
+            self.value = []
+        self.value.append(value)
 
     def add_value_to_element(self, value, key, index=None):
         if not isinstance(self.value, list):
@@ -67,6 +68,8 @@ class VocabularyField(Field):
     def add_value(self, value):
         if value in self.vocab:
             self.value.append(value)
+        else:
+            # exception mit warning werfen
 
 
 class MetadataBlock():
