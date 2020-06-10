@@ -2,8 +2,13 @@ import yaml
 import csv
 import os
 from models.Config import Config
+from models.Field import Field
 from models.TranslatorFactory import TranslatorFactory
 TranslatorFactory = TranslatorFactory()
+
+DV_MB = {}
+DV_FIELD = {}
+DV_CHILDREN = {}
 
 def read_config(data):
     yaml_file = yaml.safe_load(data) 
@@ -38,6 +43,7 @@ def read_all_config_files():
             path = os.path.join(subdir, file)
             open_yaml_file = open(path)            
             config = read_config(open_yaml_file)
+            
             # fill global dictionary of mappings
             MAPPINGS[file] = config
       
@@ -55,7 +61,11 @@ def read_all_tsv_files():
         
 def read_tsv(data):
     tsv_file = csv.reader(data, delimiter="\t")
-    for field in tsv_file:
+    
+    start_metadata_block = False
+    start_schema = False
+    start_vocabulary = False    
+    for row in tsv_file:
         # target_key fields starting
         if (row[0] == "#datasetField"):
             start_schema = True
@@ -81,22 +91,22 @@ def read_tsv(data):
             parent = row[14]
             target_key = row[1]            
             if(parent == ""):
-                parent = none
+                parent = None
             
             # check type_class
             type_class = "primitive"
             metadata_block = row[15]
-            if(field[5] == "none"):
+            if(row[5] == "none"):
                 type_class = "compound"      
-                DV_CHILDREN[target_key] = [None]      
-            if(field[9] == "TRUE"):
+                DV_CHILDREN[target_key] = []      
+            if(row[9] == "TRUE"):
                 type_class = "controlled_vocabulary"
             
             # create parent/children map
             if parent in DV_CHILDREN:
                 DV_CHILDREN[parent].append(target_key)
                 
-            field = Field(multiple, typeClass, parent, metadata_block)             
+            field = Field(multiple, type_class, parent, metadata_block)             
             DV_FIELD[target_key] = field 
                 
         if(start_vocabulary):
