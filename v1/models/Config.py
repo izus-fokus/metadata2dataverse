@@ -8,6 +8,5 @@ class Config(object):
         self.format = format
         self.translators = translators
         self.rules_dict = rules_dict
-        print(rules_dict)
                    
     

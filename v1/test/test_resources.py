@@ -3,7 +3,7 @@ import json
 import sys
 sys.path.append('..')
 
-from api.resources import read_config
+from api.resources import read_config, read_all_config_files
 
 class TestResources(unittest.TestCase):
     def setUp(self):
@@ -36,3 +36,7 @@ rules:
         self.assertEqual(test_config.description, "menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstützt)")
         self.assertEqual(test_config.format, "text/plain")
         self.assertEqual(test_config.scheme, "Harvester")
+        
+    def test_read_tsv(self):
+        pass
+            

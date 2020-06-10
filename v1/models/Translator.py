@@ -31,7 +31,7 @@ class AdditionTranslator(BaseTranslator):
 class MergeTranslator(BaseTranslator):
     
     def __init__(self, translator_type = "merge", join_symbol = " ", *args, **kwargs):
-        super(AdditionTranslator, self).__init__(*args, **kwargs)
+        super(MergeTranslator, self).__init__(*args, **kwargs)
         self.translator_type = translator_type
         self.join_symbol = join_symbol
         

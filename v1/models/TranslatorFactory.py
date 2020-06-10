@@ -12,7 +12,7 @@ class TranslatorFactory(object):
     def create_translator(translator_yaml, format):   
         """ returns a translator object out of the yaml mapping """
         
-        if (format == 'text/plain'):     
+        if(format == 'text/plain'):     
             source_key = translator_yaml.get('source_key',None) 
             target_key = translator_yaml.get('target_key',None)
             priority = translator_yaml.get('priority',None) 
@@ -20,17 +20,20 @@ class TranslatorFactory(object):
             join_symbol = translator_yaml.get('join_symbol',None)
             class_name = translator_yaml.get('class',None)    
             
-            if (len(translator_yaml) == 1):                # case 1: copy translator
+            if(len(translator_yaml) == 1):                 # case 1: copy translator
                 source_key = target_key
                 translator = BaseTranslator(source_key, target_key, priority)   
-            if (len(translator_yaml) == 2):                # case 2: normal translator
-                translator = BaseTranslator(source_key, target_key, priority)         
+                return translator
+            if(len(translator_yaml) == 2):                 # case 2: normal translator
+                translator = BaseTranslator(source_key, target_key, priority)    
+                return translator     
             if("type" in translator_yaml):                               
-                if(translator_yaml["type"] == "addition"):# case 3: addition translator
+                if(translator_yaml["type"] == "addition"):  # case 3: addition translator
                     translator = AdditionTranslator(source_key, target_key, class_name, translator_type, priority)              
-                if(translator_yaml["type"] == "merge"):   # case 4: merge translator                         
+                    return translator
+                if(translator_yaml["type"] == "merge"):     # case 4: merge translator                         
                     translator = MergeTranslator(source_key, target_key, translator_type, join_symbol, priority)
-        return translator
+                    return translator
     
     
     @staticmethod
@@ -43,7 +46,6 @@ class TranslatorFactory(object):
                       trigger: {trigger_value: list_of_translators}
                      }         
         """        
-        print(rules_yaml)
         rules_dict = {}
         for rule_yaml in rules_yaml:
             translator_dict = {}                                                # initialize inner dictionary
@@ -60,8 +62,4 @@ class TranslatorFactory(object):
             
             rules_dict[trigger] = translator_dict                               # fill outer dictionary with trigger and inner dictionary
             
-        return rules_dict
-        
-        
-        
-        
+        return rules_dict   
