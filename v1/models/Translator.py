@@ -13,9 +13,13 @@ class BaseTranslator(Translator):
         self.source_key = source_key
         self.target_key = target_key 
         self.priority = priority 
+    
+    def __repr__(self):
+        return ("source key: " + str(self.source_key) + ", target key: " + str(self.target_key))
         
     def get_source_key(self):
         return self.source_key
+    
     
         
 class AdditionTranslator(BaseTranslator):    
@@ -23,6 +27,9 @@ class AdditionTranslator(BaseTranslator):
         super(AdditionTranslator, self).__init__(*args, **kwargs)
         self.class_name = class_name
         self.translator_type = translator_type
+    
+    def __repr__(self):
+        return ("source key: " + self.source_key + ", target key: " + self.target_key)
     
     def get_source_key(self):
         return self.source_key
@@ -34,6 +41,9 @@ class MergeTranslator(BaseTranslator):
         super(MergeTranslator, self).__init__(*args, **kwargs)
         self.translator_type = translator_type
         self.join_symbol = join_symbol
+        
+    def __repr__(self):
+        return ("source key: " + str(self.source_key) + ", target key: " + str(self.target_key))
         
     def get_source_key(self):
         return self.source_key

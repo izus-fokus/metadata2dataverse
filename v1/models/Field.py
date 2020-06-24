@@ -9,6 +9,9 @@ class Field(object):
         self.parent = parent
         self.metadata_block = metadata_block
         
+    def __repr__(self):
+        return "{multiple: " + str(self.multiple) + ", type class: " + self.type_class + ", parent: " + str(self.parent) + ", metadata block: " + self.metadata_block + "}"
+        
     def set_controlled_vocabulary(self, controlled_vocabulary):
         self.controlled_vocabulary.append(controlled_vocabulary)
                    

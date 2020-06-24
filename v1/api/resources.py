@@ -5,10 +5,9 @@ from models.Config import Config
 from models.Field import Field
 from models.TranslatorFactory import TranslatorFactory
 TranslatorFactory = TranslatorFactory()
+from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB
 
-DV_MB = {}
-DV_FIELD = {}
-DV_CHILDREN = {}
+
 
 def read_config(data):
     yaml_file = yaml.safe_load(data) 
@@ -36,7 +35,6 @@ def read_config(data):
 
 def read_all_config_files():  
     rootdir = './resources/config'
-        
     # for file in resources/config
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
@@ -46,7 +44,7 @@ def read_all_config_files():
             
             # fill global dictionary of mappings
             MAPPINGS[file] = config
-      
+            print(MAPPINGS)
 
 def read_all_tsv_files():
     rootdir = './resources/tsv'
@@ -66,40 +64,60 @@ def read_tsv(data):
     start_schema = False
     start_vocabulary = False    
     for row in tsv_file:
-        # target_key fields starting
-        if (row[0] == "#datasetField"):
-            start_schema = True
-            continue
         
-        # controlled_vocabulary fields starting            
-        if (row[0] == "#controlledVocabulary"):
-            start_vocabulary = True
-            start_schema = False
-            continue
-        
-        # reading display_name and save it in DV_MB
-        if (row[0] == "#metadataBlock"):
-            start_metadata_block = True
-            continue                    
+        # save index of tsv dynamically
+        counter_column = 0
+        for column in row:
+            # target_key fields starting
+            if (column == "#datasetField"):
+                start_schema = True
+                continue
+            # controlled_vocabulary fields starting
+            if (column == "#controlledVocabulary"):
+                start_vocabulary = True
+                start_schema = False
+                continue
+            if (column == "#metadataBlock"):
+                column_metadataBlock = counter_column
+                start_metadata_block = True
+                continue  
+            if (column == "allowmultiples"):
+                column_multiples = counter_column
+            if (column == "metadatablock_id"):
+                colum_metadatablock = counter_column
+            if (column == "fieldType"):
+                column_fieldtype = counter_column
+            if (column == "name"):
+                column_targetkey = counter_column
+            if (column == "displayName"):
+                column_displayname = counter_column
+            if(column == "parent"):
+                column_parent = counter_column
+            if (column == "allowControlledVocabulary"):
+                column_controlledVocabulary = counter_column
+            if (column == "Value"):
+                column_valuecontrolledVocabulary = counter_column 
+            counter_column += 1
+                                  
         if (start_metadata_block):
-            DV_MB[row[1]]=row[3]
+            DV_MB[row[column_targetkey]]=row[column_displayname]
             start_metadata_block = False
             continue
                     
         if (start_schema):        
-            multiple = row[10]
-            parent = row[14]
-            target_key = row[1]            
+            multiple = row[column_multiples]
+            parent = row[column_parent]
+            target_key = row[column_targetkey]            
             if(parent == ""):
                 parent = None
             
             # check type_class
             type_class = "primitive"
-            metadata_block = row[15]
-            if(row[5] == "none"):
+            metadata_block = row[column_metadataBlock]
+            if(row[column_fieldtype] == "none"):
                 type_class = "compound"      
                 DV_CHILDREN[target_key] = []      
-            if(row[9] == "TRUE"):
+            if(row[column_controlledVocabulary] == "TRUE"):
                 type_class = "controlled_vocabulary"
             
             # create parent/children map
@@ -110,5 +128,8 @@ def read_tsv(data):
             DV_FIELD[target_key] = field 
                 
         if(start_vocabulary):
-            field = DV_FIELD[row[1]]
-            field.set_controlled_vocabulary(row[2])
+            field = DV_FIELD[row[column_controlledVocabulary]]
+            field.set_controlled_vocabulary(row[column_valuecontrolledVocabulary])
+    print(DV_FIELD)
+
+   
