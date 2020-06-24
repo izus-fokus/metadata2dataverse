@@ -5,8 +5,30 @@ from models.Config import Config
 from models.Field import Field
 from models.TranslatorFactory import TranslatorFactory
 TranslatorFactory = TranslatorFactory()
-from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB
+from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB      #global variables
 
+# Read config yaml files (mapping from source key to target keys)
+def read_all_config_files():  
+    rootdir = './resources/config'
+    # for file in resources/config
+    for subdir, dirs, files in os.walk(rootdir):
+        for file in files:
+            path = os.path.join(subdir, file)
+            open_yaml_file = open(path)            
+            config = read_config(open_yaml_file)            
+            # fill global dictionary of mappings
+            MAPPINGS[file] = config
+
+# Read schema tsv files (metadatablocks nesting)      
+def read_all_tsv_files():
+    rootdir = './resources/tsv'
+        
+    # for file in resources/resources
+    for subdir, dirs, files in os.walk(rootdir):
+        for file in files:
+            path = os.path.join(subdir, file)
+            open_tsv_file = open(path)            
+            read_tsv(open_tsv_file)
 
 
 def read_config(data):
@@ -30,57 +52,18 @@ def read_config(data):
     # Return config Object for MAPPINGS dictionary.
     config = Config(scheme, description, format, translators, rules_dict)        
     return config                # global variable for the rules dictionary
-        
+   
 
-
-def read_all_config_files():  
-    rootdir = './resources/config'
-    # for file in resources/config
-    for subdir, dirs, files in os.walk(rootdir):
-        for file in files:
-            path = os.path.join(subdir, file)
-            open_yaml_file = open(path)            
-            config = read_config(open_yaml_file)
-            
-            # fill global dictionary of mappings
-            MAPPINGS[file] = config
-            print(MAPPINGS)
-
-def read_all_tsv_files():
-    rootdir = './resources/tsv'
-        
-    # for file in resources/resources
-    for subdir, dirs, files in os.walk(rootdir):
-        for file in files:
-            path = os.path.join(subdir, file)
-            open_tsv_file = open(path)            
-            config = read_tsv(open_tsv_file)
-    
-        
 def read_tsv(data):
     tsv_file = csv.reader(data, delimiter="\t")
     
     start_metadata_block = False
     start_schema = False
     start_vocabulary = False    
-    for row in tsv_file:
-        
+    for row in tsv_file:        
         # save index of tsv dynamically
         counter_column = 0
-        for column in row:
-            # target_key fields starting
-            if (column == "#datasetField"):
-                start_schema = True
-                continue
-            # controlled_vocabulary fields starting
-            if (column == "#controlledVocabulary"):
-                start_vocabulary = True
-                start_schema = False
-                continue
-            if (column == "#metadataBlock"):
-                column_metadataBlock = counter_column
-                start_metadata_block = True
-                continue  
+        for column in row:  
             if (column == "allowmultiples"):
                 column_multiples = counter_column
             if (column == "metadatablock_id"):
@@ -94,10 +77,23 @@ def read_tsv(data):
             if(column == "parent"):
                 column_parent = counter_column
             if (column == "allowControlledVocabulary"):
-                column_controlledVocabulary = counter_column
+                column_hascontrolledVoc = counter_column
             if (column == "Value"):
-                column_valuecontrolledVocabulary = counter_column 
+                column_valuecontrolledVoc = counter_column 
             counter_column += 1
+        
+        if(row[0] == "#datasetField"):
+            start_schema = True
+            continue
+        
+        if(row[0] == "#controlledVocabulary"):
+            start_vocabulary = True
+            start_schema = False
+            continue
+        
+        if(row[0] == "#metadataBlock"):
+            start_metadata_block = True  
+            continue
                                   
         if (start_metadata_block):
             DV_MB[row[column_targetkey]]=row[column_displayname]
@@ -111,13 +107,13 @@ def read_tsv(data):
             if(parent == ""):
                 parent = None
             
-            # check type_class
+            # check type (primitive, compound, controlled vocabulary)
             type_class = "primitive"
-            metadata_block = row[column_metadataBlock]
+            metadata_block = row[colum_metadatablock]
             if(row[column_fieldtype] == "none"):
                 type_class = "compound"      
                 DV_CHILDREN[target_key] = []      
-            if(row[column_controlledVocabulary] == "TRUE"):
+            if(row[column_hascontrolledVoc] == "TRUE"):
                 type_class = "controlled_vocabulary"
             
             # create parent/children map
@@ -128,8 +124,5 @@ def read_tsv(data):
             DV_FIELD[target_key] = field 
                 
         if(start_vocabulary):
-            field = DV_FIELD[row[column_controlledVocabulary]]
-            field.set_controlled_vocabulary(row[column_valuecontrolledVocabulary])
-    print(DV_FIELD)
-
-   
+            field = DV_FIELD[row[column_targetkey]]
+            field.set_controlled_vocabulary(row[column_valuecontrolledVoc])

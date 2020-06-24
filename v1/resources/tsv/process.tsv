@@ -1,6 +1,6 @@
 #metadataBlock	name	dataverseAlias	displayName												
 	process		Process Metadata												
-#datasetField	name	title	description	watermark	 fieldType	displayOrder	displayFormat	advancedSearchField	allowControlledVocabulary	allowmultiples	facetable	displayoncreate	required	parent	metadatablock_id
+#datasetField	name	title	description	watermark	fieldType	displayOrder	displayFormat	advancedSearchField	allowControlledVocabulary	allowmultiples	facetable	displayoncreate	required	parent	metadatablock_id
 	processMethods	Processing Methods	Information about used methods in the data life cycle.		none	0		FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		process
 	processMethodsName	Name	Name of the method as free text.		text	1	#VALUE	TRUE	FALSE	FALSE	TRUE	TRUE	FALSE	processMethods	process
 	processMethodsDescription	Description	Description of the method as free text		textbox	2	(#VALUE)	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processMethods	process
@@ -14,7 +14,7 @@
 	processSoftwareName	Name	Name of the software.		text	10	#VALUE	TRUE	FALSE	FALSE	TRUE	TRUE	FALSE	processSoftware	process
 	processSoftwareCitation	Citation	Assosicated publication to the software.		textbox	11	(#VALUE)	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processSoftware	process
 	processSoftwareVersion	Version	Version of the software.	Number or commit	text	12	#NAME: #VALUE	TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	processSoftware	process
-	processSoftwareURL	URL	Link to the software, code repository or application.		url	13	(<a href="#VALUE" target="_blank">#VALUE</a>)	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processSoftware	process
+	processSoftwareURL	URL	Link to the software, code repository or application.		url	13	"(<a href=""#VALUE"" target=""_blank"">#VALUE</a>)"	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processSoftware	process
 	processSoftwareLicence	License	The license type of the software.		text	14	#VALUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processSoftware	process
 	processInstru	Instruments	A representation of a piece of laboratory or field equipment, used in the execution of an experiment, that produces data.		none	15		FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		process
 	processInstruName	Name	Name of this instrument.		text	16	#VALUE	TRUE	FALSE	FALSE	TRUE	TRUE	FALSE	processInstru	process
