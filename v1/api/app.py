@@ -1,5 +1,5 @@
 from flask import Flask, request, abort, jsonify, send_file
-# from flask_cors import CORS
+from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 
 
 def create_app(test_config=None):
@@ -92,6 +92,8 @@ def create_app(test_config=None):
 
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():
+        
+        print(MAPPINGS)
     
         # read input stream and parse information in JSON Object
         # 
@@ -99,11 +101,11 @@ def create_app(test_config=None):
         # add mapping to DB
         # check, if mapping already exists
         # mapping = Mapping.query.filter(Mapping.name == m.name).first()
-        mapping = None
-        if mapping is not None:
-            abort(409, 'A mapping with the name "{}" already exists. Use PUT /mapping/{} to change it.'.format(m.name))        
-        else:
-            errors = []
+        # mapping = None
+        # if mapping is not None:
+        #    abort(409, 'A mapping with the name "{}" already exists. Use PUT /mapping/{} to change it.'.format(m.name))        
+        #else:
+        #    errors = []
         # mapping = Mapping(name='',description='',format='',reference='')
         # go through mapping and add translators
         # for m in mapping:
@@ -113,12 +115,12 @@ def create_app(test_config=None):
         # existenz aller target_keys in metadaten-konfiguration prüfen
         # sonst in in Errors schreiben
         # hier factory erzeugen?
-            if len(errors) > 0:
-                abort(422, 'Unprocessable entity - validation failed. {}'.format(gen_message(errors)))
-        response = {'success': True,
-                    'created': m.name}
+        #    if len(errors) > 0:
+        #        abort(422, 'Unprocessable entity - validation failed. {}'.format(gen_message(errors)))
+        #response = {'success': True,
+        #            'created': m.name}
         
-        return jsonify(response), 201, {'Location': '/mapping/{}'.format(m.name)}
+        #return jsonify(response), 201, {'Location': '/mapping/{}'.format(m.name)}
 
 
     @app.route('/mapping/<string:scheme>', methods=["GET"])

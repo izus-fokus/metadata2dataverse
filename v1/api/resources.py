@@ -60,60 +60,57 @@ def read_tsv(data):
     start_metadata_block = False
     start_schema = False
     start_vocabulary = False    
-    for row in tsv_file:        
-        # save index of tsv dynamically
-        counter_column = 0
-        for column in row:  
-            if (column == "allowmultiples"):
-                column_multiples = counter_column
-            if (column == "metadatablock_id"):
-                colum_metadatablock = counter_column
-            if (column == "fieldType"):
-                column_fieldtype = counter_column
-            if (column == "name"):
-                column_targetkey = counter_column
-            if (column == "displayName"):
-                column_displayname = counter_column
-            if(column == "parent"):
-                column_parent = counter_column
-            if (column == "allowControlledVocabulary"):
-                column_hascontrolledVoc = counter_column
-            if (column == "Value"):
-                column_valuecontrolledVoc = counter_column 
-            counter_column += 1
-        
+    for row in tsv_file:            
         if(row[0] == "#datasetField"):
+            try:
+                index_targetkey = row.index("name")
+                index_multiple = row.index("allowmultiples")
+                index_metadatablock = row.index("metadatablock_id")
+                index_fieldtype = row.index("fieldType")
+                index_parent = row.index("parent")
+                index_hascontrolledvoc = row.index("allowControlledVocabulary")
+            except ValueError:
+                print("Check TSV #datasetField column names. Should contain name, allowmultiples, metadatablock_id, fieldType, parent and allowControlledVocabulary.")
             start_schema = True
             continue
         
         if(row[0] == "#controlledVocabulary"):
+            try:
+                index_valuecontrolledvoc = row.index("Value")
+            except ValueError:
+                print("Check TSV #controlledVocabulary column names. Should contain Value.")
             start_vocabulary = True
             start_schema = False
             continue
         
         if(row[0] == "#metadataBlock"):
+            try:
+                index_mbname = row.index("name")
+                index_displayname = row.index("displayName")
+            except ValueError:
+                print("Check TSV #metadataBlock column names. Should contain displayName.")
             start_metadata_block = True  
             continue
                                   
         if (start_metadata_block):
-            DV_MB[row[column_targetkey]]=row[column_displayname]
+            DV_MB[row[index_mbname]]=row[index_displayname]
             start_metadata_block = False
             continue
                     
         if (start_schema):        
-            multiple = row[column_multiples]
-            parent = row[column_parent]
-            target_key = row[column_targetkey]            
+            multiple = row[index_multiple]
+            parent = row[index_parent]
+            target_key = row[index_targetkey]            
             if(parent == ""):
                 parent = None
             
             # check type (primitive, compound, controlled vocabulary)
             type_class = "primitive"
-            metadata_block = row[colum_metadatablock]
-            if(row[column_fieldtype] == "none"):
+            metadata_block = row[index_metadatablock]
+            if(row[index_fieldtype] == "none"):
                 type_class = "compound"      
                 DV_CHILDREN[target_key] = []      
-            if(row[column_hascontrolledVoc] == "TRUE"):
+            if(row[index_hascontrolledvoc] == "TRUE"):
                 type_class = "controlled_vocabulary"
             
             # create parent/children map
@@ -124,5 +121,5 @@ def read_tsv(data):
             DV_FIELD[target_key] = field 
                 
         if(start_vocabulary):
-            field = DV_FIELD[row[column_targetkey]]
-            field.set_controlled_vocabulary(row[column_valuecontrolledVoc])
+            field = DV_FIELD[row[index_targetkey]]
+            field.set_controlled_vocabulary(row[index_valuecontrolledvoc])
