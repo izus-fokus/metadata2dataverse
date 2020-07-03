@@ -10,4 +10,4 @@ read_all_config_files() # MAPPINGS
 read_all_tsv_files()    # DV_FIELDS, DV_MB, DV_CHILDREN
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

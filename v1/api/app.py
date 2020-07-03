@@ -93,7 +93,12 @@ def create_app(test_config=None):
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():
         
-        print(MAPPINGS)
+        if (request.content_type == 'plain/txt'):
+            
+            data = request.data
+            print(request.args)
+        
+        return jsonify(request)
     
         # read input stream and parse information in JSON Object
         # 
