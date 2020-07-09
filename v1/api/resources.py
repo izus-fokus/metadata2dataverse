@@ -44,6 +44,7 @@ def read_config(data):
     # Create list of unfilled translators out of the mapping.                                
     translators = []            
     for translator_yaml in mapping:
+        print(translator_yaml)
         translator = TranslatorFactory.create_translator(translator_yaml, format)        
         translators.append(translator)      
         source_key = translator.get_source_key()
