@@ -1,5 +1,6 @@
 from flask import Flask, request, abort, jsonify, send_file
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
+from models.ReaderFactory import ReaderFactory
 
 
 def create_app(test_config=None):
@@ -93,12 +94,9 @@ def create_app(test_config=None):
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():
         
-        if (request.content_type == 'plain/txt'):
-            
-            data = request.data
-            print(request.args)
+        reader = ReaderFactory.create_reader(request.content_type)
+        filled_translators = reader.read(request.data)     
         
-        return jsonify(request)
     
         # read input stream and parse information in JSON Object
         # 
@@ -125,7 +123,7 @@ def create_app(test_config=None):
         #response = {'success': True,
         #            'created': m.name}
         
-        #return jsonify(response), 201, {'Location': '/mapping/{}'.format(m.name)}
+        return jsonify(response), 201, {'Location': '/mapping/{}'.format(m.name)}
 
 
     @app.route('/mapping/<string:scheme>', methods=["GET"])

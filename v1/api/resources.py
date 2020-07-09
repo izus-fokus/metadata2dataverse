@@ -5,7 +5,7 @@ from models.Config import Config
 from models.Field import Field
 from models.TranslatorFactory import TranslatorFactory
 TranslatorFactory = TranslatorFactory()
-from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB      #global variables
+from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS      #global variables
 
 # Read config yaml files (mapping from source key to target keys)
 def read_all_config_files():  
@@ -44,7 +44,11 @@ def read_config(data):
     # Create list of unfilled translators out of the mapping.                                
     translators = []            
     for translator_yaml in mapping:
-        translators.append(TranslatorFactory.create_translator(translator_yaml, format))
+        translator = TranslatorFactory.create_translator(translator_yaml, format)        
+        translators.append(translator)      
+        source_key = translator.get_source_key()
+        print(source_key)
+        SOURCE_KEYS[source_key] = translator
             
     # Return rules dictionary for trigger source keys (key) and associated translators (value).        
     rules_dict = TranslatorFactory.create_rules(rules)            
