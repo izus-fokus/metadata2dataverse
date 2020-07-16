@@ -4,6 +4,7 @@ import os
 from models.Config import Config
 from models.Field import Field
 from models.TranslatorFactory import TranslatorFactory
+from models.Translator import Translator
 TranslatorFactory = TranslatorFactory()
 from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS      #global variables
 
@@ -17,6 +18,7 @@ def read_all_config_files():
             open_yaml_file = open(path)            
             config = read_config(open_yaml_file)            
             # fill global dictionary of mappings
+            print(file)
             MAPPINGS[file] = config
 
 # Read schema tsv files (metadatablocks nesting)      
@@ -41,21 +43,22 @@ def read_config(data):
     mapping = yaml_file["mapping"]
     rules = yaml_file["rules"]
                         
-    # Create list of unfilled translators out of the mapping.                                
-    translators = []            
+    translators_dict = {}                    
+    # Create dict of translators out of the mapping.     
     for translator_yaml in mapping:
-        print(translator_yaml)
-        translator = TranslatorFactory.create_translator(translator_yaml, format)        
-        translators.append(translator)      
+        translator = TranslatorFactory.create_translator(translator_yaml)  
         source_key = translator.get_source_key()
-        print(source_key)
-        SOURCE_KEYS[source_key] = translator
+        if type(source_key) == list:    # special case: merge translators
+            for key in source_key:
+                translators_dict[key] = translator
+            continue
+        translators_dict[source_key] = translator
             
     # Return rules dictionary for trigger source keys (key) and associated translators (value).        
     rules_dict = TranslatorFactory.create_rules(rules)            
     
     # Return config Object for MAPPINGS dictionary.
-    config = Config(scheme, description, format, translators, rules_dict)        
+    config = Config(scheme, description, format, translators_dict, rules_dict)        
     return config                # global variable for the rules dictionary
    
 

@@ -25,9 +25,24 @@ def create_app(test_config=None):
                                   type=str,
                                   default='update')
         warnings = []
+        
+        mapping = MAPPINGS.get(scheme)
+        
+        reader = ReaderFactory.create_reader(request.content_type)
+        source_key_values = reader.read(request.data, scheme) 
+        print(source_key_values)
+        target_key_values = {}    
+        for k, v in source_key_values.items():
+            t = mapping.get_translator(k)
+            target_key = t.get_target_key()
+            target_key_values[target_key] = v
+            
+        print(target_key_values)
+        
+            
+            
 
-        # mapping = MAPPINGS.get(scheme)
-        # if mapping is None:
+        #if mapping is None:
         #    abort(404,
         #          '''Scheme {} not found. 
         #             Check GET /mapping for available schemes.'''
@@ -92,10 +107,8 @@ def create_app(test_config=None):
                         'schemes': [m.dump() for m in mappings]})
 
     @app.route('/mapping', methods=["POST"])
-    def createSchemaMapping():
+    def createSchemaMapping():   
         
-        reader = ReaderFactory.create_reader(request.content_type)
-        filled_translators = reader.read(request.data)     
         
     
         # read input stream and parse information in JSON Object

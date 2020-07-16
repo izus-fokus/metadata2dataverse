@@ -7,6 +7,8 @@ class Translator(metaclass=ABCMeta):
         """ Translator Interface """ 
     def set_value():
         """ Translator Interface """ 
+    def get_target_key():
+        """ Translator Interface """ 
         
         
 class BaseTranslator(Translator):    
@@ -22,14 +24,19 @@ class BaseTranslator(Translator):
     def get_source_key(self):
         return self.source_key
     
+    def get_target_key(self):
+        return self.target_key
+    
     def set_value(self, values):
         self.value = values
     
     
         
-class AdditionTranslator(BaseTranslator):    
-    def __init__(self, class_name, translator_type="addition",  *args, **kwargs):
-        super(AdditionTranslator, self).__init__(*args, **kwargs)
+class AdditionTranslator(Translator):    
+    def __init__(self, source_key, target_key, class_name, priority = 1, translator_type = "addition"):
+        self.source_key = source_key
+        self.target_key = target_key 
+        self.priority = priority
         self.class_name = class_name
         self.translator_type = translator_type
     
@@ -39,14 +46,19 @@ class AdditionTranslator(BaseTranslator):
     def get_source_key(self):
         return self.source_key
     
+    def get_target_key(self):
+        return self.target_key
+    
     def set_value(self, values):
         self.value = values
         
         
-class MergeTranslator(BaseTranslator):
+class MergeTranslator(Translator):
     
-    def __init__(self, translator_type = "merge", join_symbol = " ", *args, **kwargs):
-        super(MergeTranslator, self).__init__(*args, **kwargs)
+    def __init__(self, source_key, target_key, priority = 1, translator_type = "merge", join_symbol = " "):
+        self.source_key = source_key
+        self.target_key = target_key 
+        self.priority = priority
         self.translator_type = translator_type
         self.join_symbol = join_symbol
         
@@ -55,6 +67,9 @@ class MergeTranslator(BaseTranslator):
         
     def get_source_key(self):
         return self.source_key
+    
+    def get_target_key(self):
+        return self.target_key
     
     def set_value(self, values):
         self.value = values

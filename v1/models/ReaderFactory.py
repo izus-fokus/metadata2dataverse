@@ -1,5 +1,5 @@
 from abc import abstractstaticmethod, ABCMeta
-from api.globals import SOURCE_KEYS     # global variables
+from api.globals import MAPPINGS     # global variables
 
 class ReaderFactory(object):
     def __init__(self):
@@ -29,20 +29,25 @@ class TextReader(Reader):
     def __repr__(self):
         pass
         
-    def read(text_data):
-        translators = []
-        print(SOURCE_KEYS)
-        for line in text_data.splitlines():
+    def read(text_data, scheme):
+        mapping = MAPPINGS.get(scheme)
+        source_key_value = {}
+        for line in text_data.splitlines():            
             line = line.decode("utf-8")
-            splitted_line = line.split(":")
-            source_key = splitted_line[0]
-            print(source_key)
-            values = splitted_line[1]
-            translator = SOURCE_KEYS.get(source_key)
-            print(translator)
-            translator.set_value(values)
-            translators.append(translator)
-        return translators
+            if len(line) > 1:   # ignore empty lines
+                splitted_line = line.split(":")
+                source_key = splitted_line[0]
+                t = mapping.translators_dict.get(source_key)
+                if t is None:    
+                    print(source_key, " not found in scheme mapping - Check your Yaml Mapping File")
+                    continue        
+                values = splitted_line[1]
+                splitted_values = values.split(",")
+                source_key_value[source_key] = []
+                for value in splitted_values:
+                    if len(value) > 1:
+                        source_key_value[source_key].append(value.strip())
+        return source_key_value
     
     
         
