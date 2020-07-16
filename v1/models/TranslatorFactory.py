@@ -33,32 +33,3 @@ class TranslatorFactory(object):
         else:                                           # case 2: normal translator
             translator = BaseTranslator(source_key, target_key, priority)    
             return translator     
-    
-    
-    @staticmethod
-    def create_rules(rules_yaml):
-        """ 
-        returns nested rules dictionary
-        rules_dict = {'contact_role': {'producer': list_of_translators, 'distributor': list_of_translators},
-                      'description.descriptionType': {'SeriesInformation': list_of_translators},
-                      ...
-                      trigger: {trigger_value: list_of_translators}
-                     }         
-        """        
-        rules_dict = {}
-        for rule_yaml in rules_yaml:
-            translator_dict = {}                                                # initialize inner dictionary
-            trigger = rule_yaml.get("trigger", None)
-            trigger_values = rule_yaml.get("trigger_values", None)
-            for trigger_value in trigger_values:
-                translators_yaml = rule_yaml.get(trigger_value, None)   # get list of translators for trigger value: [{source_key: description, targetKey: seriesInformation}]
-                translators = []                                        # intitialize list of translators for translator_dict
-                for translator in translators_yaml:
-                    source_key = translator.get('source_key', None)
-                    target_key = translator.get('target_key', None)
-                    translators.append(BaseTranslator(source_key, target_key))
-                translator_dict[trigger_value] = translators            # fill inner dictionary with trigger_value and list_of_translators
-            
-            rules_dict[trigger] = translator_dict                               # fill outer dictionary with trigger and inner dictionary
-            
-        return rules_dict   

@@ -16,10 +16,10 @@ def read_all_config_files():
         for file in files:
             path = os.path.join(subdir, file)
             open_yaml_file = open(path)            
-            config = read_config(open_yaml_file)            
+            config = read_config(open_yaml_file)    
+            scheme = file.split(".")[0]        
             # fill global dictionary of mappings
-            print(file)
-            MAPPINGS[file] = config
+            MAPPINGS[scheme] = config
 
 # Read schema tsv files (metadatablocks nesting)      
 def read_all_tsv_files():
@@ -36,30 +36,28 @@ def read_all_tsv_files():
 def read_config(data):
     yaml_file = yaml.safe_load(data) 
     
-    # Extracting dictionaries out of yaml-file.
-    description = yaml_file["description"]
+    # Extracting dictionaries out of yaml-file    
     scheme = yaml_file["scheme"]   
+    description = yaml_file["description"]
     format = yaml_file["format"]   
     mapping = yaml_file["mapping"]
     rules = yaml_file["rules"]
-                        
-    translators_dict = {}                    
-    # Create dict of translators out of the mapping.     
-    for translator_yaml in mapping:
-        translator = TranslatorFactory.create_translator(translator_yaml)  
-        source_key = translator.get_source_key()
-        if type(source_key) == list:    # special case: merge translators
-            for key in source_key:
-                translators_dict[key] = translator
-            continue
-        translators_dict[source_key] = translator
-            
-    # Return rules dictionary for trigger source keys (key) and associated translators (value).        
-    rules_dict = TranslatorFactory.create_rules(rules)            
     
-    # Return config Object for MAPPINGS dictionary.
-    config = Config(scheme, description, format, translators_dict, rules_dict)        
-    return config                # global variable for the rules dictionary
+    # Return rules dictionary for trigger source keys (key) and associated translators (value).        
+    # rules_dict = TranslatorFactory.create_rules(rules)  
+    
+    config = Config(scheme, description, format) 
+                                          
+    # Create dict of translators out of the mapping    
+    for translator_yaml in mapping:
+        config.add_translator(translator_yaml)
+    
+    # Create dict of Rules out of the mapping
+    for rule_yaml in rules:
+        config.add_rules(rule_yaml)       
+        
+    # Return config Object for MAPPINGS dictionary           
+    return config               
    
 
 def read_tsv(data):
