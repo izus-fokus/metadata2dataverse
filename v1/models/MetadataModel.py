@@ -68,7 +68,7 @@ class VocabularyField(Field):
     def add_value(self, value):
         if value in self.vocab:
             self.value.append(value)
-        else:
+        #else:
             # exception mit warning werfen
 
 

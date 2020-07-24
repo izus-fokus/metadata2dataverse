@@ -66,66 +66,67 @@ def read_tsv(data):
     start_metadata_block = False
     start_schema = False
     start_vocabulary = False    
-    for row in tsv_file:            
-        if(row[0] == "#datasetField"):
-            try:
-                index_targetkey = row.index("name")
-                index_multiple = row.index("allowmultiples")
-                index_metadatablock = row.index("metadatablock_id")
-                index_fieldtype = row.index("fieldType")
-                index_parent = row.index("parent")
-                index_hascontrolledvoc = row.index("allowControlledVocabulary")
-            except ValueError:
-                print("Check TSV #datasetField column names. Should contain name, allowmultiples, metadatablock_id, fieldType, parent and allowControlledVocabulary.")
-            start_schema = True
-            continue
+    for row in tsv_file:      
+        if not all('' == s or s.isspace() for s in row):
+            if(row[0] == "#datasetField"):            
+                try:
+                    index_targetkey = row.index("name")
+                    index_multiple = row.index("allowmultiples")
+                    index_metadatablock = row.index("metadatablock_id")
+                    index_fieldtype = row.index("fieldType")
+                    index_parent = row.index("parent")
+                    index_hascontrolledvoc = row.index("allowControlledVocabulary")
+                except ValueError:
+                    print("Check TSV #datasetField column names. Should contain name, allowmultiples, metadatablock_id, fieldType, parent and allowControlledVocabulary.")
+                start_schema = True
+                continue
         
-        if(row[0] == "#controlledVocabulary"):
-            try:
-                index_valuecontrolledvoc = row.index("Value")
-            except ValueError:
-                print("Check TSV #controlledVocabulary column names. Should contain Value.")
-            start_vocabulary = True
-            start_schema = False
-            continue
+            if(row[0] == "#controlledVocabulary"):
+                try:
+                    index_valuecontrolledvoc = row.index("Value")
+                except ValueError:
+                        print("Check TSV #controlledVocabulary column names. Should contain Value.")
+                start_vocabulary = True
+                start_schema = False
+                continue
         
-        if(row[0] == "#metadataBlock"):
-            try:
-                index_mbname = row.index("name")
-                index_displayname = row.index("displayName")
-            except ValueError:
-                print("Check TSV #metadataBlock column names. Should contain displayName.")
-            start_metadata_block = True  
-            continue
+            if(row[0] == "#metadataBlock"):
+                try:
+                    index_mbname = row.index("name")
+                    index_displayname = row.index("displayName")
+                except ValueError:
+                    print("Check TSV #metadataBlock column names. Should contain displayName.")
+                start_metadata_block = True  
+                continue
                                   
-        if (start_metadata_block):
-            DV_MB[row[index_mbname]]=row[index_displayname]
-            start_metadata_block = False
-            continue
+            if (start_metadata_block):
+                DV_MB[row[index_mbname]]=row[index_displayname]
+                start_metadata_block = False
+                continue
                     
-        if (start_schema):        
-            multiple = row[index_multiple]
-            parent = row[index_parent]
-            target_key = row[index_targetkey]            
-            if(parent == ""):
-                parent = None
+            if (start_schema):        
+                multiple = row[index_multiple]
+                parent = row[index_parent]
+                target_key = row[index_targetkey]            
+                if(parent == ""):
+                    parent = None
             
-            # check type (primitive, compound, controlled vocabulary)
-            type_class = "primitive"
-            metadata_block = row[index_metadatablock]
-            if(row[index_fieldtype] == "none"):
-                type_class = "compound"      
-                DV_CHILDREN[target_key] = []      
-            if(row[index_hascontrolledvoc] == "TRUE"):
-                type_class = "controlled_vocabulary"
+                # check type (primitive, compound, controlled vocabulary)
+                type_class = "primitive"
+                metadata_block = row[index_metadatablock]
+                if(row[index_fieldtype] == "none"):
+                    type_class = "compound"      
+                    DV_CHILDREN[target_key] = []      
+                if(row[index_hascontrolledvoc] == "TRUE"):
+                    type_class = "controlled_vocabulary"
             
-            # create parent/children map
-            if parent in DV_CHILDREN:
-                DV_CHILDREN[parent].append(target_key)
+                # create parent/children map
+                if parent in DV_CHILDREN:
+                    DV_CHILDREN[parent].append(target_key)
                 
-            field = Field(multiple, type_class, parent, metadata_block)             
-            DV_FIELD[target_key] = field 
+                field = Field(multiple, type_class, parent, metadata_block)             
+                DV_FIELD[target_key] = field 
                 
-        if(start_vocabulary):
-            field = DV_FIELD[row[index_targetkey]]
-            field.set_controlled_vocabulary(row[index_valuecontrolledvoc])
+            if(start_vocabulary):
+                field = DV_FIELD[row[index_targetkey]]
+                field.set_controlled_vocabulary(row[index_valuecontrolledvoc])

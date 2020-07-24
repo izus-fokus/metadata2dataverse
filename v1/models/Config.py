@@ -13,7 +13,7 @@ class Config(object):
         self.rules_dict = {}
 
     def __repr__(self):
-        return("scheme: " + self.scheme + ", description: " + self.description + ", format: " + self.format + ", translators: " + str(self.translators) + ", rules dict: " + str(self.rules_dict))
+        return("scheme: " + self.scheme + ", description: " + self.description + ", format: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict))
     
     def get_translator(self, source_key):
         return self.translators_dict.get(source_key)
