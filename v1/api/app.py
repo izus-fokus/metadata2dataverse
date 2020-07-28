@@ -27,9 +27,10 @@ def create_app(test_config=None):
         warnings = []
         
         mapping = MAPPINGS.get(scheme)
+        list_of_source_keys = mapping.get_source_keys()
         
         reader = ReaderFactory.create_reader(request.content_type)
-        source_key_values = reader.read(request.data, scheme) 
+        source_key_values = reader.read(request.data, list_of_source_keys) 
         target_key_values = {}    
         for k, v in source_key_values.items():
             t = mapping.get_translator(k)

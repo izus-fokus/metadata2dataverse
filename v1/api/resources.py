@@ -10,7 +10,7 @@ from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS     
 
 # Read config yaml files (mapping from source key to target keys)
 def read_all_config_files():  
-    rootdir = 'v1/resources/config'
+    rootdir = './resources/config'
     # for file in resources/config
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:

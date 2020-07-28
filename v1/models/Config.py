@@ -18,6 +18,9 @@ class Config(object):
     def get_translator(self, source_key):
         return self.translators_dict.get(source_key)
     
+    def get_source_keys(self):
+        return translators_dict.keys()
+    
     # create dictionary with source key (keys) and translators (value)
     def add_translator(self, translator_yaml):
         translator = TranslatorFactory.create_translator(translator_yaml) 

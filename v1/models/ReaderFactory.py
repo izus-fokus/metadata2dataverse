@@ -31,18 +31,14 @@ class TextReader(Reader):
         
     # gets input and scheme. 
     # reads input line by line and checks if source_key is in translators_dict of scheme.     
-    def read(text_data, scheme):
-        print(MAPPINGS)
-        mapping = MAPPINGS.get(scheme)
-        print(mapping)
+    def read(text_data, list_of_source_keys):
         source_key_value = {}
         for line in text_data.splitlines():            
             line = line.decode("utf-8")
             if len(line) > 1:   # ignore empty lines
                 splitted_line = line.split(":")
                 source_key = splitted_line[0]
-                t = mapping.translators_dict.get(source_key)
-                if t is None:    
+                if source_key not in list_of_source_keys:
                     print(source_key, " not found in scheme mapping - Check your Yaml Mapping File")
                     continue        
                 values = splitted_line[1]
