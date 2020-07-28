@@ -27,5 +27,35 @@ class TestResources(unittest.TestCase):
                 path = os.path.join(subdir, file)
                 test_tsv = open(path)            
                 read_tsv(test_tsv)
-        print(DV_FIELD, DV_MB, DV_CHILDREN)
+        # test primitive without parent
+        self.assertIn("title", DV_FIELD)
+        field = DV_FIELD.get("title")
+        self.assertEqual(field.multiple, "FALSE")
+        self.assertEqual(field.type_class, "primitive")
+        self.assertEqual(field.metadata_block, "citation")
+        self.assertEqual(field.parent, None)
+        # test primitive with parent
+        self.assertIn("otherIdAgency", DV_FIELD)
+        field2 = DV_FIELD.get("otherIdAgency")
+        self.assertEqual(field2.multiple, "FALSE")
+        self.assertEqual(field2.type_class, "primitive")
+        self.assertEqual(field2.metadata_block, "citation")
+        self.assertEqual(field2.parent, "otherId")
+        # test compound
+        self.assertIn("otherId", DV_FIELD)
+        field3 = DV_FIELD.get("otherId")
+        self.assertEqual(field3.multiple, "TRUE")
+        self.assertEqual(field3.type_class, "compound")
+        self.assertEqual(field3.metadata_block, "citation")
+        self.assertEqual(field3.parent, None)
+        # test controlled Vocabulary
+        self.assertIn("subject", DV_FIELD)
+        field4 = DV_FIELD.get("subject")
+        self.assertEqual(field4.multiple, "TRUE")
+        self.assertEqual(field4.type_class, "controlled_vocabulary")
+        self.assertEqual(field4.metadata_block, "citation")
+        self.assertEqual(field4.parent, None)
+        self.assertEqual(field4.controlled_vocabulary, ["Agricultural Sciences","Arts and Humanities","Astronomy and Astrophysics","Business and Management","Chemistry","Computer and Information Science","Earth and Environmental Sciences","Engineering","Law","Mathematical Sciences","Medicine, Health and Life Sciences","Physics","Social Sciences","Other"])
+
+        
            

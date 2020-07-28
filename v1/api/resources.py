@@ -10,14 +10,16 @@ from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS     
 
 # Read config yaml files (mapping from source key to target keys)
 def read_all_config_files():  
-    rootdir = './resources/config'
+    rootdir = 'v1/resources/config'
     # for file in resources/config
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
+            print("blubb")
             path = os.path.join(subdir, file)
             open_yaml_file = open(path)            
             config = read_config(open_yaml_file)    
-            scheme = file.split(".")[0]        
+            scheme = file.split(".")[0]    
+            print(scheme)    
             # fill global dictionary of mappings
             MAPPINGS[scheme] = config
 

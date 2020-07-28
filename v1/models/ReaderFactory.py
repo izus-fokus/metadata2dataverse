@@ -29,8 +29,12 @@ class TextReader(Reader):
     def __repr__(self):
         pass
         
+    # gets input and scheme. 
+    # reads input line by line and checks if source_key is in translators_dict of scheme.     
     def read(text_data, scheme):
+        print(MAPPINGS)
         mapping = MAPPINGS.get(scheme)
+        print(mapping)
         source_key_value = {}
         for line in text_data.splitlines():            
             line = line.decode("utf-8")
