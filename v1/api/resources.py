@@ -14,12 +14,10 @@ def read_all_config_files():
     # for file in resources/config
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
-            print("blubb")
             path = os.path.join(subdir, file)
             open_yaml_file = open(path)            
             config = read_config(open_yaml_file)    
             scheme = file.split(".")[0]    
-            print(scheme)    
             # fill global dictionary of mappings
             MAPPINGS[scheme] = config
 

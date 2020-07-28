@@ -26,8 +26,11 @@ def create_app(test_config=None):
                                   default='update')
         warnings = []
         
-        mapping = MAPPINGS.get(scheme)
-        list_of_source_keys = mapping.get_source_keys()
+        try:
+            mapping = MAPPINGS.get(scheme)
+            list_of_source_keys = mapping.get_source_keys()
+        except ValueError:
+            print("No mapping for ", scheme, "found.")
         
         reader = ReaderFactory.create_reader(request.content_type)
         source_key_values = reader.read(request.data, list_of_source_keys) 

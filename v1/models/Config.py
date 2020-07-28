@@ -19,7 +19,7 @@ class Config(object):
         return self.translators_dict.get(source_key)
     
     def get_source_keys(self):
-        return translators_dict.keys()
+        return self.translators_dict.keys()
     
     # create dictionary with source key (keys) and translators (value)
     def add_translator(self, translator_yaml):
