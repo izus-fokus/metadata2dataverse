@@ -7,8 +7,6 @@ class Translator(metaclass=ABCMeta):
         """ Translator Interface """ 
     def set_value():
         """ Translator Interface """ 
-    def get_target_key():
-        """ Translator Interface """ 
         
         
 class BaseTranslator(Translator):    
@@ -23,9 +21,7 @@ class BaseTranslator(Translator):
         
     def get_source_key(self):
         return self.source_key
-    
-    def get_target_key(self):
-        return self.target_key
+
     
     def set_value(self, values):
         self.value = values
@@ -46,9 +42,6 @@ class AdditionTranslator(Translator):
     def get_source_key(self):
         return self.source_key
     
-    def get_target_key(self):
-        return self.target_key
-    
     def set_value(self, values):
         self.value = values
         
@@ -67,9 +60,6 @@ class MergeTranslator(Translator):
         
     def get_source_key(self):
         return self.source_key
-    
-    def get_target_key(self):
-        return self.target_key
     
     def set_value(self, values):
         self.value = values

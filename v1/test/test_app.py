@@ -12,5 +12,5 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.client = self.app.test_client()
 
     def test_edit_metadata(self):
-        response = self.client.post('/metadata/test')
+        response = self.client.post('/metadata/harvester')
         self.assertEqual(response.status_code, 200)

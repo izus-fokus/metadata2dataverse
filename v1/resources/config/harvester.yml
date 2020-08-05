@@ -5,8 +5,6 @@ scheme: Harvester
 
 mapping:
 
-- target_key: dates.date
-
 - target_key: title
 
 # otherId

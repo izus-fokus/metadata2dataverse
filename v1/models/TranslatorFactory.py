@@ -5,8 +5,7 @@ class TranslatorFactory(object):
 
     def __init__(self):
         ''' Constructor '''
-        pass
-                
+        pass                
                    
     @staticmethod      
     def create_translator(translator_yaml):   
