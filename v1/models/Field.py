@@ -5,7 +5,7 @@ class Field(object):
     def __init__(self, multiple, type_class, parent, metadata_block):
         ''' Constructor '''
         self.controlled_vocabulary = []
-        self.multiple = multiple
+        self.multiple = (multiple == 'TRUE')
         self.type_class = type_class
         self.parent = parent
         self.metadata_block = metadata_block
@@ -15,5 +15,7 @@ class Field(object):
         
     def set_controlled_vocabulary(self, controlled_vocabulary):
         self.controlled_vocabulary.append(controlled_vocabulary)
+        
+        
                    
     

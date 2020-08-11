@@ -18,8 +18,8 @@ class TestReader(unittest.TestCase):
                 test_input = open(path)    
                 source_key_value = self.reader.read(test_input.read().encode(), ['dates.date','contact.familyName','contributor.role'])
         
-        self.assertEqual(["2019-04-04"], source_key_value.get("dates.date"))
+        self.assertEqual("2019-04-04", source_key_value.get("dates.date"))
         self.assertEqual(["Selent","Schembera"], source_key_value.get("contact.familyName"))
-        self.assertEqual(["Data Manager"], source_key_value.get("contributor.role"))
+        self.assertEqual("Data Manager", source_key_value.get("contributor.role"))
         self.assertNotEqual(["German", "English"], source_key_value.get("subjects.subject.lang"))
         
