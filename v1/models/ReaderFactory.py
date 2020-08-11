@@ -30,7 +30,8 @@ class TextReader(Reader):
         pass
         
     # gets input and scheme. 
-    # reads input line by line and checks if source_key is in translators_dict of scheme.     
+    # reads input line by line and checks if source_key is in translators_dict of scheme.  
+    # returns source_key_value dictionary with source_key as key and values as value (can be a list or a single string)   
     def read(text_data, list_of_source_keys):
         source_key_value = {}
         for line in text_data.splitlines():            
@@ -42,11 +43,14 @@ class TextReader(Reader):
                     print(source_key, " not found in scheme mapping - Check your Yaml Mapping File")
                     continue        
                 values = splitted_line[1]
-                splitted_values = values.split(",")
-                source_key_value[source_key] = []
-                for value in splitted_values:
-                    if len(value) > 1:
+                splitted_values = values.split(", ")
+                splitted_values = list(filter(None, splitted_values))   # filter for empty elements in list
+                if len(splitted_values) > 1:                            # multiple values
+                    source_key_value[source_key] = []
+                    for value in splitted_values:
                         source_key_value[source_key].append(value.strip())
+                else:
+                    source_key_value[source_key] = splitted_values[0].strip()   #single value
         return source_key_value
     
     

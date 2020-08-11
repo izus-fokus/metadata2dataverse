@@ -7,6 +7,9 @@ mapping:
 
 - target_key: title
 
+- target_key: keywordValue
+  source_key: keyword.value
+
 # otherId
 #T: otherIdAgency
 #T: otherIdValue

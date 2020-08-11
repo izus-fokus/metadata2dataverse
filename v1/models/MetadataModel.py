@@ -60,7 +60,7 @@ class MultiplePrimitiveField(Field):
 class VocabularyField(Field):
     def __init__(self, typeName, value=[], vocab=[]):
         self.vocab = vocab
-        super().__init__(typeName, value, False, 'compound')
+        super().__init__(typeName, value, False, 'controlled_vocabulary')
 
     def add_value(self, value):
         if value in self.vocab:

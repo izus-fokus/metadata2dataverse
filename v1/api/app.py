@@ -42,26 +42,23 @@ def create_app(test_config=None):
             t = mapping.get_translator(k)
             target_key = t.target_key
             target_key_values[target_key] = v
-            
-        print(target_key_values)
         
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN
         
+        parents_dict = {}
+        primitives_dict = {}
         for k, v in target_key_values.items():
             field = DV_FIELD.get(k)
             parent = field.parent
             type_class = field.type_class
-            multiple = bool(field.multiple)
-            print(parent, type_class, multiple)
+            multiple = field.multiple
             
             # PrimitiveFields
             if type_class == "primitive":
                 if multiple == True:
                     p_field = MultiplePrimitiveField(k,v)
-                    result = MultiplePrimitiveFieldScheme().dump(p_field)
                 if multiple == False:
                     p_field = PrimitiveField(k,v)
-                    result = PrimitiveFieldScheme().dump(p_field)
             
             # To Do
             if type_class == "controlled_vocabulary":
@@ -70,19 +67,35 @@ def create_app(test_config=None):
             # CompoundFields
             if parent != None:
                 parent_field = DV_FIELD.get(parent)
-                parent_field_multiple = bool(parent_field.multiple)
+                parent_field_multiple = parent_field.multiple
                 # MultipleCompoundField
                 if parent_field_multiple == True:
-                    c_field = MultipleCompoundField(parent)                 
-                    c_field.add_value(p_field)
-                    result = MultipleCompoundFieldScheme().dump(c_field)                    
+                    c_field = MultipleCompoundField(parent)                              
                 # CompoundField
                 if parent_field_multiple == False:
-                    c_field = CompoundField(parent)
-                    c_field.add_value(p_field)
-                    result = CompoundFieldScheme().dump(c_field)        
+                    c_field = CompoundField(parent)    
+                parents_dict[parent] = c_field
+                
+            primitives_dict[k] = p_field
             
-            
+        result = {}
+        for parent, c_field in parents_dict.items():
+            # get children of parent element
+            children = DV_CHILDREN.get(parent)
+            for child in children:
+                # get filled child
+                p_field = primitives_dict.pop(child)
+                if p_field is not None:
+                    if isinstance(c_field, CompoundField):
+                        c_field.add_value(p_field, child)
+                        r = CompoundFieldScheme().dump(c_field)
+                    if isinstance(c_field, MultipleCompoundField):
+                        c_field.add_value(p_field, child)
+                        r = MultipleCompoundFieldScheme.dump(c_field)
+                    
+                else:           # child is not filled
+                    continue
+        #for left_elements in primitives_dict:
             
             
 
