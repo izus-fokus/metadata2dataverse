@@ -37,17 +37,14 @@ class MultipleCompoundField(Field):
     def __init__(self, typeName, value=[]):
         super().__init__(typeName, value, True, 'compound')
 
-    def add_value(self, value):
+    def add_value(self, compound):
         if not isinstance(self.value, list):
             self.value = []
-        self.value.append(value)
+        if isinstance(compound, CompoundField):
+            # hier eventuell noch Fehlerbehandlung hinzufügen
+            self.value.append(compound.value)
 
-    def add_value_to_element(self, value, key, index=None):
-        if not isinstance(self.value, list):
-            self.value = []
-        if index is None:
-            index = len(self.value)
-        self.value[index][key] = value
+
 
 
 class MultiplePrimitiveField(Field):
@@ -75,7 +72,15 @@ class VocabularyField(Field):
 class MetadataBlock():
     def __init__(self, id, name, fields=[]):
         self.id = id
-        self.name = name
+        self.displayName = name
+        self.fields = fields
+
+    def add_field(self, field):
+        self.fields.append(field)
+
+
+class EditFormat():
+    def __init__(self, fields=[]):
         self.fields = fields
 
     def add_field(self, field):
