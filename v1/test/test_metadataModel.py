@@ -8,7 +8,9 @@ from models.MetadataModel import MultiplePrimitiveField
 from models.MetadataModel import CompoundFieldScheme, CompoundField
 from models.MetadataModel import MultipleCompoundFieldScheme
 from models.MetadataModel import MultipleCompoundField
-from models.MetadataModel import EditFormat, EditScheme
+from models.MetadataModel import EditFormat, EditScheme, EditFieldSchema
+from models.MetadataModel import Field, FieldSchema
+from models.MetadataModel import MetadataBlock, MetadataBlockSchema
 # from models.MetadataModel import SimpleFieldSchema, FieldsScheme, EditScheme, MetadataBlockSchema, DatasetSchema, CreateDatasetSchema
 
 
@@ -75,15 +77,13 @@ class TestMetadataModel(unittest.TestCase):
         )
         self.assertEqual(s1_field.get_multiple(), True)
         self.assertEqual(s2_field.get_typeClass(), 'primitive')
-        #for i in range(len(self.multiple_compound_child1['value'])):            
+        # for i in range(len(self.multiple_compound_child1['value'])):            
         c_field.add_value(s1_field)
         c_field.add_value(s2_field)
         result = MultipleCompoundFieldScheme().dump(c_field)
-        print(result)
-
         self.assertIn('value', result)
-        #self.assertIn(self.multiple_compound_child1['typeName'], result['value'])
-        #self.assertIn(self.multiple_compound_child2['typeName'], result['value'])
+        # self.assertIn(self.multiple_compound_child1['typeName'], result['value'])
+        # self.assertIn(self.multiple_compound_child2['typeName'], result['value'])
 
 
     def test_compoundField(self):
@@ -103,7 +103,6 @@ class TestMetadataModel(unittest.TestCase):
         c_field.add_value(s1_field, self.compound_child1['typeName'])
         c_field.add_value(s2_field, self.compound_child2['typeName'])
         result = CompoundFieldScheme().dump(c_field)
-
         self.assertIn('value', result)
         self.assertIn(self.compound_child1['typeName'], result['value'])
         self.assertIn(self.compound_child2['typeName'], result['value'])
@@ -111,22 +110,15 @@ class TestMetadataModel(unittest.TestCase):
     def test_editScheme(self):
 
         edit = EditFormat()
-
         p_field = PrimitiveField(
             self.primitive_data['typeName'],
             self.primitive_data['value'])
         edit.add_field(p_field)
 
-        p_field2 = PrimitiveField(
-            'title',
-            'Das ist ein Testtitel für einen Datensatz'
-        )
-
-        edit.add_field(p_field2)
-
-        c_field = CompoundField(
+        c2_field = CompoundField(
             'author'
         )
+        
         p_field3 = PrimitiveField(
             'authorName',
             'Dorothea Iglezakis'
@@ -135,11 +127,18 @@ class TestMetadataModel(unittest.TestCase):
             'authorAffiliation',
             'Universität Stuttgart'
         )
-        c_field.add_value(p_field3, 'authorName')
-        c_field.add_value(p_affiliation, 'authorAffiliation')
-
-        edit.add_field(c_field)
-
+        c2_field.add_value(p_field3, 'authorName')
+        c2_field.add_value(p_affiliation, 'authorAffiliation')
+        
+        edit.add_field(c2_field)
         result = EditScheme().dump(edit)
-        print (result)
-            
+        self.assertEqual(len(result["fields"]), 2)
+        
+
+    def test_metadatablock(self):
+        id = 'citation'
+        displayName = 'Citation'
+        mb = MetadataBlock(id,displayName)
+        result = MetadataBlockSchema().dump(mb)
+        self.assertEqual(result['displayName'], displayName)
+        self.assertEqual(result['id'], id)

@@ -2,12 +2,11 @@ from flask import Flask, request, abort, jsonify, send_file
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 from models.ReaderFactory import ReaderFactory
 from models.MetadataModel import PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
-
+from api.resources import read_all_config_files, read_all_tsv_files
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
-       
         
     # helper functions
 
@@ -26,15 +25,20 @@ def create_app(test_config=None):
                                   type=str,
                                   default='update')
         warnings = []
-        
         # read input and generate target_key_values dictionary for input
         
         try:
             mapping = MAPPINGS.get(scheme)
+            if mapping is None:
+                abort(404,
+                      '''Scheme {} not found. 
+                         Check GET /mapping for available schemes.'''
+                      .format(scheme))
+
             list_of_source_keys = mapping.get_source_keys()
         except ValueError:
             print("No mapping for ", scheme, "found.")
-        
+
         reader = ReaderFactory.create_reader(request.content_type)
         source_key_values = reader.read(request.data, list_of_source_keys) 
         target_key_values = {}    
@@ -42,9 +46,9 @@ def create_app(test_config=None):
             t = mapping.get_translator(k)
             target_key = t.target_key
             target_key_values[target_key] = v
-        
+
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN
-        
+
         parents_dict = {}
         primitives_dict = {}
         for k, v in target_key_values.items():

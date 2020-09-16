@@ -19,7 +19,8 @@ class TestResources(unittest.TestCase):
                 test_config = read_config(test_yaml)        
                 self.assertEqual(test_config.description, "menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstützt)")
                 self.assertEqual(test_config.format, "text/plain")
-                self.assertEqual(test_config.scheme, "Harvester")        
+                self.assertEqual(test_config.scheme, "Harvester")
+                test_yaml.close()        
     
     def test_read_tsv(self):
         for subdir, dirs, files in os.walk('./tsv'):
@@ -27,6 +28,7 @@ class TestResources(unittest.TestCase):
                 path = os.path.join(subdir, file)
                 test_tsv = open(path)            
                 read_tsv(test_tsv)
+                test_tsv.close()
         # test primitive without parent
         self.assertIn("title", DV_FIELD)
         field = DV_FIELD.get("title")
