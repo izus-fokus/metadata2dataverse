@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields
-from marshmallow.validate import OneOf, Equal
+from marshmallow.validate import Equal
 from marshmallow_oneofschema import OneOfSchema
 
 
@@ -16,9 +16,24 @@ class Field():
     def get_multiple(self):
         return self.multiple
 
+    def get_typeName(self):
+        return self.typeName
+
+    def get_value(self):
+        return self.value
+
+    def __repr__(self):
+        return '{} ({}, {}): {}'.format(
+            self.typeName,
+            self.typeClass,
+            "m" if self.multiple else 'nm',
+            self.value)
+
 
 class PrimitiveField(Field):
-    def __init__(self, typeName, value=''):
+    def __init__(self, typeName, value=None):
+        if value is None:
+            value = ''
         super().__init__(typeName, value, False, 'primitive')
 
     def add_value(self, value):
@@ -26,32 +41,35 @@ class PrimitiveField(Field):
 
 
 class CompoundField(Field):
-    def __init__(self, typeName, value={}):
+    def __init__(self, typeName, value=None):
+        if value is None:
+            value = {}
         super().__init__(typeName, value, False, 'compound')
 
     def add_value(self, value, key):
+        # print('add value {} with key {} to CF'.format(value, key))
         self.value[key] = value
 
 
 class MultipleCompoundField(Field):
-    def __init__(self, typeName, value=[]):
+    def __init__(self, typeName, value=None):
+        if value is None:
+            value = []
         super().__init__(typeName, value, True, 'compound')
 
-    def add_value(self, value):
+    def add_value(self, compound):
         if not isinstance(self.value, list):
             self.value = []
-        self.value.append(value)
-
-    def add_value_to_element(self, value, key, index=None):
-        if not isinstance(self.value, list):
-            self.value = []
-        if index is None:
-            index = len(self.value)
-        self.value[index][key] = value
+        if isinstance(compound, CompoundField):
+            # print('add Value to MCF: ', compound.value)
+            # hier eventuell noch Fehlerbehandlung hinzufügen
+            self.value.append(compound.value)
 
 
 class MultiplePrimitiveField(Field):
-    def __init__(self, typeName, value=[]):
+    def __init__(self, typeName, value=None):
+        if value is None:
+            value = []
         super().__init__(typeName, value, True, 'primitive')
 
     def add_value(self, value):
@@ -61,25 +79,62 @@ class MultiplePrimitiveField(Field):
 
 
 class VocabularyField(Field):
-    def __init__(self, typeName, value=[], vocab=[]):
+    def __init__(self, typeName, value=None, vocab=None):
+        if value is None:
+            value = []
+        if vocab is None:
+            vocab = []
         self.vocab = vocab
         super().__init__(typeName, value, False, 'controlled_vocabulary')
 
     def add_value(self, value):
         if value in self.vocab:
             self.value.append(value)
-        #else:
+        # else:
             # exception mit warning werfen
 
 
 class MetadataBlock():
-    def __init__(self, id, name, fields=[]):
+    def __init__(self, id, name, fields=None):
+        if fields is None:
+            fields = []
         self.id = id
-        self.name = name
+        self.displayName = name
         self.fields = fields
 
     def add_field(self, field):
         self.fields.append(field)
+
+
+class EditFormat():
+    def __init__(self, fields=None):
+        if fields is None:
+            fields = []
+        self.mFields = fields
+
+    def add_field(self, field):
+        self.mFields.append(field)
+
+    def __repr__(self):
+        r = ''
+        for field in self.mFields:
+            r += '{} ({}, {}): {}'.format(
+                field.get_typeName(),
+                field.get_typeClass(),
+                'm' if field.get_multiple() else 'nm',
+                field.get_value())
+        return "fields = [{}]".format(r)
+
+
+class Dataset():
+    def __init__(self, blocks=None):
+        if blocks is None:
+            blocks = []
+        self.md_blocks = blocks
+
+    def add_block(self, block):
+        if isinstance(block, MetadataBlock):
+            self.md_blocks.append(block)
 
 
 class PrimitiveFieldScheme(Schema):
@@ -115,6 +170,7 @@ class MultiplePrimitiveFieldScheme(Schema):
 
 
 class FieldSchema(OneOfSchema):
+    type_field_remove = True
     type_schemas = {
         'PrimitiveField': PrimitiveFieldScheme,
         'CompoundField': CompoundFieldScheme,
@@ -123,11 +179,25 @@ class FieldSchema(OneOfSchema):
     }
 
 
+class EditFieldSchema(OneOfSchema):
+    type_field_remove = True
+    type_schemas = {
+        'PrimitiveField': PrimitiveFieldScheme(
+            only=["typeName", "value"]),
+        'CompoundField': CompoundFieldScheme(
+            only=["typeName", "value"]),
+        'MultiplePrimitiveField': MultiplePrimitiveFieldScheme(
+            only=["typeName", "value"]),
+        'MultipleCompoundField': MultipleCompoundFieldScheme(
+            only=["typeName", "value"])
+    }
+
+
 class EditScheme(Schema):
     mFields = fields.List(
         fields.Nested(
-            #FieldSchema(only=['typeName', 'value'])
-            FieldSchema()
+            # FieldSchema(only=['typeName', 'value'])
+            EditFieldSchema()
             ),
         data_key='fields')
 

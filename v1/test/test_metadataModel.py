@@ -2,8 +2,15 @@ import unittest
 import sys
 sys.path.append('..')
 
-from models.MetadataModel import PrimitiveFieldScheme, PrimitiveField, MultiplePrimitiveField, MultiplePrimitiveFieldScheme
-from models.MetadataModel import CompoundFieldScheme, CompoundField, MultipleCompoundField, MultipleCompoundFieldScheme
+from models.MetadataModel import PrimitiveFieldScheme, PrimitiveField
+from models.MetadataModel import MultiplePrimitiveFieldScheme
+from models.MetadataModel import MultiplePrimitiveField
+from models.MetadataModel import CompoundFieldScheme, CompoundField
+from models.MetadataModel import MultipleCompoundFieldScheme
+from models.MetadataModel import MultipleCompoundField
+from models.MetadataModel import EditFormat, EditScheme, EditFieldSchema
+from models.MetadataModel import Field, FieldSchema
+from models.MetadataModel import MetadataBlock, MetadataBlockSchema
 # from models.MetadataModel import SimpleFieldSchema, FieldsScheme, EditScheme, MetadataBlockSchema, DatasetSchema, CreateDatasetSchema
 
 
@@ -11,11 +18,11 @@ class TestMetadataModel(unittest.TestCase):
     def setUp(self):
         self.primitive_data = {'typeName': 'title', 'value': 'New Post Publish'}
         self.multiple_data = {'typeName': 'language', 'value': ['German', 'English']}
-        
+
         self.compound_parent = {'typeName': 'engMetaGitter'}
         self.compound_child1 = {'typeName': 'engMetaGitterCountX', 'value': '60'}
         self.compound_child2 = {'typeName': 'engMetaGitterCountY', 'value': '80'}
-        
+
         self.multiple_compound_parent = {'typeName': 'author'}        
         self.multiple_compound_child1 = {'typeName': 'authorName', 'value': ['Elisabeth', 'Anne']}
 
@@ -35,7 +42,7 @@ class TestMetadataModel(unittest.TestCase):
         self.assertIn('typeName', result)
         self.assertNotIn('multiple', result)
         self.assertNotIn('typeClass', result)
-        
+
     def test_multiplePrimitiveField(self):
         p_field = MultiplePrimitiveField(
             self.multiple_data['typeName'],
@@ -54,7 +61,29 @@ class TestMetadataModel(unittest.TestCase):
         self.assertNotIn('typeClass', result)
         
     def test_multipleCompoundField(self):
-        pass
+
+        c_field = MultipleCompoundField(
+            self.multiple_compound_parent['typeName']
+        )
+        self.assertEqual(c_field.get_multiple(), True)
+        self.assertEqual(c_field.get_typeClass(), 'compound')
+        s1_field = MultiplePrimitiveField(
+            self.multiple_compound_child1['typeName'],
+            self.multiple_compound_child1['value']
+        )
+        s2_field = MultiplePrimitiveField(
+            self.multiple_compound_child2['typeName'],
+            self.multiple_compound_child2['value']
+        )
+        self.assertEqual(s1_field.get_multiple(), True)
+        self.assertEqual(s2_field.get_typeClass(), 'primitive')
+        # for i in range(len(self.multiple_compound_child1['value'])):            
+        c_field.add_value(s1_field)
+        c_field.add_value(s2_field)
+        result = MultipleCompoundFieldScheme().dump(c_field)
+        self.assertIn('value', result)
+        # self.assertIn(self.multiple_compound_child1['typeName'], result['value'])
+        # self.assertIn(self.multiple_compound_child2['typeName'], result['value'])
 
 
     def test_compoundField(self):
@@ -74,7 +103,42 @@ class TestMetadataModel(unittest.TestCase):
         c_field.add_value(s1_field, self.compound_child1['typeName'])
         c_field.add_value(s2_field, self.compound_child2['typeName'])
         result = CompoundFieldScheme().dump(c_field)
-        
         self.assertIn('value', result)
         self.assertIn(self.compound_child1['typeName'], result['value'])
         self.assertIn(self.compound_child2['typeName'], result['value'])
+
+    def test_editScheme(self):
+
+        edit = EditFormat()
+        p_field = PrimitiveField(
+            self.primitive_data['typeName'],
+            self.primitive_data['value'])
+        edit.add_field(p_field)
+
+        c2_field = CompoundField(
+            'author'
+        )
+        
+        p_field3 = PrimitiveField(
+            'authorName',
+            'Dorothea Iglezakis'
+        )
+        p_affiliation = PrimitiveField(
+            'authorAffiliation',
+            'Universität Stuttgart'
+        )
+        c2_field.add_value(p_field3, 'authorName')
+        c2_field.add_value(p_affiliation, 'authorAffiliation')
+        
+        edit.add_field(c2_field)
+        result = EditScheme().dump(edit)
+        self.assertEqual(len(result["fields"]), 2)
+        
+
+    def test_metadatablock(self):
+        id = 'citation'
+        displayName = 'Citation'
+        mb = MetadataBlock(id,displayName)
+        result = MetadataBlockSchema().dump(mb)
+        self.assertEqual(result['displayName'], displayName)
+        self.assertEqual(result['id'], id)
