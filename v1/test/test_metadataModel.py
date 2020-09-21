@@ -18,7 +18,6 @@ class TestMetadataModel(unittest.TestCase):
         
         self.multiple_compound_parent = {'typeName': 'author'}        
         self.multiple_compound_child1 = {'typeName': 'authorName', 'value': ['Elisabeth', 'Anne']}
-        self.multiple_compound_child2 = {'typeName': 'authorCity', 'value': ['Büdingen', 'Stuttgart']}
 
     def test_primitiveField(self):
         p_field = PrimitiveField(
@@ -55,30 +54,7 @@ class TestMetadataModel(unittest.TestCase):
         self.assertNotIn('typeClass', result)
         
     def test_multipleCompoundField(self):
-        c_field = MultipleCompoundField(
-            self.multiple_compound_parent['typeName']
-        )
-        self.assertEqual(c_field.get_multiple(), True)
-        self.assertEqual(c_field.get_typeClass(), 'compound')
-        s1_field = MultiplePrimitiveField(
-            self.multiple_compound_child1['typeName'],
-            self.multiple_compound_child1['value']
-        )
-        s2_field = MultiplePrimitiveField(
-            self.multiple_compound_child2['typeName'],
-            self.multiple_compound_child2['value']
-        )
-        self.assertEqual(s1_field.get_multiple(), True)
-        self.assertEqual(s2_field.get_typeClass(), 'primitive')
-        #for i in range(len(self.multiple_compound_child1['value'])):            
-        c_field.add_value(s1_field)
-        c_field.add_value(s2_field)
-        result = MultipleCompoundFieldScheme().dump(c_field)
-        print(result)
-        
-        self.assertIn('value', result)
-        self.assertIn(self.multiple_compound_child1['typeName'], result['value'])
-        self.assertIn(self.multiple_compound_child2['typeName'], result['value'])
+        pass
 
 
     def test_compoundField(self):

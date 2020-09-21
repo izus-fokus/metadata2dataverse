@@ -77,14 +77,20 @@ def create_app(test_config=None):
                 parents_dict[parent] = c_field
                 
             primitives_dict[k] = p_field
+        
+        print(primitives_dict)
+        print(parents_dict)
             
         result = {}
         for parent, c_field in parents_dict.items():
             # get children of parent element
             children = DV_CHILDREN.get(parent)
+            print(children)
+            print(c_field)
             for child in children:
                 # get filled child
                 p_field = primitives_dict.pop(child)
+                print(p_field)
                 if p_field is not None:
                     if isinstance(c_field, CompoundField):
                         c_field.add_value(p_field, child)
