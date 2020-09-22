@@ -48,11 +48,13 @@ def create_app(test_config=None):
             target_key_values[target_key] = v
 
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN
-
+        result = []
         parents_dict = {}
         primitives_dict = {}
+        print(target_key_values)
         for k, v in target_key_values.items():
             field = DV_FIELD.get(k)
+            print(field)
             parent = field.parent
             type_class = field.type_class
             multiple = field.multiple
@@ -61,9 +63,10 @@ def create_app(test_config=None):
             if type_class == "primitive":
                 if multiple == True:
                     p_field = MultiplePrimitiveField(k,v)
+                    print("p:", p_field)
                 if multiple == False:
                     p_field = PrimitiveField(k,v)
-            
+                
             # To Do
             if type_class == "controlled_vocabulary":
                 pass
@@ -74,37 +77,50 @@ def create_app(test_config=None):
                 parent_field_multiple = parent_field.multiple
                 # MultipleCompoundField
                 if parent_field_multiple == True:
-                    c_field = MultipleCompoundField(parent)                              
+                    c_field = MultipleCompoundField(parent)          
+                    c_field_child = CompoundField(k)         
+                    c_field_child.add_value(p_field, k)           
                 # CompoundField
                 if parent_field_multiple == False:
                     c_field = CompoundField(parent)    
+                    c_field_child = CompoundField(k)
+                    c_field_child.add_value(p_field, k)  
                 parents_dict[parent] = c_field
                 
-            primitives_dict[k] = p_field
+                primitives_dict[k] = c_field_child
+            else: 
+                if multiple == True:
+                    print("blubb")
+                    r = PrimitiveFieldScheme().dump(p_field)
+                    print(r)
+                    result.append(r)
+                if multiple == False:
+                    r = MultiplePrimitiveFieldScheme().dump(p_field)
+                    result.append(r)
         
-        print(primitives_dict)
-        print(parents_dict)
             
-        result = {}
+        
         for parent, c_field in parents_dict.items():
             # get children of parent element
             children = DV_CHILDREN.get(parent)
             print(children)
-            print(c_field)
             for child in children:
                 # get filled child
-                p_field = primitives_dict.pop(child)
-                print(p_field)
-                if p_field is not None:
+                try:
+                    p_field = primitives_dict.pop(child)
+                    print(p_field)
                     if isinstance(c_field, CompoundField):
                         c_field.add_value(p_field, child)
                         r = CompoundFieldScheme().dump(c_field)
                     if isinstance(c_field, MultipleCompoundField):
-                        c_field.add_value(p_field, child)
-                        r = MultipleCompoundFieldScheme.dump(c_field)
+                        c_field.add_value(p_field)
+                        r = MultipleCompoundFieldScheme().dump(c_field)
                     
-                else:           # child is not filled
+                except KeyError:           # child is not filled
                     continue
+        result.append(r)
+        print(result)
+                
         #for left_elements in primitives_dict:
             
             

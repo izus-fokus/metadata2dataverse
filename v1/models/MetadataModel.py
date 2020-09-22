@@ -166,7 +166,7 @@ class MultiplePrimitiveFieldScheme(Schema):
     typeName = fields.Str(required=True)
     multiple = fields.Boolean(validate=Equal(True))
     typeClass = fields.Str(validate=Equal('primitive'))
-    value = fields.List(fields.Str())
+    value = fields.Str()
 
 
 class FieldSchema(OneOfSchema):
