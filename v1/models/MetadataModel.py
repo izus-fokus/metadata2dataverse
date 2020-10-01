@@ -68,8 +68,8 @@ class MultipleCompoundField(Field):
 
 class MultiplePrimitiveField(Field):
     def __init__(self, typeName, value=None):
-        if value is None:
-            value = []
+        self.value = []
+        self.value.append(value)
         super().__init__(typeName, value, True, 'primitive')
 
     def add_value(self, value):
@@ -166,7 +166,7 @@ class MultiplePrimitiveFieldScheme(Schema):
     typeName = fields.Str(required=True)
     multiple = fields.Boolean(validate=Equal(True))
     typeClass = fields.Str(validate=Equal('primitive'))
-    value = fields.Str()
+    value = fields.List(fields.Str())
 
 
 class FieldSchema(OneOfSchema):
