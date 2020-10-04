@@ -58,12 +58,14 @@ class MultipleCompoundField(Field):
         super().__init__(typeName, value, True, 'compound')
 
     def add_value(self, compound):
+        print("add value: ", compound)
         if not isinstance(self.value, list):
             self.value = []
-        if isinstance(compound, CompoundField):
+        if isinstance(compound, PrimitiveField):
+            print("ja hallllooo")
             # print('add Value to MCF: ', compound.value)
             # hier eventuell noch Fehlerbehandlung hinzufügen
-            self.value.append(compound.value)
+            self.value.append(compound)
 
 
 class MultiplePrimitiveField(Field):

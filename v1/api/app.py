@@ -3,6 +3,8 @@ from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 from models.ReaderFactory import ReaderFactory
 from models.MetadataModel import EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
 from api.resources import read_all_config_files, read_all_tsv_files
+from asn1crypto.core import Primitive
+from pkg_resources._vendor.pyparsing import empty
 
 def create_app(test_config=None):
     # create and configure the app
@@ -88,36 +90,50 @@ def create_app(test_config=None):
                 if multiple == False:
                     edit.add_field(p_field)
         
-            
-        print(parents_dict)
-        print(primitives_dict)
-        for parent, c_field in parents_dict.items():
-            # get children of parent element
-            children = DV_CHILDREN.get(parent)
-            # outer loop
-            for child in children:
-                # inner loop
-                try:
-                    p_field = primitives_dict.pop(child)
-                    if isinstance(c_field, CompoundField):
-                        c_field.add_value(p_field, child)
-                        edit.add_field(c_field)
-                        
-                    if isinstance(c_field, MultipleCompoundField):
-                        
-                        c_field.add_value(p_field)
-                        edit.add_field(c_field)
-                    
-                    
-                except KeyError:           # child is not filled
-                    continue
         
-        kp = EditScheme().dump(edit)   
-        
-        print(kp)
                 
+                # inner loop
+                #try:
+                #    p_field = primitives_dict.pop(child)
+                #    if isinstance(c_field, CompoundField):
+                #        c_field.add_value(p_field, child)
+                #        edit.add_field(c_field)
+                #        
+                #    if isinstance(c_field, MultipleCompoundField):
+                #        
+                #        c_field.add_value(p_field)
+                #        edit.add_field(c_field)
+                    
+                    
+                #except KeyError:           # child is not filled
+                #    continue
+        
+        
+        
         #for left_elements in primitives_dict:
-            
+        for k, v in primitives_dict.items():
+            parent = [key for (key, value) in DV_CHILDREN.items() if k in value]
+            parent = parent[0]
+            c_field = parents_dict.get(parent)            
+            children = DV_CHILDREN.get(parent)
+            while primitives_dict.get(k):
+                for child in children:                    
+                    if child in primitives_dict:                                           
+                        if isinstance(primitives_dict.get(child), list): # multiple compound
+                            p_field = primitives_dict.get(child).pop(0)
+                            print(type(p_field))
+                            print(c_field)
+                            c_field.add_value(p_field)
+                        else: # compound  
+                            p_field = primitives_dict.get(child)
+                            c_field.add_value(p_field, child)
+                            primitives_dict[child] = None
+                            
+        edit.add_field(c_field)
+        kp = EditScheme().dump(edit)
+        print(kp)
+        
+        
             
 
         #if mapping is None:
