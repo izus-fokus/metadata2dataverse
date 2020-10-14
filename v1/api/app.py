@@ -74,8 +74,11 @@ def create_app(test_config=None):
                 if parent_field_multiple == True:
                     c_field = MultipleCompoundField(parent)
                     primitives_dict[k] = []
-                    for value in v:          
-                        primitives_dict[k].append(PrimitiveField(k,value))         
+                    if isinstance(v, list):
+                        for value in v:          
+                            primitives_dict[k].append(PrimitiveField(k,value)) 
+                    else:
+                        primitives_dict[k].append(PrimitiveField(k,v))        
                 # CompoundField
                 if parent_field_multiple == False:
                     c_field = CompoundField(parent)    
@@ -85,51 +88,32 @@ def create_app(test_config=None):
                 
             # has no parent
             else: 
-                if multiple == True:
-                    edit.add_field(p_field)
-                if multiple == False:
-                    edit.add_field(p_field)
+                edit.add_field(p_field)
         
-        
-                
-                # inner loop
-                #try:
-                #    p_field = primitives_dict.pop(child)
-                #    if isinstance(c_field, CompoundField):
-                #        c_field.add_value(p_field, child)
-                #        edit.add_field(c_field)
-                #        
-                #    if isinstance(c_field, MultipleCompoundField):
-                #        
-                #        c_field.add_value(p_field)
-                #        edit.add_field(c_field)
-                    
-                    
-                #except KeyError:           # child is not filled
-                #    continue
-        
-        
-        
-        #for left_elements in primitives_dict:
+                                              
+            
+        #build up compounds
         for k, v in primitives_dict.items():
             parent = [key for (key, value) in DV_CHILDREN.items() if k in value]
-            parent = parent[0]
-            c_field = parents_dict.get(parent)            
+            parent = parent[0]            
             children = DV_CHILDREN.get(parent)
+            c_field_outer = parents_dict.get(parent) 
             while primitives_dict.get(k):
-                for child in children:                    
-                    if child in primitives_dict:                                           
-                        if isinstance(primitives_dict.get(child), list): # multiple compound
-                            p_field = primitives_dict.get(child).pop(0)
-                            print(type(p_field))
-                            print(c_field)
-                            c_field.add_value(p_field)
-                        else: # compound  
+                if isinstance(primitives_dict.get(k), list):                                              
+                    c_field_inner = CompoundField(k)
+                    for child in children:                                       
+                        if child in primitives_dict:                                                                            
+                            p_field = primitives_dict.get(child).pop(0)   
+                            c_field_inner.add_value(p_field, child)   
+                    c_field_outer.add_value(c_field_inner)
+                else:                                               # compound
+                    for child in children:
+                        if child in primitives_dict:  
                             p_field = primitives_dict.get(child)
-                            c_field.add_value(p_field, child)
-                            primitives_dict[child] = None
+                            c_field_outer.add_value(p_field, child)
+                            primitives_dict[child] = None                       
                             
-        edit.add_field(c_field)
+                edit.add_field(c_field_outer)
         kp = EditScheme().dump(edit)
         print(kp)
         
