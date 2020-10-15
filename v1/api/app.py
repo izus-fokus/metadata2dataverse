@@ -64,7 +64,14 @@ def create_app(test_config=None):
                 if multiple == True:
                     p_field = MultiplePrimitiveField(k,v)
                 if multiple == False:
-                    p_field = PrimitiveField(k,v)
+                    if isinstance(v, list):
+                        concatenated = ""
+                        for value in v:
+                            concatenated += value + ", "
+                        p_field = PrimitiveField(k,concatenated[:-2])                        
+                    else:    
+                        p_field = PrimitiveField(k,v)
+                        
             
             # has parent
             if parent != None:
@@ -82,38 +89,39 @@ def create_app(test_config=None):
                 # CompoundField
                 if parent_field_multiple == False:
                     c_field = CompoundField(parent)    
-                    c_field_child = PrimitiveField(k,v)
-                    primitives_dict[k] = c_field_child
+                    primitives_dict[k] = p_field
                 parents_dict[parent] = c_field                
                 
             # has no parent
             else: 
                 edit.add_field(p_field)
         
-                                              
-            
-        #build up compounds
-        for k, v in primitives_dict.items():
-            parent = [key for (key, value) in DV_CHILDREN.items() if k in value]
-            parent = parent[0]            
-            children = DV_CHILDREN.get(parent)
-            c_field_outer = parents_dict.get(parent) 
-            while primitives_dict.get(k):
-                if isinstance(primitives_dict.get(k), list):                                              
-                    c_field_inner = CompoundField(k)
-                    for child in children:                                       
-                        if child in primitives_dict:                                                                            
-                            p_field = primitives_dict.get(child).pop(0)   
-                            c_field_inner.add_value(p_field, child)   
+        
+        # build compound fields        
+        for parent, c_field_outer in parents_dict.items(): 
+            children = DV_CHILDREN.get(parent) 
+            if isinstance(c_field_outer, MultipleCompoundField):                
+                for child in children:                    
+                    if child in primitives_dict:
+                        number_of_values = len(primitives_dict.get(child))
+                        break                                   
+                for i in range(number_of_values):
+                    c_field_inner = CompoundField(parent)
+                    for child in children:                                                
+                        if child in primitives_dict: 
+                           p_field = primitives_dict.get(child)[i]
+                           c_field_inner.add_value(p_field, child)
                     c_field_outer.add_value(c_field_inner)
-                else:                                               # compound
-                    for child in children:
-                        if child in primitives_dict:  
-                            p_field = primitives_dict.get(child)
-                            c_field_outer.add_value(p_field, child)
-                            primitives_dict[child] = None                       
-                            
+                    
                 edit.add_field(c_field_outer)
+            else:
+                for child in children:
+                    if child in primitives_dict:  
+                        p_field = primitives_dict.get(child)
+                        c_field_outer.add_value(p_field, child)
+                edit.add_field(c_field_outer)                
+
+
         kp = EditScheme().dump(edit)
         print(kp)
         
