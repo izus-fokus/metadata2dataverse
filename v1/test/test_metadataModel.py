@@ -25,6 +25,7 @@ class TestMetadataModel(unittest.TestCase):
 
         self.multiple_compound_parent = {'typeName': 'author'}        
         self.multiple_compound_child1 = {'typeName': 'authorName', 'value': ['Elisabeth', 'Anne']}
+        self.multiple_compound_child2 = {'typeName': 'authorCity', 'value': ['Büdingen', 'Stuttgart']}
 
     def test_primitiveField(self):
         p_field = PrimitiveField(
@@ -61,7 +62,6 @@ class TestMetadataModel(unittest.TestCase):
         self.assertNotIn('typeClass', result)
         
     def test_multipleCompoundField(self):
-
         c_field = MultipleCompoundField(
             self.multiple_compound_parent['typeName']
         )
@@ -115,10 +115,12 @@ class TestMetadataModel(unittest.TestCase):
             self.primitive_data['value'])
         edit.add_field(p_field)
 
-        c2_field = CompoundField(
+        c2_field = MultipleCompoundField(
             'author'
         )
         
+        c3_field = CompoundField('author')
+
         p_field3 = PrimitiveField(
             'authorName',
             'Dorothea Iglezakis'
@@ -127,13 +129,14 @@ class TestMetadataModel(unittest.TestCase):
             'authorAffiliation',
             'Universität Stuttgart'
         )
-        c2_field.add_value(p_field3, 'authorName')
-        c2_field.add_value(p_affiliation, 'authorAffiliation')
+        c3_field.add_value(p_field3, 'authorName')
+        c3_field.add_value(p_affiliation, 'authorAffiliation')
         
+        c2_field.add_value(c3_field)
         edit.add_field(c2_field)
         result = EditScheme().dump(edit)
         self.assertEqual(len(result["fields"]), 2)
-        
+
 
     def test_metadatablock(self):
         id = 'citation'
@@ -142,3 +145,4 @@ class TestMetadataModel(unittest.TestCase):
         result = MetadataBlockSchema().dump(mb)
         self.assertEqual(result['displayName'], displayName)
         self.assertEqual(result['id'], id)
+        

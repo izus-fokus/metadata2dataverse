@@ -152,6 +152,12 @@ class CompoundFieldScheme(Schema):
         keys=fields.Str(),
         values=fields.Nested(PrimitiveFieldScheme))
 
+class EditCompoundFieldScheme(CompoundFieldScheme):
+    value = fields.Dict(
+        keys=fields.Str(),
+        values=fields.Nested(PrimitiveFieldScheme(only=["typeName", "value"]))
+    )
+
 
 class MultipleCompoundFieldScheme(Schema):
     typeName = fields.Str(required=True)
@@ -160,6 +166,13 @@ class MultipleCompoundFieldScheme(Schema):
     value = fields.List(fields.Dict(
         keys=fields.Str(),
         values=fields.Nested(PrimitiveFieldScheme)))
+
+
+class EditMultipleCompoundFieldScheme(MultipleCompoundFieldScheme):
+    value = fields.List(fields.Dict(
+        keys=fields.Str(),
+        values=fields.Nested(PrimitiveFieldScheme(only=["typeName", "value"]))
+    ))
 
 
 class MultiplePrimitiveFieldScheme(Schema):
@@ -184,11 +197,11 @@ class EditFieldSchema(OneOfSchema):
     type_schemas = {
         'PrimitiveField': PrimitiveFieldScheme(
             only=["typeName", "value"]),
-        'CompoundField': CompoundFieldScheme(
+        'CompoundField': EditCompoundFieldScheme(
             only=["typeName", "value"]),
         'MultiplePrimitiveField': MultiplePrimitiveFieldScheme(
             only=["typeName", "value"]),
-        'MultipleCompoundField': MultipleCompoundFieldScheme(
+        'MultipleCompoundField': EditMultipleCompoundFieldScheme(
             only=["typeName", "value"])
     }
 
