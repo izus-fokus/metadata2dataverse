@@ -21,36 +21,28 @@ def create_app(test_config=None):
     def gen_message(warnings):
         return '. '.join(warnings)
 
-    @app.route('/metadata/<string:scheme>', methods=["POST"])
-    def mapMetadata(scheme):
-        method = request.args.get('method',
-                                  type=str,
-                                  default='update')
-        warnings = []
-        # read input and generate target_key_values dictionary for input
-        
-        try:
-            mapping = MAPPINGS.get(scheme)
-            if mapping is None:
-                abort(404,
-                      '''Scheme {} not found. 
-                         Check GET /mapping for available schemes.'''
-                      .format(scheme))
-
-            list_of_source_keys = mapping.get_source_keys()
-        except ValueError:
-            print("No mapping for ", scheme, "found.")
-
-        reader = ReaderFactory.create_reader(request.content_type)
-        source_key_values = reader.read(request.data, list_of_source_keys) 
+    def get_mapping(scheme):
+        mapping = MAPPINGS.get(scheme)
+        if mapping is None:
+            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
+        return mapping
+    
+    def translate_source_keys(source_key_values, mapping):
         target_key_values = {}    
         for k, v in source_key_values.items():
             t = mapping.get_translator(k)
             target_key = t.target_key
             target_key_values[target_key] = v
-
-        # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN
-        edit = EditFormat()
+        return target_key_values
+    
+    def get_format(method):
+        if method == 'update':
+            return EditFormat()
+        # elif method == 'update':
+        #    return ?
+    
+    def build_json(target_key_values, method):
+        json_result = get_format(method)
         parents_dict = {}
         primitives_dict = {}
         for k, v in target_key_values.items():
@@ -70,9 +62,7 @@ def create_app(test_config=None):
                             concatenated += value + ", "
                         p_field = PrimitiveField(k,concatenated[:-2])                        
                     else:    
-                        p_field = PrimitiveField(k,v)
-                        
-            
+                        p_field = PrimitiveField(k,v)      
             # has parent
             if parent != None:
                 parent_field = DV_FIELD.get(parent)
@@ -90,11 +80,10 @@ def create_app(test_config=None):
                 if parent_field_multiple == False:
                     c_field = CompoundField(parent)    
                     primitives_dict[k] = p_field
-                parents_dict[parent] = c_field                
-                
+                parents_dict[parent] = c_field           
             # has no parent
-            else: 
-                edit.add_field(p_field)
+            if parent == None: 
+                json_result.add_field(p_field)
         
         
         # build compound fields        
@@ -113,36 +102,42 @@ def create_app(test_config=None):
                            c_field_inner.add_value(p_field, child)
                     c_field_outer.add_value(c_field_inner)
                     
-                edit.add_field(c_field_outer)
+                json_result.add_field(c_field_outer)
             else:
                 for child in children:
                     if child in primitives_dict:  
                         p_field = primitives_dict.get(child)
                         c_field_outer.add_value(p_field, child)
-                edit.add_field(c_field_outer)                
-
-
-        kp = EditScheme().dump(edit)
-        print(kp)
+                json_result.add_field(c_field_outer) 
         
+        return json_result
         
-            
+    @app.route('/metadata/<string:scheme>', methods=["POST"])
+    def mapMetadata(scheme):
+        method = request.args.get('method',
+                                  type=str,
+                                  default='update')
+        warnings = []
+        
+        # get mapping for requested scheme        
+        mapping = get_mapping(scheme)
+        
+        # get all source keys of scheme
+        list_of_source_keys = mapping.get_source_keys()
+        
+        # read input depending on content-type and get all key-value-pairs in input
+        reader = ReaderFactory.create_reader(request.content_type)        
+        source_key_values = reader.read(request.data, list_of_source_keys) 
+        
+        # translate key-value-pairs in input to target scheme
+        target_key_values = translate_source_keys(source_key_values, mapping)
+        
+        # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN       
+        result = build_json(target_key_values, method)      
 
-        #if mapping is None:
-        #    abort(404,
-        #          '''Scheme {} not found. 
-        #             Check GET /mapping for available schemes.'''
-        #          .format(scheme))
-        # check input file for the right format
-        # if request.headers.get('Content-Type') !== mapping.format:
-        #   abort (415, '''The request media type is not supported for 
-        #               '{}'. Check resource `/mapping/engMeta` 
-        #               for available media types of this metadata scheme'''.format(scheme))                         
-        # parse input file
-        # translators = mapping.translators
-        # response = mapping.getModel(method,target_keys)
-        response = {}
-        # build JSON-Structure from tsv-information
+        if method == 'update':
+            response = EditScheme().dump(result)
+                       
 
         if len(warnings) > 0:
             if verbose:
