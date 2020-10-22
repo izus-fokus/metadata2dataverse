@@ -43,6 +43,7 @@ class TestMetadataModel(unittest.TestCase):
         self.assertIn('typeName', result)
         self.assertNotIn('multiple', result)
         self.assertNotIn('typeClass', result)
+        self.assertNotIn('type', result)
 
     def test_multiplePrimitiveField(self):
         p_field = MultiplePrimitiveField(
@@ -55,6 +56,7 @@ class TestMetadataModel(unittest.TestCase):
         self.assertEqual(result['value'], self.multiple_data['value'])
         self.assertEqual(result['typeClass'], 'primitive')
         self.assertTrue(result['multiple'])
+        self.assertNotIn('type', result)
         result = MultiplePrimitiveFieldScheme(only=['value', 'typeName']).dump(p_field)
         self.assertIn('value', result)
         self.assertIn('typeName', result)
@@ -135,8 +137,14 @@ class TestMetadataModel(unittest.TestCase):
         c2_field.add_value(c3_field)
         edit.add_field(c2_field)
         result = EditScheme().dump(edit)
+        print(result)
         self.assertEqual(len(result["fields"]), 2)
-
+        for field in result["fields"]:
+            self.assertIn('typeName', field)
+            self.assertIn('value', field)
+            self.assertNotIn('type', field)
+            self.assertNotIn('multiple', field)
+            self.assertNotIn('typeClass', field)
 
     def test_metadatablock(self):
         id = 'citation'

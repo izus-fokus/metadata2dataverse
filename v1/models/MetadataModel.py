@@ -209,7 +209,6 @@ class EditFieldSchema(OneOfSchema):
 class EditScheme(Schema):
     mFields = fields.List(
         fields.Nested(
-            # FieldSchema(only=['typeName', 'value'])
             EditFieldSchema()
             ),
         data_key='fields')

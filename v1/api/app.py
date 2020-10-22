@@ -2,9 +2,9 @@ from flask import Flask, request, abort, jsonify, send_file
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 from models.ReaderFactory import ReaderFactory
 from models.MetadataModel import EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
-from api.resources import read_all_config_files, read_all_tsv_files
-from asn1crypto.core import Primitive
-from pkg_resources._vendor.pyparsing import empty
+# from api.resources import read_all_config_files, read_all_tsv_files
+# from asn1crypto.core import Primitive
+# from pkg_resources._vendor.pyparsing import empty
 
 def create_app(test_config=None):
     # create and configure the app
