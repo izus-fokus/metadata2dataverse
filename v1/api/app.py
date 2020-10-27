@@ -1,7 +1,7 @@
 from flask import Flask, request, abort, jsonify, send_file
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 from models.ReaderFactory import ReaderFactory
-from models.MetadataModel import EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
+from models.MetadataModel import DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
 # from api.resources import read_all_config_files, read_all_tsv_files
 # from asn1crypto.core import Primitive
 # from pkg_resources._vendor.pyparsing import empty
@@ -36,13 +36,93 @@ def create_app(test_config=None):
         return target_key_values
     
     def get_format(method):
-        if method == 'update':
+        if method == 'edit':
             return EditFormat()
-        # elif method == 'update':
-        #    return ?
+        #elif method == 'update':
+        #    mb_dict = {}
+        #    return mb_dict
+    
+    def build_json_update(target_key_values):
+        mb_dict = {}
+        parents_dict = {}
+        primitives_dict = {}
+        for k, v in target_key_values.items():
+            field = DV_FIELD.get(k)
+            parent = field.parent
+            type_class = field.type_class
+            multiple = field.multiple
+            mb_id = field.metadata_block
+            if mb_id not in mb_dict:
+                mb = MetadataBlock(mb_id, DV_MB[mb_id]) 
+                mb_dict[mb_id] = mb
+                
+            # PrimitiveFields
+            if type_class == "primitive" or "controlled_vocabulary":
+                if multiple == True:
+                    p_field = MultiplePrimitiveField(k,v)
+                if multiple == False:
+                    if isinstance(v, list):
+                        concatenated = ""
+                        for value in v:
+                            concatenated += value + ", "
+                        p_field = PrimitiveField(k,concatenated[:-2])                        
+                    else:    
+                        p_field = PrimitiveField(k,v)      
+            # has parent
+            if parent != None:
+                parent_field = DV_FIELD.get(parent)
+                parent_field_multiple = parent_field.multiple
+                # MultipleCompoundField
+                if parent_field_multiple == True:
+                    c_field = MultipleCompoundField(parent)
+                    primitives_dict[k] = []
+                    if isinstance(v, list):
+                        for value in v:          
+                            primitives_dict[k].append(PrimitiveField(k,value)) 
+                    else:
+                        primitives_dict[k].append(PrimitiveField(k,v))        
+                # CompoundField
+                if parent_field_multiple == False:
+                    c_field = CompoundField(parent)    
+                    primitives_dict[k] = p_field
+                parents_dict[parent] = c_field           
+            # has no parent
+            if parent == None: 
+                mb_dict[mb_id].add_field(p_field) 
+        
+        
+        # build compound fields        
+        for parent, c_field_outer in parents_dict.items(): 
+            children = DV_CHILDREN.get(parent) 
+            if isinstance(c_field_outer, MultipleCompoundField):                
+                for child in children:                    
+                    if child in primitives_dict:
+                        number_of_values = len(primitives_dict.get(child))
+                        break                                   
+                for i in range(number_of_values):
+                    c_field_inner = CompoundField(parent)
+                    for child in children:                                                
+                        if child in primitives_dict: 
+                           p_field = primitives_dict.get(child)[i]
+                           c_field_inner.add_value(p_field, child)
+                    c_field_outer.add_value(c_field_inner)                
+                mb_dict[mb_id].add_field(c_field_outer)    
+            else:
+                for child in children:
+                    if child in primitives_dict:  
+                        p_field = primitives_dict.get(child)
+                        c_field_outer.add_value(p_field, child)
+                mb_dict[mb_id].add_field(c_field_outer)
+        
+        dataset = Dataset()
+        for mb, block in mb_dict.items():
+            dataset.add_block(block)
+        return dataset
+            
     
     def build_json(target_key_values, method):
-        json_result = get_format(method)
+        print(target_key_values)
+        json_result = get_format(method)    #EditFormat() for edit, mb_dict for update
         parents_dict = {}
         primitives_dict = {}
         for k, v in target_key_values.items():
@@ -132,11 +212,13 @@ def create_app(test_config=None):
         # translate key-value-pairs in input to target scheme
         target_key_values = translate_source_keys(source_key_values, mapping)
         
-        # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN       
-        result = build_json(target_key_values, method)      
-
-        if method == 'update':
+        # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
+        if method == 'edit':
+            result = build_json(target_key_values, method)  
             response = EditScheme().dump(result)
+        elif method == 'update':
+            result = build_json_update(target_key_values)
+            response = DatasetSchema().dump(result)
                        
 
         if len(warnings) > 0:
