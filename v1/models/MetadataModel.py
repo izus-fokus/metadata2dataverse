@@ -29,7 +29,6 @@ class Field():
             "m" if self.multiple else 'nm',
             self.value)
 
-
 class PrimitiveField(Field):
     def __init__(self, typeName, value=None):
         if value is None:
@@ -100,10 +99,13 @@ class MetadataBlock():
             fields = []
         self.id = id
         self.displayName = name
-        self.fields = fields
+        self.mFields = fields
 
     def add_field(self, field):
-        self.fields.append(field)
+        self.mFields.append(field)
+        
+    def __repr__(self):
+        return str(self.displayName) + " " + str(self.mFields)
 
 
 class EditFormat():
@@ -125,17 +127,22 @@ class EditFormat():
                 field.get_value())
         return "fields = [{}]".format(r)
 
+class CreateDataset():
+    def __init__(self, datasetVersion):
+        self.datasetVersion = datasetVersion
 
 class Dataset():
     def __init__(self, blocks=None):
         if blocks is None:
             blocks = []
-        self.md_blocks = blocks
+        self.metadataBlocks = blocks
 
     def add_block(self, block):
         if isinstance(block, MetadataBlock):
-            self.md_blocks.append(block)
+            self.metadataBlocks.append(block)
 
+    def __repr__(self):
+        return "blocks: " + str(self.metadataBlocks)
 
 class PrimitiveFieldScheme(Schema):
     typeName = fields.Str(required=True)
@@ -157,7 +164,6 @@ class EditCompoundFieldScheme(CompoundFieldScheme):
         keys=fields.Str(),
         values=fields.Nested(PrimitiveFieldScheme(only=["typeName", "value"]))
     )
-
 
 class MultipleCompoundFieldScheme(Schema):
     typeName = fields.Str(required=True)
@@ -218,7 +224,7 @@ class MetadataBlockSchema(Schema):
     id = fields.Str()
     displayName = fields.Str()
     mFields = fields.List(fields.Nested(FieldSchema), data_key='fields')
-
+    
 
 class DatasetSchema(Schema):
     metadataBlocks = fields.List(fields.Nested(MetadataBlockSchema))

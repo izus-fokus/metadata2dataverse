@@ -124,7 +124,7 @@ def read_tsv(data):
                 if parent in DV_CHILDREN:
                     DV_CHILDREN[parent].append(target_key)
                 
-                field = Field(multiple, type_class, parent, metadata_block)             
+                field = Field(target_key, multiple, type_class, parent, metadata_block)             
                 DV_FIELD[target_key] = field 
                 
             if(start_vocabulary):

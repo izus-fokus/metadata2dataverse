@@ -2,8 +2,9 @@ class Field(object):
     ''' object after parsing a tsv file '''
 
     
-    def __init__(self, multiple, type_class, parent, metadata_block):
+    def __init__(self, target_key, multiple, type_class, parent, metadata_block):
         ''' Constructor '''
+        self.target_key = target_key
         self.controlled_vocabulary = []
         self.multiple = (multiple == 'TRUE')
         self.type_class = type_class
@@ -16,6 +17,19 @@ class Field(object):
     def set_controlled_vocabulary(self, controlled_vocabulary):
         self.controlled_vocabulary.append(controlled_vocabulary)
         
-        
+    def check_controlled_vocabulary(self, v):  
+        if isinstance(v, list):
+            v_new = []
+            for value_ in v:
+                if value_ in self.controlled_vocabulary:
+                    v_new.append(value_)
+                else:
+                    print(self.target_key, "has a controlled vocabulary.", value_ ,"is not part of it. It has been removed.")
+                    continue
+        else:
+            if v not in self.controlled_vocabulary:       
+                print(self.target_key, "has a controlled vocabulary.", v ,"is not part of it. It has been removed.")
+                v_new = []
+        return v_new
                    
     
