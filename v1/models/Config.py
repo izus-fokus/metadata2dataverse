@@ -11,6 +11,7 @@ class Config(object):
         self.format = format
         self.translators_dict = {}
         self.rules_dict = {}
+        self.target_keys = []
 
     def __repr__(self):
         return("scheme: " + self.scheme + ", description: " + self.description + ", format: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict))
@@ -21,10 +22,16 @@ class Config(object):
     def get_source_keys(self):
         return self.translators_dict.keys()
     
+    def get_target_keys(self):
+        self.target_keys = list(dict.fromkeys(self.target_keys))
+        return self.target_keys
+    
     # create dictionary with source key (keys) and translators (value)
     def add_translator(self, translator_yaml):
         translator = TranslatorFactory.create_translator(translator_yaml) 
         source_key = translator.get_source_key()
+        target_key = translator.get_target_key()
+        self.target_keys.append(target_key)
         if type(source_key) == list:    # special case: merge translators
             for key in source_key:
                 self.translators_dict[key] = translator

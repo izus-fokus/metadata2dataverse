@@ -307,12 +307,10 @@ mapping:
   target_key: engMetaGitterIntervalZ
 - source_key: system.grid.scalingFormula
   target_key: engMetaGitterScalingFormular
-- source_key: system.grid.distance
-  target_key: engMetaGitterDistance
-- source_key: [system.grid.point.positionX, system.grid.point.positionY, system.grid.point.positionZ]
-  target_key: engMetaGitterPoints
-  type: merge
-  join_symbol: "; "
+#- source_key: [system.grid.point.positionX, system.grid.point.positionY, system.grid.point.positionZ]
+#  target_key: engMetaGitterPoints
+#  type: merge
+#  join_symbol: "; "
 - source_key: system.grid.unit
   target_key: engMetaGitterUnit
 
@@ -355,20 +353,20 @@ mapping:
   target_key: processMethodsParName
 - source_key: provenance.processingStep.method.parameter.symbol
   target_key: processMethodsParSymbol
-- source_key: provenance.processingStep.method.parameter.encoding
-  target_key: processMethodsParEncoding
+#- source_key: provenance.processingStep.method.parameter.encoding
+#  target_key: processMethodsParEncoding
 - source_key: provenance.processingStep.method.parameter.value
   target_key: processMethodsParValue
 
 # processMethods
 - source_key: provenance.processingStep.method.name.value
   target_key: processMethodsName
-- source_key: provenance.processingStep.method.name.methodScheme
-  target_key: processMethodsScheme
-- source_key: provenance.processingStep.method.name.schemeURI
-  target_key: processMethodsSchemeURI
-- source_key: provenance.processingStep.method.name.valueURI
-  target_key: processMethodsValueURI
+#- source_key: provenance.processingStep.method.name.methodScheme
+#  target_key: processMethodsScheme
+#- source_key: provenance.processingStep.method.name.schemeURI
+#  target_key: processMethodsSchemeURI
+#- source_key: provenance.processingStep.method.name.valueURI
+#  target_key: processMethodsValueURI
 - source_key: provenance.processingStep.method.parameter.name
   target_key: processMethodsPars
 

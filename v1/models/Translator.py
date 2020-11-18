@@ -21,7 +21,9 @@ class BaseTranslator(Translator):
         
     def get_source_key(self):
         return self.source_key
-
+    
+    def get_target_key(self):
+        return self.target_key
     
     def set_value(self, values):
         self.value = values
@@ -42,6 +44,9 @@ class AdditionTranslator(Translator):
     def get_source_key(self):
         return self.source_key
     
+    def get_target_key(self):
+        return self.target_key
+    
     def set_value(self, values):
         self.value = values
         
@@ -60,6 +65,9 @@ class MergeTranslator(Translator):
         
     def get_source_key(self):
         return self.source_key
+    
+    def get_target_key(self):
+        return self.target_key
     
     def set_value(self, values):
         self.value = values

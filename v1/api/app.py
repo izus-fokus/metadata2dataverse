@@ -54,7 +54,7 @@ def create_app(test_config=None):
         primitives_dict = {}
         single_fields = []
         mb_dict = {}
-        for k, v in target_key_values.items():
+        for k, v in target_key_values.items():            
             field = DV_FIELD.get(k)
             parent = field.parent
             type_class = field.type_class
@@ -69,11 +69,15 @@ def create_app(test_config=None):
                 p_field = get_primitive_field(k, v, multiple)
             # Controlled Vocabulary
             if type_class == "controlled_vocabulary":
+                if v == "":        # special case for getEmptyDataverseJson
+                    p_field = get_primitive_field(k, field.controlled_vocabulary, multiple)
+                    continue
                 v_checked = field.check_controlled_vocabulary(v)
                 if len(v_checked) > 0:
-                    p_field = get_primitive_field(k, v_checked, multiple)
+                    p_field = get_primitive_field(k, v_checked, multiple)                
                 else: 
                     print("Use controlled vocabulary for ", k, ": ", field.controlled_vocabulary)
+                    continue
             # has parent
             if parent != None:
                 c_field = get_compound_field(parent, k, v, multiple)
@@ -91,11 +95,12 @@ def create_app(test_config=None):
                 parents_dict[parent] = c_field
                 
             if parent == None:
-                    mb_dict[mb_id].add_field(p_field) 
-                    json_result.add_field(p_field)
-                    
+                mb_dict[mb_id].add_field(p_field) 
+                json_result.add_field(p_field)
+        
         # build compound fields        
         for parent, c_field_outer in parents_dict.items(): 
+            print(parent)
             children = DV_CHILDREN.get(parent)             
             if isinstance(c_field_outer, MultipleCompoundField):            
                 for child in children:                    
@@ -116,8 +121,9 @@ def create_app(test_config=None):
                     if child in primitives_dict:  
                         p_field = primitives_dict.get(child)
                         c_field_outer.add_value(p_field, child)
-                    json_result.add_field(c_field_outer)     
-                    mb_dict[mb_id].add_field(c_field_outer)
+                json_result.add_field(c_field_outer)     
+                mb_dict[mb_id].add_field(c_field_outer)
+        
         
         if method == 'update':            
             dataset = Dataset()
@@ -192,18 +198,23 @@ def create_app(test_config=None):
                                   type=str,
                                   default='update')
         warnings = []
-        # get all target keys from mapping
-        # mapping = Mapping.query.get(scheme)
-        #if mapping is None:
-        #    abort(404,
-        #          '''Scheme {} not found. 
-        #             Get available schemes 
-        #             with GET /metadata'''
-        #          .format(scheme))
-        # target_keys = mapping.target_keys
-        # response = getModel(method,target_keys)
-        response = {}
-        # build JSON-Structure from tsv-information
+        # get all target keys from scheme
+        mapping = get_mapping(scheme)
+        target_keys = mapping.get_target_keys()        
+        
+        
+        # build empty target key dictionary
+        target_key_values = dict.fromkeys(target_keys, "")
+
+        result = build_json(target_key_values, method)         
+        if method == 'edit':
+            response = EditScheme().dump(result)
+        elif method == 'update':
+            response = DatasetSchema().dump(result)
+        elif method == 'create':
+            response = CreateDatasetSchema().dump(result) 
+        
+        
 
         if len(warnings) > 0:
             if verbose:
@@ -226,9 +237,7 @@ def create_app(test_config=None):
                         'schemes': [m.dump() for m in mappings]})
 
     @app.route('/mapping', methods=["POST"])
-    def createSchemaMapping():   
-        
-        
+    def createSchemaMapping():         
     
         # read input stream and parse information in JSON Object
         # 
