@@ -28,6 +28,7 @@ class Field():
             self.typeClass,
             "m" if self.multiple else 'nm',
             self.value)
+        
 
 class PrimitiveField(Field):
     def __init__(self, typeName, value=None):
@@ -75,23 +76,21 @@ class MultiplePrimitiveField(Field):
         if not isinstance(self.value, list):
             self.value = []
         self.value.append(value)
-
+        
 
 class VocabularyField(Field):
-    def __init__(self, typeName, value=None, vocab=None):
+    def __init__(self, typeName, value=None):
         if value is None:
-            value = []
-        if vocab is None:
-            vocab = []
-        self.vocab = vocab
+            value = ''
         super().__init__(typeName, value, False, 'controlled_vocabulary')
+        
 
-    def add_value(self, value):
-        if value in self.vocab:
-            self.value.append(value)
-        # else:
-            # exception mit warning werfen
-
+class MultipleVocabularyField(Field):
+    def __init__(self, typeName, value=None):
+        self.value = []
+        self.value.append(value)
+        super().__init__(typeName, value, True, 'controlled_vocabulary')
+        
 
 class MetadataBlock():
     def __init__(self, id, name, fields=None):
@@ -127,6 +126,7 @@ class EditFormat():
                 field.get_value())
         return "fields = [{}]".format(r)
 
+
 class CreateDataset():
     def __init__(self, datasetVersion):
         self.datasetVersion = datasetVersion
@@ -143,12 +143,34 @@ class Dataset():
 
     def __repr__(self):
         return "blocks: " + str(self.metadataBlocks)
+    
 
 class PrimitiveFieldScheme(Schema):
     typeName = fields.Str(required=True)
     multiple = fields.Boolean(validate=Equal(False))
     typeClass = fields.Str(validate=Equal('primitive'))
     value = fields.Str()
+    
+    
+class MultiplePrimitiveFieldScheme(Schema):
+    typeName = fields.Str(required=True)
+    multiple = fields.Boolean(validate=Equal(True))
+    typeClass = fields.Str(validate=Equal('primitive'))
+    value = fields.List(fields.Str())
+
+    
+class VocabularyFieldScheme(Schema):
+    typeName = fields.Str(required=True)
+    multiple = fields.Boolean(validate=Equal(False))
+    typeClass = fields.Str(validate=Equal('controlled_vocabulary'))
+    value = fields.Str()    
+    
+    
+class MultipleVocabularyFieldScheme(Schema):
+    typeName = fields.Str(required=True)
+    multiple = fields.Boolean(validate=Equal(True))
+    typeClass = fields.Str(validate=Equal('controlled_vocabulary'))
+    value = fields.List(fields.Str())   
 
 
 class CompoundFieldScheme(Schema):
@@ -158,6 +180,7 @@ class CompoundFieldScheme(Schema):
     value = fields.Dict(
         keys=fields.Str(),
         values=fields.Nested(PrimitiveFieldScheme))
+    
 
 class EditCompoundFieldScheme(CompoundFieldScheme):
     value = fields.Dict(
@@ -181,20 +204,15 @@ class EditMultipleCompoundFieldScheme(MultipleCompoundFieldScheme):
     ))
 
 
-class MultiplePrimitiveFieldScheme(Schema):
-    typeName = fields.Str(required=True)
-    multiple = fields.Boolean(validate=Equal(True))
-    typeClass = fields.Str(validate=Equal('primitive'))
-    value = fields.List(fields.Str())
-
-
 class FieldSchema(OneOfSchema):
     type_field_remove = True
     type_schemas = {
         'PrimitiveField': PrimitiveFieldScheme,
         'CompoundField': CompoundFieldScheme,
         'MultiplePrimitiveField': MultiplePrimitiveFieldScheme,
-        'MultipleCompoundField': MultipleCompoundFieldScheme
+        'MultipleCompoundField': MultipleCompoundFieldScheme,
+        'VocabularyField': VocabularyFieldScheme,
+        'MultipleVocabularyField': MultipleVocabularyFieldScheme
     }
 
 

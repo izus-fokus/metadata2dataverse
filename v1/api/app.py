@@ -1,7 +1,8 @@
 from flask import Flask, request, abort, jsonify, send_file
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 from models.ReaderFactory import ReaderFactory
-from models.MetadataModel import CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
+from models.Translator import MergeTranslator, AdditionTranslator
+from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
 # from api.resources import read_all_config_files, read_all_tsv_files
 # from asn1crypto.core import Primitive
 # from pkg_resources._vendor.pyparsing import empty
@@ -28,11 +29,35 @@ def create_app(test_config=None):
         return mapping
     
     def translate_source_keys(source_key_values, mapping):
-        target_key_values = {}    
-        for k, v in source_key_values.items():
-            t = mapping.get_translator(k)
-            target_key = t.target_key
-            target_key_values[target_key] = v
+        translator_value = {}  
+        target_key_values = {}          
+        for k,v in source_key_values.items():          
+            translator = mapping.get_translator(k)
+            # look for merge translators
+            if isinstance(translator, MergeTranslator):
+                # merge values
+                v_merged = ""
+                for i in range(len(translator.source_key)):
+                    v = source_key_values.get(translator.source_key[i])
+                    v_merged += v + translator.merge_symbol
+                translator_value[translator] = v_merged[:-len(translator.merge_symbol)]
+            else:
+                translator_value[translator] = v
+                
+        for k,v in translator_value.items():
+            target_key = k.target_key
+            priority = k.priority
+            if target_key in target_key_values:
+                # check priority: replace with higher priority
+                if priority > target_key_values[target_key][1]:
+                    target_key_values[target_key] = [v,priority]
+            else:
+                target_key_values[target_key] = [v,priority]
+        
+        # delete priorities
+        for key in target_key_values:
+            target_key_values[key].pop()
+                    
         return target_key_values
     
     def get_primitive_field(k,v,multiple):
@@ -48,13 +73,28 @@ def create_app(test_config=None):
                 p_field = PrimitiveField(k,v)
         return p_field
     
+    def get_vocabulary_field(k, v, multiple):        
+        if multiple == True:        
+            v_field = MultipleVocabularyField(k,v)
+        if multiple == False:
+            if isinstance(v, list):
+                concatenated = ""
+                for value in v:
+                    concatenated += value + ", "
+                p_field = VocabularyField(k,concatenated[:-2])                        
+            else:    
+                p_field = VocabularyField(k,v)
+        return v_field
+    
     def build_json(target_key_values, method):
+        print(target_key_values)
         json_result = EditFormat() 
         parents_dict = {}
         primitives_dict = {}
         single_fields = []
         mb_dict = {}
-        for k, v in target_key_values.items():            
+        for k, v in target_key_values.items():  
+            v=v[0]          #remove priority     
             field = DV_FIELD.get(k)
             parent = field.parent
             type_class = field.type_class
@@ -70,11 +110,11 @@ def create_app(test_config=None):
             # Controlled Vocabulary
             if type_class == "controlled_vocabulary":
                 if v == "":        # special case for getEmptyDataverseJson
-                    p_field = get_primitive_field(k, field.controlled_vocabulary, multiple)
+                    p_field = get_vocabulary_field(k, v, multiple)
                     continue
                 v_checked = field.check_controlled_vocabulary(v)
                 if len(v_checked) > 0:
-                    p_field = get_primitive_field(k, v_checked, multiple)                
+                    p_field = get_vocabulary_field(k, v_checked, multiple)                
                 else: 
                     print("Use controlled vocabulary for ", k, ": ", field.controlled_vocabulary)
                     continue
@@ -100,7 +140,6 @@ def create_app(test_config=None):
         
         # build compound fields        
         for parent, c_field_outer in parents_dict.items(): 
-            print(parent)
             children = DV_CHILDREN.get(parent)             
             if isinstance(c_field_outer, MultipleCompoundField):            
                 for child in children:                    
@@ -168,6 +207,7 @@ def create_app(test_config=None):
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
         source_key_values = reader.read(request.data, list_of_source_keys) 
+        print(source_key_values)
         
         # translate key-value-pairs in input to target scheme
         target_key_values = translate_source_keys(source_key_values, mapping)

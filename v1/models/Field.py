@@ -27,9 +27,10 @@ class Field(object):
                     print(self.target_key, "has a controlled vocabulary.", value_ ,"is not part of it. It has been removed.")
                     continue
         else:
-            if v not in self.controlled_vocabulary:       
+            if v in self.controlled_vocabulary:      
+                return v
+            else: 
                 print(self.target_key, "has a controlled vocabulary.", v ,"is not part of it. It has been removed.")
                 v_new = []
         return v_new
-                   
     

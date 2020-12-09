@@ -22,6 +22,7 @@ mapping:
   priority: 1
 - source_key: creator.name
   target_key: authorName
+  priority: 2
 - source_key: creator.affiliation.name
   target_key: authorAffiliation
 - source_key: creator.role
