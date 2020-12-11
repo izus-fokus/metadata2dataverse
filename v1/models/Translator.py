@@ -9,6 +9,8 @@ class Translator(metaclass=ABCMeta):
         """ Translator Interface """ 
     def get_value():
         """ Translator Interface """ 
+    def get_priority():
+        """ Translator Interface """         
         
 class BaseTranslator(Translator):    
 
@@ -27,14 +29,11 @@ class BaseTranslator(Translator):
         return self.target_key    
         
     def get_value(self,source_key_values):
-        # get value from source
-        v = source_key_values.get(self.source_key)  
-        
-        mini_dict = {}
-        mini_dict[self.target_key] = [v]
-        mini_dict[self.target_key].append(self.priority)
-                    
-        return mini_dict
+        v = source_key_values.get(self.source_key)                        
+        return v
+    
+    def get_priority(self):
+        return self.priority
     
     
         
@@ -86,11 +85,9 @@ class MergeTranslator(Translator):
         for i in range(len(self.source_keys)):
             v = source_key_values.get(self.source_keys[i])
             list_of_values.append(v)
-        v_merged = self.merge_symbol.join(list_of_values)    
-             
-        mini_dict = {}
-        mini_dict[self.target_key] = [v_merged]
-        mini_dict[self.target_key].append(self.priority)
-                    
-        return mini_dict
+        v_merged = self.merge_symbol.join(list_of_values)                              
+        return v_merged
+    
+    def get_priority(self):
+        return self.priority
         

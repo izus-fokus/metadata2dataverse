@@ -33,10 +33,9 @@ def create_app(test_config=None):
         target_key_values = {}          
         for k,v in source_key_values.items():          
             translator = mapping.get_translator(k)
-            prio_target_keys = translator.get_value(source_key_values)
             target_key = translator.target_key
-            priority = prio_target_keys[target_key][1]
-            value = prio_target_keys[target_key][0]            
+            priority = translator.get_priority()
+            value = translator.get_value(source_key_values)     
             if target_key in target_key_values:                
                 if priority > target_key_values[target_key][1]:
                     target_key_values[target_key] = [value,priority]
