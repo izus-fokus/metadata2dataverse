@@ -29,6 +29,7 @@ def create_app(test_config=None):
         return mapping
     
     def translate_source_keys(source_key_values, mapping):
+        print(source_key_values)
         prio_target_keys = {}  
         target_key_values = {}          
         for k,v in source_key_values.items():          
@@ -40,8 +41,20 @@ def create_app(test_config=None):
                 if priority > target_key_values[target_key][1]:
                     target_key_values[target_key] = [value,priority]
             else:
-                target_key_values[target_key] = [value,priority]            
-            
+                target_key_values[target_key] = [value,priority] 
+                
+            if k in mapping.addition_translators_dict:
+                translator = mapping.addition_translators_dict.get(k)
+                target_key = translator.target_key 
+                value = translator.get_value()
+                priority = translator.priority 
+                if target_key in target_key_values:                
+                    if priority > target_key_values[target_key][1]:
+                        target_key_values[target_key] = [value,priority]
+                else:
+                    target_key_values[target_key] = [value,priority] 
+                
+                
         # delete priorities
         for key in target_key_values:
             target_key_values[key].pop()        

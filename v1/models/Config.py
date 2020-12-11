@@ -12,6 +12,7 @@ class Config(object):
         self.translators_dict = {}
         self.rules_dict = {}
         self.target_keys = []
+        self.addition_translators_dict = {}
 
     def __repr__(self):
         return("scheme: " + self.scheme + ", description: " + self.description + ", format: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict))
@@ -32,11 +33,14 @@ class Config(object):
         source_key = translator.get_source_key()
         target_key = translator.get_target_key()
         self.target_keys.append(target_key)
-        if type(source_key) == list:    # special case: merge translators
-            for key in source_key:
-                self.translators_dict[key] = translator
+        if isinstance(translator, AdditionTranslator):      # special case: addition translators
+            self.addition_translators_dict[source_key] = translator  
         else:
-            self.translators_dict[source_key] = translator
+            if type(source_key) == list:    # special case: merge translators
+                for key in source_key:
+                    self.translators_dict[key] = translator
+            else:
+                self.translators_dict[source_key] = translator
         
     def add_rules(self, rule_yaml):
         # siehe Translator Factory

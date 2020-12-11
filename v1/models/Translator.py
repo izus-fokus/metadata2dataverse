@@ -1,4 +1,5 @@
 from abc import abstractstaticmethod, ABCMeta
+from models.DateAdder import DateAdder
 
 class Translator(metaclass=ABCMeta):
     """ Factory-Class """
@@ -57,6 +58,11 @@ class AdditionTranslator(Translator):
     def get_target_key(self):
         return self.target_key
     
+    def get_value(self):
+        klass = globals()[self.class_name]
+        value = klass().main()
+        return value
+        
         
         
 class MergeTranslator(Translator):
