@@ -5,9 +5,10 @@ class Translator(metaclass=ABCMeta):
 
     def get_source_key():
         """ Translator Interface """ 
-    def set_value():
+    def get_target_key():
         """ Translator Interface """ 
-        
+    def get_value():
+        """ Translator Interface """ 
         
 class BaseTranslator(Translator):    
 
@@ -23,10 +24,17 @@ class BaseTranslator(Translator):
         return self.source_key
     
     def get_target_key(self):
-        return self.target_key
-    
-    def set_value(self, values):
-        self.value = values
+        return self.target_key    
+        
+    def get_value(self,source_key_values):
+        # get value from source
+        v = source_key_values.get(self.source_key)  
+        
+        mini_dict = {}
+        mini_dict[self.target_key] = [v]
+        mini_dict[self.target_key].append(self.priority)
+                    
+        return mini_dict
     
     
         
@@ -50,30 +58,39 @@ class AdditionTranslator(Translator):
     def get_target_key(self):
         return self.target_key
     
-    def set_value(self, values):
-        self.value = values
         
         
 class MergeTranslator(Translator):
     
-    def __init__(self, source_key, target_key, priority = 1, translator_type = "merge", merge_symbol = " "):
-        self.source_key = source_key
+    def __init__(self, source_keys, target_key, priority = 1, translator_type = "merge", merge_symbol = " "):
+        self.source_keys = source_keys
         self.target_key = target_key 
         self.priority = priority
         self.translator_type = translator_type
         self.merge_symbol = merge_symbol
         
     def __repr__(self):
-        return ("source key: " + str(self.source_key) + ", target key: " + str(self.target_key) + ", type: merge")
+        return ("source keys: " + str(self.source_keys) + ", target key: " + str(self.target_key) + ", type: merge")
         
     def get_translator_type(self):    
         return self.translator_type
         
     def get_source_key(self):
-        return self.source_key
+        return self.source_keys
     
     def get_target_key(self):
         return self.target_key
     
-    def set_value(self, values):
-        self.value = values
+    def get_value(self, source_key_values):
+        list_of_values = []
+        for i in range(len(self.source_keys)):
+            v = source_key_values.get(self.source_keys[i])
+            list_of_values.append(v)
+        v_merged = self.merge_symbol.join(list_of_values)    
+             
+        mini_dict = {}
+        mini_dict[self.target_key] = [v_merged]
+        mini_dict[self.target_key].append(self.priority)
+                    
+        return mini_dict
+        

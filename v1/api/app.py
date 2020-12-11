@@ -29,35 +29,24 @@ def create_app(test_config=None):
         return mapping
     
     def translate_source_keys(source_key_values, mapping):
-        translator_value = {}  
+        prio_target_keys = {}  
         target_key_values = {}          
         for k,v in source_key_values.items():          
             translator = mapping.get_translator(k)
-            # look for merge translators
-            if isinstance(translator, MergeTranslator):
-                # merge values
-                v_merged = ""
-                for i in range(len(translator.source_key)):
-                    v = source_key_values.get(translator.source_key[i])
-                    v_merged += v + translator.merge_symbol
-                translator_value[translator] = v_merged[:-len(translator.merge_symbol)]
-            else:
-                translator_value[translator] = v
-                
-        for k,v in translator_value.items():
-            target_key = k.target_key
-            priority = k.priority
-            if target_key in target_key_values:
-                # check priority: replace with higher priority
+            prio_target_keys = translator.get_value(source_key_values)
+            target_key = translator.target_key
+            priority = prio_target_keys[target_key][1]
+            value = prio_target_keys[target_key][0]            
+            if target_key in target_key_values:                
                 if priority > target_key_values[target_key][1]:
-                    target_key_values[target_key] = [v,priority]
+                    target_key_values[target_key] = [value,priority]
             else:
-                target_key_values[target_key] = [v,priority]
-        
+                target_key_values[target_key] = [value,priority]            
+            
         # delete priorities
         for key in target_key_values:
-            target_key_values[key].pop()
-                    
+            target_key_values[key].pop()        
+            
         return target_key_values
     
     def get_primitive_field(k,v,multiple):
@@ -81,9 +70,9 @@ def create_app(test_config=None):
                 concatenated = ""
                 for value in v:
                     concatenated += value + ", "
-                p_field = VocabularyField(k,concatenated[:-2])                        
+                v_field = VocabularyField(k,concatenated[:-2])                        
             else:    
-                p_field = VocabularyField(k,v)
+                v_field = VocabularyField(k,v)
         return v_field
     
     def build_json(target_key_values, method):
