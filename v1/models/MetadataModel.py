@@ -28,7 +28,7 @@ class Field():
             self.typeClass,
             "m" if self.multiple else 'nm',
             self.value)
-        
+
 
 class PrimitiveField(Field):
     def __init__(self, typeName, value=None):
@@ -76,21 +76,31 @@ class MultiplePrimitiveField(Field):
         if not isinstance(self.value, list):
             self.value = []
         self.value.append(value)
-        
+
 
 class VocabularyField(Field):
-    def __init__(self, typeName, value=None):
+    def __init__(self, typeName, multiple=False, value=None):
         if value is None:
-            value = ''
-        super().__init__(typeName, value, False, 'controlled_vocabulary')
-        
+            if multiple is False:
+                value = ''
+            else:
+                value = []
+        super().__init__(typeName, value, multiple, 'controlled_vocabulary')
 
-class MultipleVocabularyField(Field):
-    def __init__(self, typeName, value=None):
-        self.value = []
-        self.value.append(value)
-        super().__init__(typeName, value, True, 'controlled_vocabulary')
-        
+    def add_value(self, value):
+        if self.multiple is False:
+            self.value = value
+        else:
+            if not isinstance(self.value, list):
+                self.value = []
+            self.value.append(value)
+
+    def __repr__(self):
+        return "{}: {}".format(
+            self.typeName,
+            self.value if self.multiple is False
+            else "[" + (v for v in self.value) + "]")
+
 
 class MetadataBlock():
     def __init__(self, id, name, fields=None):
@@ -102,7 +112,7 @@ class MetadataBlock():
 
     def add_field(self, field):
         self.mFields.append(field)
-        
+
     def __repr__(self):
         return str(self.displayName) + " " + str(self.mFields)
 
@@ -131,6 +141,7 @@ class CreateDataset():
     def __init__(self, datasetVersion):
         self.datasetVersion = datasetVersion
 
+
 class Dataset():
     def __init__(self, blocks=None):
         if blocks is None:
@@ -143,34 +154,34 @@ class Dataset():
 
     def __repr__(self):
         return "blocks: " + str(self.metadataBlocks)
-    
+
 
 class PrimitiveFieldScheme(Schema):
     typeName = fields.Str(required=True)
     multiple = fields.Boolean(validate=Equal(False))
     typeClass = fields.Str(validate=Equal('primitive'))
     value = fields.Str()
-    
-    
+
+
 class MultiplePrimitiveFieldScheme(Schema):
     typeName = fields.Str(required=True)
     multiple = fields.Boolean(validate=Equal(True))
     typeClass = fields.Str(validate=Equal('primitive'))
     value = fields.List(fields.Str())
 
-    
+
 class VocabularyFieldScheme(Schema):
     typeName = fields.Str(required=True)
     multiple = fields.Boolean(validate=Equal(False))
     typeClass = fields.Str(validate=Equal('controlled_vocabulary'))
-    value = fields.Str()    
-    
-    
+    value = fields.Str()
+
+
 class MultipleVocabularyFieldScheme(Schema):
     typeName = fields.Str(required=True)
     multiple = fields.Boolean(validate=Equal(True))
     typeClass = fields.Str(validate=Equal('controlled_vocabulary'))
-    value = fields.List(fields.Str())   
+    value = fields.List(fields.Str())
 
 
 class CompoundFieldScheme(Schema):
@@ -180,13 +191,14 @@ class CompoundFieldScheme(Schema):
     value = fields.Dict(
         keys=fields.Str(),
         values=fields.Nested(PrimitiveFieldScheme))
-    
+
 
 class EditCompoundFieldScheme(CompoundFieldScheme):
     value = fields.Dict(
         keys=fields.Str(),
         values=fields.Nested(PrimitiveFieldScheme(only=["typeName", "value"]))
     )
+
 
 class MultipleCompoundFieldScheme(Schema):
     typeName = fields.Str(required=True)
@@ -226,6 +238,10 @@ class EditFieldSchema(OneOfSchema):
         'MultiplePrimitiveField': MultiplePrimitiveFieldScheme(
             only=["typeName", "value"]),
         'MultipleCompoundField': EditMultipleCompoundFieldScheme(
+            only=["typeName", "value"]),
+        'VocabularyField': VocabularyFieldScheme(
+            only=["typeName", "value"]),
+        'MultipleVocabularyField': MultipleVocabularyFieldScheme(
             only=["typeName", "value"])
     }
 
@@ -242,7 +258,7 @@ class MetadataBlockSchema(Schema):
     id = fields.Str()
     displayName = fields.Str()
     mFields = fields.List(fields.Nested(FieldSchema), data_key='fields')
-    
+
 
 class DatasetSchema(Schema):
     metadataBlocks = fields.List(fields.Nested(MetadataBlockSchema))
