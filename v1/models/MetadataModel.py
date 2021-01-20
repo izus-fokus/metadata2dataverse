@@ -184,20 +184,28 @@ class MultipleVocabularyFieldScheme(Schema):
     value = fields.List(fields.Str())
 
 
+class SimpleFieldScheme(OneOfSchema):
+    type_field_remove = True
+    type_schemas = {
+        'PrimitiveField': PrimitiveFieldScheme,
+        'VocabularyField': VocabularyFieldScheme
+    }
+    
+    
 class CompoundFieldScheme(Schema):
     typeName = fields.Str(required=True)
     multiple = fields.Boolean(validate=Equal(False))
     typeClass = fields.Str(validate=Equal('compound'))
     value = fields.Dict(
         keys=fields.Str(),
-        values=fields.Nested(PrimitiveFieldScheme))
-
+        values=fields.Nested(SimpleFieldScheme))
 
 class EditCompoundFieldScheme(CompoundFieldScheme):
     value = fields.Dict(
         keys=fields.Str(),
-        values=fields.Nested(PrimitiveFieldScheme(only=["typeName", "value"]))
+        values=fields.Nested(SimpleFieldScheme(only=["typeName", "value"]))
     )
+    
 
 
 class MultipleCompoundFieldScheme(Schema):
@@ -206,13 +214,13 @@ class MultipleCompoundFieldScheme(Schema):
     typeClass = fields.Str(validate=Equal('compound'))
     value = fields.List(fields.Dict(
         keys=fields.Str(),
-        values=fields.Nested(PrimitiveFieldScheme)))
+        values=fields.Nested(SimpleFieldScheme)))
 
 
 class EditMultipleCompoundFieldScheme(MultipleCompoundFieldScheme):
     value = fields.List(fields.Dict(
         keys=fields.Str(),
-        values=fields.Nested(PrimitiveFieldScheme(only=["typeName", "value"]))
+        values=fields.Nested(SimpleFieldScheme(only=["typeName", "value"]))
     ))
 
 

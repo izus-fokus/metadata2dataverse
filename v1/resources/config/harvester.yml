@@ -433,6 +433,11 @@ mapping:
 - source_key: provenance.processingStep.environment.name
   target_key: processStepEnvironment
 
+- source_key: title
+  target_key: dateOfDeposit
+  type: addition
+  class: DateAdder
+
 rules:
 - trigger: contact.role
   type: rule
