@@ -1,7 +1,8 @@
-dates.date: 2019-04-04, , , , , , , , , , 
-contact.familyName: Selent, , Schembera, , , , , , , , 
-contributor.role: Data Manager, , , , , , , , , , 
+dates.date: 2019-04-04, ,
+creator.name: Selent, , Schembera
+creator.affiliation: IMS, ,
+contributor.role: Data Manager, ,
 
 
-subjects.subject.lang: German, English, , , , , , , , , 
+subjects.subject.lang: German, English, ,
 

@@ -1,4 +1,4 @@
-description: menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstützt)
+description: menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstï¿½tzt)
 
 format: text/plain
 scheme: Harvester
@@ -14,6 +14,9 @@ mapping:
   priority: 1
 - source_key: creator.name
   target_key: authorName
+  priority: 2
+- source_key: creator.affiliation
+  target_key: authorAffiliation
 
 - source_key: title
   target_key: dateOfDeposit
