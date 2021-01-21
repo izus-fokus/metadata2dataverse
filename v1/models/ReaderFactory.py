@@ -45,8 +45,7 @@ class TextReader(Reader):
                     print(source_key, " not found in scheme mapping - Check your Yaml Mapping File")
                     continue        
                 values = splitted_line[1]
-                splitted_values = values.split(", ")
-                splitted_values = list(filter(None, splitted_values))   # filter for empty elements in list
+                splitted_values = values.split(",")
                 if len(splitted_values) > 1:                            # multiple values
                     source_key_value[source_key] = []
                     for value in splitted_values:

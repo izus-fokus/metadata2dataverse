@@ -29,7 +29,6 @@ def create_app(test_config=None):
         return mapping
     
     def translate_source_keys(source_key_values, mapping):
-        print(source_key_values)
         prio_target_keys = {}  
         target_key_values = {}          
         for k,v in source_key_values.items():          
@@ -85,7 +84,7 @@ def create_app(test_config=None):
         return v_field
     
     def build_json(target_key_values, method):
-        print(target_key_values)
+        print("target_key_values: ", target_key_values)
         json_result = EditFormat() 
         parents_dict = {}
         primitives_dict = {}
@@ -104,7 +103,7 @@ def create_app(test_config=None):
             
             # PrimitiveFields
             if type_class == "primitive":
-                p_field = get_primitive_field(k, v, multiple)
+                    p_field = get_primitive_field(k, v, multiple)
             # Controlled Vocabulary
             if type_class == "controlled_vocabulary":
                 if v == "":        # special case for getEmptyDataverseJson
@@ -136,6 +135,7 @@ def create_app(test_config=None):
                 mb_dict[mb_id].add_field(p_field) 
                 json_result.add_field(p_field)
         
+        print("primitives_dict: ", primitives_dict)
         # build compound fields        
         for parent, c_field_outer in parents_dict.items(): 
             children = DV_CHILDREN.get(parent)             
@@ -144,15 +144,16 @@ def create_app(test_config=None):
                     if child in primitives_dict:
                         number_of_values = len(primitives_dict.get(child))
                         break                                   
-                for i in range(number_of_values):
-                    c_field_inner = CompoundField(parent)
+                for i in range(number_of_values):                    
                     for child in children:                                                
                         if child in primitives_dict: 
                            p_field = primitives_dict.get(child)[i]
-                           c_field_inner.add_value(p_field, child)
+                           if p_field.value != '':
+                               c_field_inner = CompoundField(parent)
+                               c_field_inner.add_value(p_field, child)
                     c_field_outer.add_value(c_field_inner)
-                    json_result.add_field(c_field_outer)
-                    mb_dict[mb_id].add_field(c_field_outer)
+                json_result.add_field(c_field_outer)
+                mb_dict[mb_id].add_field(c_field_outer)
             else:
                 for child in children:
                     if child in primitives_dict:  
@@ -205,7 +206,7 @@ def create_app(test_config=None):
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
         source_key_values = reader.read(request.data, list_of_source_keys) 
-        print(source_key_values)
+        print("source_key_values: ", source_key_values)
         
         # translate key-value-pairs in input to target scheme
         target_key_values = translate_source_keys(source_key_values, mapping)
