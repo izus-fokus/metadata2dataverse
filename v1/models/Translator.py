@@ -1,5 +1,5 @@
 from abc import abstractstaticmethod, ABCMeta
-from models.DateAdder import DateAdder
+#from models.DateAdder import DateAdder
 
 class Translator(metaclass=ABCMeta):
     """ Factory-Class """

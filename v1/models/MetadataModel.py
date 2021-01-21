@@ -79,7 +79,9 @@ class MultiplePrimitiveField(Field):
 
 
 class VocabularyField(Field):
-    def __init__(self, typeName, multiple=False, value=None):
+    def __init__(self, typeName, multiple=None, value=None):
+        if multiple is None:
+            multiple = False
         if value is None:
             if multiple is False:
                 value = ''
@@ -190,7 +192,15 @@ class SimpleFieldScheme(OneOfSchema):
         'PrimitiveField': PrimitiveFieldScheme,
         'VocabularyField': VocabularyFieldScheme
     }
-    
+
+
+class EditSimpleFieldScheme(OneOfSchema):
+    type_field_remove = True
+    type_schemas = {
+        'PrimitiveField': PrimitiveFieldScheme(only=["typeName", "value"]),
+        'VocabularyField': VocabularyFieldScheme(only=["typeName", "value"])
+    }    
+
     
 class CompoundFieldScheme(Schema):
     typeName = fields.Str(required=True)
@@ -203,9 +213,8 @@ class CompoundFieldScheme(Schema):
 class EditCompoundFieldScheme(CompoundFieldScheme):
     value = fields.Dict(
         keys=fields.Str(),
-        values=fields.Nested(SimpleFieldScheme(only=["typeName", "value"]))
+        values=fields.Nested(EditSimpleFieldScheme)
     )
-    
 
 
 class MultipleCompoundFieldScheme(Schema):
@@ -220,7 +229,7 @@ class MultipleCompoundFieldScheme(Schema):
 class EditMultipleCompoundFieldScheme(MultipleCompoundFieldScheme):
     value = fields.List(fields.Dict(
         keys=fields.Str(),
-        values=fields.Nested(SimpleFieldScheme(only=["typeName", "value"]))
+        values=fields.Nested(EditSimpleFieldScheme)
     ))
 
 

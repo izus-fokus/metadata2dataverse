@@ -11,6 +11,7 @@ from models.MetadataModel import MultipleCompoundField
 from models.MetadataModel import EditFormat, EditScheme, EditFieldSchema
 from models.MetadataModel import Field, FieldSchema
 from models.MetadataModel import MetadataBlock, MetadataBlockSchema
+from models.MetadataModel import VocabularyField, VocabularyFieldScheme, MultipleVocabularyFieldScheme
 # from models.MetadataModel import SimpleFieldSchema, FieldsScheme, EditScheme, MetadataBlockSchema, DatasetSchema, CreateDatasetSchema
 
 
@@ -26,6 +27,14 @@ class TestMetadataModel(unittest.TestCase):
         self.multiple_compound_parent = {'typeName': 'author'}        
         self.multiple_compound_child1 = {'typeName': 'authorName', 'value': ['Elisabeth', 'Anne']}
         self.multiple_compound_child2 = {'typeName': 'authorCity', 'value': ['Büdingen', 'Stuttgart']}
+        
+    def test_vocabField(self):
+        v_field = VocabularyField("subject", multiple=True, value=['Chemistry'])
+        v_field2 = VocabularyField("testField", multiple=False, value='testvalue')
+        error_field = VocabularyField("multipleField", multiple=True, value="testvalue")
+        error_field2 = VocabularyField("primitiveField", multiple=False, value=["val1", "val2"])
+
+        self.assertEqual(v_field.get_typeClass(), 'controlled_vocabulary')
 
     def test_primitiveField(self):
         p_field = PrimitiveField(

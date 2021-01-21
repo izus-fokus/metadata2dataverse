@@ -2,7 +2,7 @@ from flask import Flask, request, abort, jsonify, send_file
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 from models.ReaderFactory import ReaderFactory
 from models.Translator import MergeTranslator, AdditionTranslator
-from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
+from models.MetadataModel import VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
 # from api.resources import read_all_config_files, read_all_tsv_files
 # from asn1crypto.core import Primitive
 # from pkg_resources._vendor.pyparsing import empty
@@ -74,17 +74,14 @@ def create_app(test_config=None):
                 p_field = PrimitiveField(k,v)
         return p_field
     
-    def get_vocabulary_field(k, v, multiple):        
-        if multiple == True:        
-            v_field = MultipleVocabularyField(k,v)
-        if multiple == False:
-            if isinstance(v, list):
-                concatenated = ""
-                for value in v:
-                    concatenated += value + ", "
-                v_field = VocabularyField(k,concatenated[:-2])                        
-            else:    
-                v_field = VocabularyField(k,v)
+    def get_vocabulary_field(k, v, multiple):
+        if multiple is True and not isinstance(v, list):
+            val = [v]        
+        elif multiple is False and isinstance(v, list):
+            val = ", ".join(v)
+        else:
+            val = v
+        v_field = VocabularyField(k, multiple=multiple, value=val)        
         return v_field
     
     def build_json(target_key_values, method):
