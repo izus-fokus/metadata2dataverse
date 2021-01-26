@@ -103,7 +103,8 @@ def create_app(test_config=None):
             
             # PrimitiveFields
             if type_class == "primitive":
-                    p_field = get_primitive_field(k, v, multiple)
+                print("primitive field with value(s): ", v)
+                p_field = get_primitive_field(k, v, multiple)
             # Controlled Vocabulary
             if type_class == "controlled_vocabulary":
                 if v == "":        # special case for getEmptyDataverseJson
@@ -144,14 +145,17 @@ def create_app(test_config=None):
                     if child in primitives_dict:
                         number_of_values = len(primitives_dict.get(child))
                         break                                   
-                for i in range(number_of_values):                    
+                for i in range(number_of_values):    
+                    c_field_inner = CompoundField(parent)                
                     for child in children:                                                
                         if child in primitives_dict: 
-                           p_field = primitives_dict.get(child)[i]
-                           if p_field.value != '':
-                               c_field_inner = CompoundField(parent)
-                               c_field_inner.add_value(p_field, child)
-                    c_field_outer.add_value(c_field_inner)
+                           p_field = primitives_dict.get(child)[i]                           
+                           if p_field.value != '':                           
+                               c_field_inner.add_value(p_field, child)                               
+                           else:
+                                continue
+                    if bool(c_field_inner.value):
+                        c_field_outer.add_value(c_field_inner)
                 json_result.add_field(c_field_outer)
                 mb_dict[mb_id].add_field(c_field_outer)
             else:
