@@ -68,40 +68,42 @@ class MultipleCompoundField(Field):
 
 class MultiplePrimitiveField(Field):
     def __init__(self, typeName, value=None):
-        self.value = []
-        self.value.append(value)
         super().__init__(typeName, value, True, 'primitive')
 
     def add_value(self, value):
         if not isinstance(self.value, list):
             self.value = []
         self.value.append(value)
-
-
-class VocabularyField(Field):
-    def __init__(self, typeName, multiple=None, value=None):
-        if multiple is None:
-            multiple = False
+        
+class MultipleVocabularyField(Field):
+    def __init__(self, typeName, value=None):
         if value is None:
-            if multiple is False:
-                value = ''
-            else:
-                value = []
-        super().__init__(typeName, value, multiple, 'controlled_vocabulary')
+            value = []
+        super().__init__(typeName, value, True, 'controlled_vocabulary')
 
     def add_value(self, value):
-        if self.multiple is False:
-            self.value = value
-        else:
-            if not isinstance(self.value, list):
-                self.value = []
+        if not isinstance(self.value, list):
+            self.value = []
             self.value.append(value)
 
     def __repr__(self):
         return "{}: {}".format(
             self.typeName,
-            self.value if self.multiple is False
-            else "[" + (v for v in self.value) + "]")
+            "[" + (v for v in self.value) + "]")
+        
+class VocabularyField(Field):
+    def __init__(self, typeName, value=None):
+        if value is None:
+            value = ''
+        super().__init__(typeName, value, False, 'controlled_vocabulary')
+
+    def add_value(self, value):
+        self.value = value
+        
+    def __repr__(self):
+        return "{}: {}".format(
+            self.typeName,
+            self.value)
 
 
 class MetadataBlock():

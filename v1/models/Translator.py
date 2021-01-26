@@ -99,12 +99,12 @@ class MergeTranslator(Translator):
             if len(list_of_values) == 2:        # case: multiple values with 2 merge items
                 list1 = list_of_values[0]
                 list2 = list_of_values[1]
-                v_merged = [m + self.merge_symbol + n for m,n in zip(list1,list2) if len(m+n) > 1]
+                v_merged = [m + self.merge_symbol + n for m,n in zip(list1,list2) if m and n != "none"]
             if len(list_of_values) == 3:        # case: multiple values with 3 merge items
                 list1 = list_of_values[0]
                 list2 = list_of_values[1]
                 list3 = list_of_values[2]
-                v_merged = [m + self.merge_symbol + n + self.merge_symbol + p for m,n,p in zip(list1,list2,list3)if len(m+n+p) > 1]
+                v_merged = [m + self.merge_symbol + n + self.merge_symbol + p for m,n,p in zip(list1,list2,list3) if m and n and p != "none"]
         else:
             v_merged = self.merge_symbol.join(list_of_values)       
                                    

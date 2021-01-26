@@ -49,7 +49,10 @@ class TextReader(Reader):
                 if len(splitted_values) > 1:                            # multiple values
                     source_key_value[source_key] = []
                     for value in splitted_values:
-                        source_key_value[source_key].append(value.strip())
+                        if value.strip() == '':
+                            source_key_value[source_key].append('none')
+                        else:
+                            source_key_value[source_key].append(value.strip())
                 else:
                     source_key_value[source_key] = splitted_values[0].strip()   #single value
         return source_key_value
