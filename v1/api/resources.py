@@ -12,6 +12,7 @@ from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS     
 def read_all_config_files():  
     rootdir = './resources/config'
     # for file in resources/config
+
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
             path = os.path.join(subdir, file)
@@ -20,6 +21,9 @@ def read_all_config_files():
             scheme = file.split(".")[0]    
             # fill global dictionary of mappings
             MAPPINGS[scheme] = config
+            open_yaml_file.close()
+    print("Anzahl Mappings: ", len(MAPPINGS))
+    return MAPPINGS
 
 # Read schema tsv files (metadatablocks nesting)      
 def read_all_tsv_files():
@@ -31,6 +35,7 @@ def read_all_tsv_files():
             path = os.path.join(subdir, file)
             open_tsv_file = open(path)            
             read_tsv(open_tsv_file)
+            open_tsv_file.close()
 
 
 def read_config(data):

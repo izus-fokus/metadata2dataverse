@@ -1,5 +1,6 @@
 from flask import Flask, request, abort, jsonify, send_file
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
+from api.resources import read_all_config_files, read_all_tsv_files
 from models.ReaderFactory import ReaderFactory
 from models.Translator import MergeTranslator, AdditionTranslator
 from models.MetadataModel import VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
@@ -12,6 +13,10 @@ def create_app(test_config=None):
     app = Flask(__name__)
         
     # helper functions
+    @app.before_first_request
+    def init_globals():
+        read_all_config_files()
+        read_all_tsv_files()
 
     def verbose(response, warnings=[]):
         return {'success': True,
@@ -91,8 +96,12 @@ def create_app(test_config=None):
         single_fields = []
         mb_dict = {}
         for k, v in target_key_values.items():  
-            v=v[0]          #remove priority     
+            if isinstance(v, list):
+                v=v[0]          #remove priority     
             field = DV_FIELD.get(k)
+            if field is None:
+                print("Field {} not in Dataverse-Konfiguration".format(k))
+                continue
             parent = field.parent
             type_class = field.type_class
             multiple = field.multiple
@@ -151,7 +160,7 @@ def create_app(test_config=None):
                            if p_field.value != '':
                                c_field_inner = CompoundField(parent)
                                c_field_inner.add_value(p_field, child)
-                    c_field_outer.add_value(c_field_inner)
+                               c_field_outer.add_value(c_field_inner)
                 json_result.add_field(c_field_outer)
                 mb_dict[mb_id].add_field(c_field_outer)
             else:
@@ -268,12 +277,10 @@ def create_app(test_config=None):
     def SchemasMappingInfo():
         # get all available mappings
         # mappings = Mapping.query.all()
-        mappings = []
-        if(len(mappings) == 0):
+        if(len(MAPPINGS) == 0):
             abort(404, 'No mappings available')
-
         return jsonify({'success': True,
-                        'schemes': [m.dump() for m in mappings]})
+                        'schemes': [MAPPINGS[m].dump() for m in MAPPINGS]})
 
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():         

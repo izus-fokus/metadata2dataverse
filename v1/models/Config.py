@@ -19,6 +19,9 @@ class Config(object):
     
     def get_translator(self, source_key):
         return self.translators_dict.get(source_key)
+
+    def dump(self):
+        return {"scheme": self.scheme, "description": self.description, "format": self.format}
     
     def get_source_keys(self):
         return self.translators_dict.keys()

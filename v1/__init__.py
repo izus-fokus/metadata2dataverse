@@ -6,8 +6,8 @@ from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 
 app = create_app()
 # read all files in resources/tsv and resources/config
-read_all_config_files() # MAPPINGS
-read_all_tsv_files()    # DV_FIELDS, DV_MB, DV_CHILDREN
+#read_all_config_files() # MAPPINGS
+#read_all_tsv_files()    # DV_FIELDS, DV_MB, DV_CHILDREN
 
 if __name__ == '__main__':
     app.run(debug=True)

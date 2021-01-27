@@ -1,0 +1,45 @@
+#metadataBlock	name	dataverseAlias	displayName												
+	process		Process Metadata												
+#datasetField	name	title	description	watermark	fieldType	displayOrder	displayFormat	advancedSearchField	allowControlledVocabulary	allowmultiples	facetable	displayoncreate	required	parent	metadatablock_id
+	processMethods	Processing Methods	Information about used methods in the data life cycle.		none	0		FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		process
+	processMethodsName	Name	Name of the method as free text.		text	1	#VALUE	TRUE	FALSE	FALSE	TRUE	TRUE	FALSE	processMethods	process
+	processMethodsDescription	Description	Description of the method as free text		textbox	2	(#VALUE)	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processMethods	process
+	processMethodsPars	Parameters	List of all parameter names relevant for this method (detailed information about parameters should be given under Method Parameters).		text	3	; #NAME: #VALUE	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processMethods	process
+	processMethodsPar	Method Parameters	Parameters relevant for processing methods.		none	4		FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		process
+	processMethodsParName	Name	Name of the parameter.		text	5	#VALUE	TRUE	FALSE	FALSE	TRUE	TRUE	FALSE	processMethodsPar	process
+	processMethodsParSymbol	Symbol	The symbol used to describe this parameter.		text	6	(#VALUE)	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processMethodsPar	process
+	processMethodsParUnit	Unit	The unit or scale of this parameter.		text	7	[#VALUE]	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processMethodsPar	process
+	processMethodsParValue	Value	The value of this parameter.		float	8	: #VALUE	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processMethodsPar	process
+	processSoftware	Software	Information about used software.		none	9		FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		process
+	processSoftwareName	Name	Name of the software.		text	10	#VALUE	TRUE	FALSE	FALSE	TRUE	TRUE	FALSE	processSoftware	process
+	processSoftwareCitation	Citation	Assosicated publication to the software.		textbox	11	(#VALUE)	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processSoftware	process
+	processSoftwareVersion	Version	Version of the software.	Number or commit	text	12	#NAME: #VALUE	TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	processSoftware	process
+	processSoftwareURL	URL	Link to the software, code repository or application.		url	13	"(<a href=""#VALUE"" target=""_blank"">#VALUE</a>)"	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processSoftware	process
+	processSoftwareLicence	License	The license type of the software.		text	14	#VALUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processSoftware	process
+	processInstru	Instruments	A representation of a piece of laboratory or field equipment, used in the execution of an experiment, that produces data.		none	15		FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		process
+	processInstruName	Name	Name of this instrument.		text	16	#VALUE	TRUE	FALSE	FALSE	TRUE	TRUE	FALSE	processInstru	process
+	processInstruDescr	Description	Description of the instrument, e.g., what it is used for.		text	17	(#VALUE)	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processInstru	process
+	processInstruType	Version	The type or version of this instrument.		text	18	, #NAME: #VALUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processInstru	process
+	processInstruPartnum	Part Number	A vendors part number for an instrument or a piece of equipment.		text	19	, #NAME: #VALUE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	processInstru	process
+	processInstruSerialnum	Serial Number	A vendors serial number for an instrument or a piece of equipment.		text	20	, #NAME: #VALUE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	processInstru	process
+	processInstruSoftware	Software	Required software for this instrument.		text	21	, #NAME: #VALUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processInstru	process
+	processInstruLocation	Location	Location of the instrument.		text	22	, #NAME: #VALUE	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processInstru	process
+	processEnv	Environments	(Computation) environments of the data generation. 		none	23	,	FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		process
+	processEnvName	Name	Name of the environment.		text	24	#VALUE	TRUE	FALSE	FALSE	TRUE	FALSE	FALSE	processEnv	process
+	processEnvCompName	Compiler Names and Flags	Name and flags of the used compilers.		text	25	#VALUE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	processEnv	process
+	processEnvNodes	Number of Nodes	Number of compute nodes inside a high performance cluster environment.		int	26	#VALUE computing nodes	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processEnv	process
+	processEnvPPN	PPN	Processors per node		int	27	#NAME: #VALUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processEnv	process
+	processStep	Processing Steps	Specification of the processing steps in the data life cycle.		none	28		FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		process
+	processStepId	Id	Used to order the processing steps.	number	int	29	#VALUE.	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processStep	process
+	processStepType	Type	Specifies the position in the data life cycle.		text	30	#VALUE	TRUE	TRUE	FALSE	TRUE	TRUE	FALSE	processStep	process
+	processStepDate	Date	Date this step has been performed.		date	31	(#VALUE)	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processStep	process
+	processStepMethods	Methods	List of methods used in this processing step (detailed information about methods should be given under Processing Methods).		text	32	; #NAME: #VALUE	TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	processStep	process
+	processStepErrorMethod	Error Method	Method used to measure the errors or uncertainties of this processing step.		text	33	; #NAME: #VALUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	processStep	process
+	processStepSoftware	Software	List of software names used in this processing step (detailed information about software should be given under Software).		text	34	; #NAME: #VALUE	TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	processStep	process
+	processStepHardware	Instruments	List of instrumental hardware used in this processing step (detailed information about instruments should be given under Instruments).		text	35	; #NAME: #VALUE	TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	processStep	process
+	processStepEnvironment	Environment	Name of the environment used for this processing step (detailed information about the environment should be given under Environments).		text	36	; #NAME: #VALUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	processStep	process
+#controlledVocabulary	DatasetField	Value	identifier	displayOrder											
+	processStepType	Generation		0											
+	processStepType	Postprocessing		1											
+	processStepType	Analysis		2											
+	processStepType	Other		3											

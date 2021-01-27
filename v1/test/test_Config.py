@@ -24,6 +24,3 @@ class TestConfig(unittest.TestCase):
         t_list = inner_dict.get("Producer")
         self.assertEqual(t_list[0].source_key, "contact.name")
         self.assertEqual(t_list[0].target_key, "producerName")
-    
-        
-           
