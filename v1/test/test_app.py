@@ -1,18 +1,16 @@
 import unittest
-import json
 import sys
 sys.path.append('..')
 
 from api.app import create_app
-from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 
 
 class TestMetadataMapperEndpoints(unittest.TestCase):
     def setUp(self):
+        self.__init__()
         self.app = create_app()
         self.app.testing = True
         self.client = self.app.test_client()
-
 
     def test_empty_metadata(self):
 

@@ -3,7 +3,8 @@ from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 from api.resources import read_all_config_files, read_all_tsv_files
 from models.ReaderFactory import ReaderFactory
 from models.Translator import MergeTranslator, AdditionTranslator
-from models.MetadataModel import VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
+from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
+from builtins import isinstance
 # from api.resources import read_all_config_files, read_all_tsv_files
 # from asn1crypto.core import Primitive
 # from pkg_resources._vendor.pyparsing import empty
@@ -60,36 +61,43 @@ def create_app(test_config=None):
                 
                 
         # delete priorities
-        for key in target_key_values:
-            target_key_values[key].pop()        
+        for k,v in target_key_values.items():
+            target_key_values[k].pop()        
+            target_key_values[k] = v[0]
             
         return target_key_values
     
     def get_primitive_field(k,v,multiple):
         if multiple == True:
+            if isinstance(v,list):
+                v_new = []
+                for value in v:
+                    if value != 'none':
+                        v_new.append(value)
+                v = v_new
             p_field = MultiplePrimitiveField(k,v)
         if multiple == False:
             if isinstance(v, list):
-                concatenated = ""
+                v_new = ""
                 for value in v:
-                    concatenated += value + ", "
-                p_field = PrimitiveField(k,concatenated[:-2])                        
-            else:    
-                p_field = PrimitiveField(k,v)
+                    if value != 'none':
+                        v_new += value + ", "
+                v = v_new[:-2]
+            p_field = PrimitiveField(k,v)
         return p_field
     
     def get_vocabulary_field(k, v, multiple):
-        if multiple is True and not isinstance(v, list):
-            val = [v]        
-        elif multiple is False and isinstance(v, list):
-            val = ", ".join(v)
-        else:
-            val = v
-        v_field = VocabularyField(k, multiple=multiple, value=val)        
+        if multiple == True:
+            if not isinstance(v,list):
+                v = [v]
+            v_field = MultipleVocabularyField(k,v)
+        if multiple == False:
+            if isinstance(v,list):
+                v = ", ".join(v)
+            v_field = VocabularyField(k,v)   
         return v_field
     
     def build_json(target_key_values, method):
-        print("target_key_values: ", target_key_values)
         json_result = EditFormat() 
         parents_dict = {}
         primitives_dict = {}
@@ -112,7 +120,8 @@ def create_app(test_config=None):
             
             # PrimitiveFields
             if type_class == "primitive":
-                    p_field = get_primitive_field(k, v, multiple)
+                print("primitive field with value(s): ", v)
+                p_field = get_primitive_field(k, v, multiple)
             # Controlled Vocabulary
             if type_class == "controlled_vocabulary":
                 if v == "":        # special case for getEmptyDataverseJson
@@ -144,7 +153,6 @@ def create_app(test_config=None):
                 mb_dict[mb_id].add_field(p_field) 
                 json_result.add_field(p_field)
         
-        print("primitives_dict: ", primitives_dict)
         # build compound fields        
         for parent, c_field_outer in parents_dict.items(): 
             children = DV_CHILDREN.get(parent)             
@@ -153,14 +161,17 @@ def create_app(test_config=None):
                     if child in primitives_dict:
                         number_of_values = len(primitives_dict.get(child))
                         break                                   
-                for i in range(number_of_values):                    
+                for i in range(number_of_values):    
+                    c_field_inner = CompoundField(parent)                
                     for child in children:                                                
                         if child in primitives_dict: 
-                           p_field = primitives_dict.get(child)[i]
-                           if p_field.value != '':
-                               c_field_inner = CompoundField(parent)
-                               c_field_inner.add_value(p_field, child)
-                               c_field_outer.add_value(c_field_inner)
+                           p_field = primitives_dict.get(child)[i]                           
+                           if p_field.value != 'none':                           
+                               c_field_inner.add_value(p_field, child)                               
+                           else:
+                                continue
+                    if bool(c_field_inner.value):
+                        c_field_outer.add_value(c_field_inner)
                 json_result.add_field(c_field_outer)
                 mb_dict[mb_id].add_field(c_field_outer)
             else:
@@ -215,8 +226,6 @@ def create_app(test_config=None):
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
         source_key_values = reader.read(request.data, list_of_source_keys) 
-        print("source_key_values: ", source_key_values)
-        
         # translate key-value-pairs in input to target scheme
         target_key_values = translate_source_keys(source_key_values, mapping)
         

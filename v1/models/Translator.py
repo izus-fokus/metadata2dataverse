@@ -1,5 +1,5 @@
 from abc import abstractstaticmethod, ABCMeta
-#from models.DateAdder import DateAdder
+from models.DateAdder import DateAdder
 
 class Translator(metaclass=ABCMeta):
     """ Factory-Class """
@@ -59,6 +59,7 @@ class AdditionTranslator(Translator):
         return self.target_key
     
     def get_value(self):
+        print(self.class_name)
         klass = globals()[self.class_name]
         value = klass().main()
         return value
@@ -90,19 +91,23 @@ class MergeTranslator(Translator):
         list_of_values = []
         for i in range(len(self.source_keys)):
             v = source_key_values.get(self.source_keys[i])
-            list_of_values.append(v)
+            print(len(v))
+            if len(v) > 0:
+                list_of_values.append(v)
+        print("list_of_values: ", list_of_values)
         if any(isinstance(i, list) for i in list_of_values):
             if len(list_of_values) == 2:        # case: multiple values with 2 merge items
                 list1 = list_of_values[0]
                 list2 = list_of_values[1]
-                v_merged = [m + self.merge_symbol + n for m,n in zip(list1,list2)]
+                v_merged = [m + self.merge_symbol + n for m,n in zip(list1,list2) if m and n != "none"]
             if len(list_of_values) == 3:        # case: multiple values with 3 merge items
                 list1 = list_of_values[0]
                 list2 = list_of_values[1]
                 list3 = list_of_values[2]
-                v_merged = [m + self.merge_symbol + n + self.merge_symbol + p for m,n,p in zip(list1,list2,list3)]
+                v_merged = [m + self.merge_symbol + n + self.merge_symbol + p for m,n,p in zip(list1,list2,list3) if m and n and p != "none"]
         else:
-            v_merged = self.merge_symbol.join(list_of_values)                              
+            v_merged = self.merge_symbol.join(list_of_values)       
+                                   
         return v_merged
     
     def get_priority(self):
