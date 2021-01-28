@@ -35,12 +35,13 @@ def create_app(test_config=None):
         return mapping
     
     def translate_source_keys(source_key_values, mapping):
-        prio_target_keys = {}  
         target_key_values = {}          
         for k,v in source_key_values.items():          
             translator = mapping.get_translator(k)
             target_key = translator.target_key
+            print("source_key: ", k)
             priority = translator.get_priority()
+            print("priority: ", priority)
             value = translator.get_value(source_key_values)     
             if target_key in target_key_values:                
                 if priority > target_key_values[target_key][1]:
@@ -59,7 +60,7 @@ def create_app(test_config=None):
                 else:
                     target_key_values[target_key] = [value,priority] 
                 
-                
+        print("target_key_values: ", target_key_values)        
         # delete priorities
         for k,v in target_key_values.items():
             target_key_values[k].pop()        
@@ -98,14 +99,13 @@ def create_app(test_config=None):
         return v_field
     
     def build_json(target_key_values, method):
+        print(target_key_values)
         json_result = EditFormat() 
         parents_dict = {}
         primitives_dict = {}
         single_fields = []
         mb_dict = {}
-        for k, v in target_key_values.items():  
-            if isinstance(v, list):
-                v=v[0]          #remove priority     
+        for k, v in target_key_values.items():    
             field = DV_FIELD.get(k)
             if field is None:
                 print("Field {} not in Dataverse-Konfiguration".format(k))
@@ -120,7 +120,6 @@ def create_app(test_config=None):
             
             # PrimitiveFields
             if type_class == "primitive":
-                print("primitive field with value(s): ", v)
                 p_field = get_primitive_field(k, v, multiple)
             # Controlled Vocabulary
             if type_class == "controlled_vocabulary":

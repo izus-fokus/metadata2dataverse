@@ -19,10 +19,10 @@ mapping:
   target_key: authorName
   type: merge
   join_symbol: " "
-  priority: 2
+  priority: 1
 - source_key: creator.name
   target_key: authorName
-  priority: 1
+  priority: 2
 - source_key: creator.affiliation.name
   target_key: authorAffiliation
 - source_key: creator.role
@@ -308,10 +308,10 @@ mapping:
   target_key: engMetaGitterIntervalZ
 - source_key: system.grid.scalingFormula
   target_key: engMetaGitterScalingFormular
-#- source_key: [system.grid.point.positionX, system.grid.point.positionY, system.grid.point.positionZ]
-#  target_key: engMetaGitterPoints
-#  type: merge
-#  join_symbol: "; "
+- source_key: [system.grid.point.positionX, system.grid.point.positionY, system.grid.point.positionZ]
+  target_key: engMetaGitterPoints
+  type: merge
+  join_symbol: "; "
 - source_key: system.grid.unit
   target_key: engMetaGitterUnit
 

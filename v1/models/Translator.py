@@ -14,8 +14,7 @@ class Translator(metaclass=ABCMeta):
         """ Translator Interface """         
         
 class BaseTranslator(Translator):    
-
-    def __init__(self, source_key, target_key, priority = 1):        
+    def __init__(self, source_key, target_key, priority = 1): 
         self.source_key = source_key
         self.target_key = target_key 
         self.priority = priority 
@@ -66,8 +65,7 @@ class AdditionTranslator(Translator):
         
         
         
-class MergeTranslator(Translator):
-    
+class MergeTranslator(Translator):    
     def __init__(self, source_keys, target_key, priority = 1, translator_type = "merge", merge_symbol = " "):
         self.source_keys = source_keys
         self.target_key = target_key 

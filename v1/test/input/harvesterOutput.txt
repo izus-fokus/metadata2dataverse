@@ -1,8 +1,0 @@
-dates.date: 2019-04-04, ,
-creator.name: Selent, , Schembera
-creator.affiliation: IMS, ,
-contributor.role: Data Manager, ,
-
-
-subjects.subject.lang: German, English, ,
-
