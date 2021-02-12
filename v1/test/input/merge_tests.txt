@@ -1,8 +1,0 @@
-description.descriptionType: Abstract, , ,
-description: Dies ist die Abstract Description!, , ,
-system.grid.point.positionX: A, , , 
-system.grid.point.positionY: B, , ,
-system.grid.point.positionZ: C, , ,
-creator.givenName: Dorothea, Anne, , 
-creator.familyName: Iglezakis, Kreuter, ,
-

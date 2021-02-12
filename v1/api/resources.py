@@ -10,7 +10,6 @@ from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS     
 
 # Read config yaml files (mapping from source key to target keys)
 def read_all_config_files():  
-    print("hallo read all config files")
     rootdir = './resources/config'
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
@@ -21,8 +20,6 @@ def read_all_config_files():
             # fill global dictionary of mappings
             MAPPINGS[scheme] = config
             open_yaml_file.close()
-    print("Anzahl Mappings: ", len(MAPPINGS))
-    return MAPPINGS
 
 # Read schema tsv files (metadatablocks nesting)      
 def read_all_tsv_files():
@@ -39,7 +36,6 @@ def read_all_tsv_files():
 
 def read_config(data):
     yaml_file = yaml.safe_load(data) 
-    
     # Extracting dictionaries out of yaml-file    
     scheme = yaml_file["scheme"]   
     description = yaml_file["description"]

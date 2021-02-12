@@ -58,7 +58,6 @@ class AdditionTranslator(Translator):
         return self.target_key
     
     def get_value(self):
-        print(self.class_name)
         klass = globals()[self.class_name]
         value = klass().main()
         return value
@@ -89,10 +88,8 @@ class MergeTranslator(Translator):
         list_of_values = []
         for i in range(len(self.source_keys)):
             v = source_key_values.get(self.source_keys[i])
-            print(len(v))
             if len(v) > 0:
                 list_of_values.append(v)
-        print("list_of_values: ", list_of_values)
         if any(isinstance(i, list) for i in list_of_values):
             if len(list_of_values) == 2:        # case: multiple values with 2 merge items
                 list1 = list_of_values[0]

@@ -1,4 +1,4 @@
-creator.name: Selent, Schembera
-creator.givenName: Dorothea, Anne
-creator.familyName: Iglezakis, Kreuter
+creator.name: Selent
+creator.givenName: Dorothea
+creator.familyName: Iglezakis
 

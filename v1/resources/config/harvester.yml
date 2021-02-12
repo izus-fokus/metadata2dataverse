@@ -309,7 +309,7 @@ mapping:
 - source_key: system.grid.scalingFormula
   target_key: engMetaGitterScalingFormular
 - source_key: [system.grid.point.positionX, system.grid.point.positionY, system.grid.point.positionZ]
-  target_key: engMetaGitterPoints
+  target_key: engMetaTempPoints
   type: merge
   join_symbol: "; "
 - source_key: system.grid.unit

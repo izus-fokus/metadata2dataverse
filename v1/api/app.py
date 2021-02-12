@@ -39,9 +39,7 @@ def create_app(test_config=None):
         for k,v in source_key_values.items():          
             translator = mapping.get_translator(k)
             target_key = translator.target_key
-            print("source_key: ", k)
             priority = translator.get_priority()
-            print("priority: ", priority)
             value = translator.get_value(source_key_values)     
             if target_key in target_key_values:                
                 if priority > target_key_values[target_key][1]:
@@ -59,8 +57,7 @@ def create_app(test_config=None):
                         target_key_values[target_key] = [value,priority]
                 else:
                     target_key_values[target_key] = [value,priority] 
-                
-        print("target_key_values: ", target_key_values)        
+                       
         # delete priorities
         for k,v in target_key_values.items():
             target_key_values[k].pop()        
@@ -99,7 +96,6 @@ def create_app(test_config=None):
         return v_field
     
     def build_json(target_key_values, method):
-        print(target_key_values)
         json_result = EditFormat() 
         parents_dict = {}
         primitives_dict = {}
@@ -224,19 +220,27 @@ def create_app(test_config=None):
         
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
-        source_key_values = reader.read(request.data, list_of_source_keys) 
-        # translate key-value-pairs in input to target scheme
-        target_key_values = translate_source_keys(source_key_values, mapping)
+        if reader != None:
+            # translate key-value-pairs in input to target scheme
+            source_key_values = reader.read(request.data, list_of_source_keys) 
+            target_key_values = translate_source_keys(source_key_values, mapping)
+            
+            # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
+            result = build_json(target_key_values, method)  
+            if method == 'edit':
+                response = EditScheme().dump(result)
+            elif method == 'update':
+                response = DatasetSchema().dump(result)
+            elif method == 'create':
+                response = CreateDatasetSchema().dump(result) 
+        else:
+            warnings.append("Invalid Content-Type")
         
-        # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
         
-        result = build_json(target_key_values, method)  
-        if method == 'edit':
-            response = EditScheme().dump(result)
-        elif method == 'update':
-            response = DatasetSchema().dump(result)
-        elif method == 'create':
-            response = CreateDatasetSchema().dump(result) 
+        
+        
+        
+        
         
 
         if len(warnings) > 0:
