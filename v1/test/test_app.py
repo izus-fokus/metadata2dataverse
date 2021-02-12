@@ -18,34 +18,38 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)      
-        self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'author', 'value': [{'authorName': {'type': 'PrimitiveField', 'typeName': 'authorName', 'value': 'Dorothea Iglezakis'}}]}]})
+        self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'author', 'value': [{'authorName': {'type': 'PrimitiveField', 'typeName': 'authorName', 'value': 'Selent'}}]}]})
         
         # testen des Configtypes merge: 1. Einfacher Merge mit Symbol ";"
         with open(r'./input/merge_test1.txt', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
-        self.assertEqual(response.status_code, 200)    
+        print(response.json) 
+        self.assertEqual(response.status_code, 200) 
+          
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'dsDescription', 'value': [{'dsDescriptionValue': {'type': 'PrimitiveField', 'typeName': 'dsDescriptionValue', 'value': 'Abstract; Dies ist die Abstract Description!'}}]}]})
         
-        # testen des Configtypes merge: 2. dreifacher Merge (engMetaGitterPoints)
-        #with open(r'./input/merge_test2.txt', 'rb') as f:
-        #    file_content = f.read()
-        #response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
-        #self.assertEqual(response.status_code, 200)    
-        #self.assertEqual(response.json, {'fields': [{'type': 'CompoundField', 'typeName': 'engMetaTemp', 'value': {'engMetaTempPoints': {'type': 'PrimitiveField', 'typeName': 'engMetaTempPoints', 'value': '1; 2; 3'}}}]})
+        # testen des Configtypes merge: 2. dreifacher Merge (engMetaTempPoints)
+        with open(r'./input/merge_test2.txt', 'rb') as f:
+            file_content = f.read()
+        response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
+        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.json, {'fields': [{'type': 'CompoundField', 'typeName': 'engMetaTemp', 'value': {'engMetaTempPoints': {'type': 'PrimitiveField', 'typeName': 'engMetaTempPoints', 'value': '1; 2; 3'}}}]})
         
         # testen des Configtypes merge: 3. Merge mit mehreren Values (authorName)
         with open(r'./input/merge_test3.txt', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
+        print(response.json)
         self.assertEqual(response.status_code, 200)    
+        print(response)
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'author', 'value': [{'authorName': {'type': 'PrimitiveField', 'typeName': 'authorName', 'value': 'Anne Kreuter'}}, {'authorName': {'type': 'PrimitiveField', 'typeName': 'authorName', 'value': 'Dorothea Iglezakis'}}]}]})
         
         # testen multiplecompoundfields mit Kindern die unterschiedliche Felder besetzen
         with open(r'./input/unterschiedliche_felder.txt', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
-        self.assertEqual(response.status_code, 200) 
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'datasetContact', 'value': [{'datasetContactName': {'type': 'PrimitiveField', 'typeName': 'datasetContactName', 'value': 'Dorothea Iglezakis'}, 'datasetContactAffiliation':{'type': 'PrimitiveField', 'typeName': 'datasetContactAffiliation', 'value': 'Uni Stuttgart'}}, {'datasetContactName': {'type': 'PrimitiveField', 'typeName': 'datasetContactName', 'value': 'Anett Seeland'}, 'datasetContactAffiliation':{'type': 'PrimitiveField', 'typeName': 'datasetContactAffiliation', 'value': 'IZUS'}}, {'datasetContactName': {'type': 'PrimitiveField', 'typeName': 'datasetContactName', 'value': 'Max Mustermann'}}]}]})
         
         # testen des Configtypes: addition
@@ -66,6 +70,21 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/text'})
         self.assertEqual(response.status_code, 404) 
+        
+        # source key existiert nicht
+        with open(r'./input/unknown_key.txt', 'rb') as f:
+            file_content = f.read()
+        response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
+        self.assertEqual(response.status_code, 202) 
+        self.assertEqual(response.json['response'], {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021/02/12'}]})
+                
+        # input key has multiple values but is primitive field
+        with open(r'./input/single_multiple.txt', 'rb') as f:
+            file_content = f.read()
+        response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
+        self.assertEqual(response.status_code, 202) 
+        self.assertEqual(response.json['response'], {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel 1'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021/02/12'}]})
+        
         
         
         

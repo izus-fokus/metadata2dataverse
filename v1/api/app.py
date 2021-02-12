@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, jsonify, send_file
+from flask import Flask, request, abort, jsonify, send_file, g
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 from api.resources import read_all_config_files, read_all_tsv_files
 from models.ReaderFactory import ReaderFactory
@@ -19,9 +19,9 @@ def create_app(test_config=None):
         read_all_config_files()
         read_all_tsv_files()
 
-    def verbose(response, warnings=[]):
+    def verbosize(response):
         return {'success': True,
-                'warnings': warnings,
+                'warnings': g.warnings,
                 'response': response
                 }
 
@@ -104,7 +104,7 @@ def create_app(test_config=None):
         for k, v in target_key_values.items():    
             field = DV_FIELD.get(k)
             if field is None:
-                print("Field {} not in Dataverse-Konfiguration".format(k))
+                g.warnings.append("Field {} not in Dataverse-Konfiguration".format(k))
                 continue
             parent = field.parent
             type_class = field.type_class
@@ -112,8 +112,7 @@ def create_app(test_config=None):
             mb_id = field.metadata_block
             if mb_id not in mb_dict:
                 mb = MetadataBlock(mb_id, DV_MB[mb_id]) 
-                mb_dict[mb_id] = mb
-            
+                mb_dict[mb_id] = mb            
             # PrimitiveFields
             if type_class == "primitive":
                 p_field = get_primitive_field(k, v, multiple)
@@ -126,7 +125,7 @@ def create_app(test_config=None):
                 if len(v_checked) > 0:
                     p_field = get_vocabulary_field(k, v_checked, multiple)                
                 else: 
-                    print("Use controlled vocabulary for ", k, ": ", field.controlled_vocabulary)
+                    print("Use controlled vocabulary for " + k + ": " + field.controlled_vocabulary)
                     continue
             # has parent
             if parent != None:
@@ -210,7 +209,11 @@ def create_app(test_config=None):
         method = request.args.get('method',
                                   type=str,
                                   default='update')
-        warnings = []
+        verbose = request.args.get('verbose',
+                                  type=bool,
+                                  default=True)
+        
+        g.warnings=[]
         
         # get mapping for requested scheme        
         mapping = get_mapping(scheme)
@@ -220,33 +223,26 @@ def create_app(test_config=None):
         
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
-        if reader != None:
-            # translate key-value-pairs in input to target scheme
-            source_key_values = reader.read(request.data, list_of_source_keys) 
-            target_key_values = translate_source_keys(source_key_values, mapping)
+        if reader is None:
+            abort(404, '''Content-Type {} not found. Check GET /mapping for available schemes.'''.format(scheme))
+        
+        # translate key-value-pairs in input to target scheme
+        source_key_values = reader.read(request.data, list_of_source_keys) 
+        target_key_values = translate_source_keys(source_key_values, mapping)
             
-            # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
-            result = build_json(target_key_values, method)  
-            if method == 'edit':
-                response = EditScheme().dump(result)
-            elif method == 'update':
-                response = DatasetSchema().dump(result)
-            elif method == 'create':
-                response = CreateDatasetSchema().dump(result) 
-        else:
-            warnings.append("Invalid Content-Type")
+        # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
+        result = build_json(target_key_values, method)  
+        if method == 'edit':
+            response = EditScheme().dump(result)
+        elif method == 'update':
+            response = DatasetSchema().dump(result)
+        elif method == 'create':
+            response = CreateDatasetSchema().dump(result) 
         
-        
-        
-        
-        
-        
-        
-
-        if len(warnings) > 0:
+        if len(g.warnings) > 0:
             if verbose:
-                verbosize(response)
-            return jsonify(response), 202
+                response = verbosize(response)
+            return response, 202
 
         else:
             return jsonify(response), 200
@@ -257,11 +253,10 @@ def create_app(test_config=None):
         method = request.args.get('method',
                                   type=str,
                                   default='update')
-        warnings = []
+        g.warnings = []
         # get all target keys from scheme
         mapping = get_mapping(scheme)
         target_keys = mapping.get_target_keys()        
-        
         
         # build empty target key dictionary
         target_key_values = dict.fromkeys(target_keys, "")
@@ -272,13 +267,11 @@ def create_app(test_config=None):
         elif method == 'update':
             response = DatasetSchema().dump(result)
         elif method == 'create':
-            response = CreateDatasetSchema().dump(result) 
-        
-        
-
-        if len(warnings) > 0:
+            response = CreateDatasetSchema().dump(result)  
+            
+        if len(g.warnings) > 0:
             if verbose:
-                verbose(response)
+                verbosize(response,g.warnings)
             return jsonify(response), 202
 
         else:

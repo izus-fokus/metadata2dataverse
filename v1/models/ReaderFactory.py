@@ -1,4 +1,5 @@
 from abc import abstractstaticmethod, ABCMeta
+from flask import g
 from api.globals import MAPPINGS     # global variables
 import xml.etree.ElementTree as ET
 
@@ -42,7 +43,7 @@ class TextReader(Reader):
                 splitted_line = line.split(":")
                 source_key = splitted_line[0]
                 if source_key not in list_of_source_keys:
-                    print(source_key, " not found in scheme mapping - Check your Yaml Mapping File")
+                    g.warnings.append(source_key + " not found in scheme mapping - Check your Yaml Mapping File")
                     continue        
                 values = splitted_line[1]
                 splitted_values = values.split(",")
