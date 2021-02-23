@@ -36,7 +36,23 @@ def create_app(test_config=None):
     
     def translate_source_keys(source_key_values, mapping):
         target_key_values = {}          
-        for k,v in source_key_values.items():          
+        for k,v in source_key_values.items():     
+            if k in mapping.rules_dict:
+                rule = mapping.rules_dict.get(k)
+                if v in rule:
+                    translators = rule.get(v)
+                    for translator in translators:
+                        target_key = translator.target_key
+                        priority = translator.priority
+                        value = translator.get_value(source_key_values)
+                        if target_key in target_key_values:                
+                            if priority > target_key_values[target_key][1]:
+                                target_key_values[target_key] = [value,priority]
+                        else:
+                            target_key_values[target_key] = [value,priority]
+                    continue
+                            
+                 
             translator = mapping.get_translator(k)
             target_key = translator.target_key
             priority = translator.get_priority()
@@ -57,6 +73,8 @@ def create_app(test_config=None):
                         target_key_values[target_key] = [value,priority]
                 else:
                     target_key_values[target_key] = [value,priority] 
+            
+                    
                        
         # delete priorities
         for k,v in target_key_values.items():
@@ -238,7 +256,7 @@ def create_app(test_config=None):
             response = DatasetSchema().dump(result)
         elif method == 'create':
             response = CreateDatasetSchema().dump(result) 
-        
+        print(g.warnings)
         if len(g.warnings) > 0:
             if verbose:
                 response = verbosize(response)
