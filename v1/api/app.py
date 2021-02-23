@@ -35,24 +35,32 @@ def create_app(test_config=None):
         return mapping
     
     def translate_source_keys(source_key_values, mapping):
-        target_key_values = {}          
+        target_key_values = {}   
+        
+        # check if rules can be applied to source_keys
+        source_keys_to_delete = []       
         for k,v in source_key_values.items():     
             if k in mapping.rules_dict:
+                print(k)
                 rule = mapping.rules_dict.get(k)
                 if v in rule:
                     translators = rule.get(v)
                     for translator in translators:
                         target_key = translator.target_key
                         priority = translator.priority
+                        source_keys_to_delete.append(translator.source_key)
                         value = translator.get_value(source_key_values)
-                        if target_key in target_key_values:                
-                            if priority > target_key_values[target_key][1]:
+                        if value != None:   
+                            if target_key in target_key_values:             
+                                if priority > target_key_values[target_key][1]:
+                                    target_key_values[target_key] = [value,priority]
+                            else:
                                 target_key_values[target_key] = [value,priority]
-                        else:
-                            target_key_values[target_key] = [value,priority]
-                    continue
-                            
-                 
+        # delete used source_keys                        
+        for key in source_keys_to_delete:
+            source_key_values.pop(key, None)
+            
+        for k,v in source_key_values.items():       
             translator = mapping.get_translator(k)
             target_key = translator.target_key
             priority = translator.get_priority()
@@ -73,13 +81,13 @@ def create_app(test_config=None):
                         target_key_values[target_key] = [value,priority]
                 else:
                     target_key_values[target_key] = [value,priority] 
-            
-                    
                        
         # delete priorities
         for k,v in target_key_values.items():
             target_key_values[k].pop()        
             target_key_values[k] = v[0]
+            
+        print(target_key_values)
             
         return target_key_values
     
@@ -229,7 +237,7 @@ def create_app(test_config=None):
                                   default='update')
         verbose = request.args.get('verbose',
                                   type=bool,
-                                  default=True)
+                                  default=False)
         
         g.warnings=[]
         
