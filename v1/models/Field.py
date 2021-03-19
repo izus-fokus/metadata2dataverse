@@ -1,3 +1,4 @@
+from flask import g
 class Field(object):
     ''' object after parsing a tsv file '''
 
@@ -24,13 +25,13 @@ class Field(object):
                 if value_ in self.controlled_vocabulary:
                     v_new.append(value_)
                 else:
-                    print(self.target_key, "has a controlled vocabulary.", value_ ,"is not part of it. It has been removed.")
+                    g.warnings.append(self.target_key + " has a controlled vocabulary. " + value_ + " is not part of it. It has been removed. Allowed values are: " + str(self.controlled_vocabulary))
                     continue
         else:
             if v in self.controlled_vocabulary:      
                 return v
             else: 
-                print(self.target_key, "has a controlled vocabulary.", v ,"is not part of it. It has been removed.")
+                g.warnings.append(self.target_key + " has a controlled vocabulary. " + v +" is not part of it. It has been removed. Allowed values are: " + str(self.controlled_vocabulary))
                 v_new = []
         return v_new
     

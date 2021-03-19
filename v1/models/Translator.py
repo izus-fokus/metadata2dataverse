@@ -29,7 +29,7 @@ class BaseTranslator(Translator):
         return self.target_key    
         
     def get_value(self,source_key_values):
-        v = source_key_values.get(self.source_key)                        
+        v = source_key_values.get(self.source_key)   
         return v
     
     def get_priority(self):

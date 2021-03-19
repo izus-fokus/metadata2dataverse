@@ -36,26 +36,26 @@ def create_app(test_config=None):
     
     def translate_source_keys(source_key_values, mapping):
         target_key_values = {}   
-        
         # check if rules can be applied to source_keys
         source_keys_to_delete = []       
         for k,v in source_key_values.items():     
             if k in mapping.rules_dict:
-                print(k)
                 rule = mapping.rules_dict.get(k)
-                if v in rule:
-                    translators = rule.get(v)
-                    for translator in translators:
-                        target_key = translator.target_key
-                        priority = translator.priority
-                        source_keys_to_delete.append(translator.source_key)
-                        value = translator.get_value(source_key_values)
-                        if value != None:   
-                            if target_key in target_key_values:             
-                                if priority > target_key_values[target_key][1]:
-                                    target_key_values[target_key] = [value,priority]
-                            else:
-                                target_key_values[target_key] = [value,priority]
+                for value in v:
+                    if value in rule:
+                        translators = rule.get(value)
+                        for translator in translators:
+                            target_key = translator.target_key
+                            priority = translator.priority
+                            source_keys_to_delete.append(translator.source_key)
+                            source_keys_to_delete.append(k)
+                            value_new = translator.get_value(source_key_values)
+                            if value_new != None:   
+                                if target_key in target_key_values:             
+                                    if priority > target_key_values[target_key][1]:
+                                        target_key_values[target_key] = [value_new,priority]
+                                else:
+                                    target_key_values[target_key] = [value_new,priority]
         # delete used source_keys                        
         for key in source_keys_to_delete:
             source_key_values.pop(key, None)
@@ -87,7 +87,6 @@ def create_app(test_config=None):
             target_key_values[k].pop()        
             target_key_values[k] = v[0]
             
-        print(target_key_values)
             
         return target_key_values
     
@@ -151,7 +150,7 @@ def create_app(test_config=None):
                 if len(v_checked) > 0:
                     p_field = get_vocabulary_field(k, v_checked, multiple)                
                 else: 
-                    print("Use controlled vocabulary for " + k + ": " + field.controlled_vocabulary)
+                    g.warnings.append("Use controlled vocabulary for " + k + ": " + str(field.controlled_vocabulary))
                     continue
             # has parent
             if parent != None:
@@ -246,7 +245,6 @@ def create_app(test_config=None):
         
         # get all source keys of scheme
         list_of_source_keys = mapping.get_source_keys()
-        
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
         if reader is None:
@@ -264,7 +262,6 @@ def create_app(test_config=None):
             response = DatasetSchema().dump(result)
         elif method == 'create':
             response = CreateDatasetSchema().dump(result) 
-        print(g.warnings)
         if len(g.warnings) > 0:
             if verbose:
                 response = verbosize(response)

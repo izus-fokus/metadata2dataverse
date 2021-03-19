@@ -55,7 +55,7 @@ class TextReader(Reader):
                         else:
                             source_key_value[source_key].append(value.strip())
                 else:
-                    source_key_value[source_key] = splitted_values[0].strip()   #single value
+                    source_key_value[source_key] = [splitted_values[0].strip()]   #single value
         return source_key_value
 
 

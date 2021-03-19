@@ -43,7 +43,7 @@ mapping:
 - source_key: contact.email
   target_key: datasetContactEmail
 - source_key: contact.role
-  target_key: contactType
+  target_key: contactRole
 
 # dsDescription
 - source_key: [description.descriptionType, description]
@@ -468,8 +468,8 @@ rules:
 - trigger: description.descriptionType
   type: rule
   priority: 1
-  trigger_values: [SeriesInformation]
-  SeriesInformation: [{source_key: description, targetKey: seriesInformation}]
+  trigger_values: [seriesInformation]
+  SeriesInformation: [{source_key: description, target_key: seriesInformation}]
 
 - trigger: dates.date.dateType
   type: rule
