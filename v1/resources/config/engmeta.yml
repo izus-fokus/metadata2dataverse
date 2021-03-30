@@ -1,7 +1,7 @@
 description: parses XML-Files coded in EngMeta up to version 0/2
 
-format: application/xml
-scheme: EngMeta
+format: text/xml
+scheme: engmeta
 
 mapping:
 - source_key: /dataset/title
@@ -438,39 +438,37 @@ mapping:
   target_key: processStepEnvironment
 
 rules:
-- trigger: contact/role
+- trigger: //contact/role
   type: rule
   priority: 1
   trigger_values: [Producer, Distributor]
   Producer: [{source_key: //contact/name, target_key: producerName}, {source_key: //contact/affiliation/name, target_key: producerAffiliation}, {source_key: //contact/affiliation/id, target_key: producerAbbreviation}]
   Distributor: [{source_key: //contact/name, target_key: distributorName}, {source_key: //contact/affiliation/name, target_key: distributorAffiliation}, {source_key: //contact/affiliation/id, target_key: distributorAbbreviation}]
 
-- trigger: title/titleType
+- trigger: //title/titleType
   type: rule
   priority: 1
   trigger_values: [Title, AlternativeTitle, Subtitle]
-  Title: [{target_key: title}]
+  Title: [{source_key: //title, target_key: title}]
   AlternativeTitle: [{source_key: //title, target_key: alternativeTitle}]
   Subtitle: [{source_key: //title, target_key: subtitle}]
 
-- trigger: contributor/role
+- trigger: //contributor/role
   type: rule
   priority: 1
   trigger_values: [Producer, Distributor]
   Producer: [{source_key: //contributor/name, target_key: producerName}, {source_key: //contributor/affiliation/name, target_key: producerAffiliation}, {source_key: //contributor/affiliation/id, target_key: producerAbbreviation}]
   Distributor: [{source_key: //contributor/name, target_key: distributorName}, {source_key: //contributor/affiliation/name, target_key: distributorAffiliation}, {source_key: //contributor/affiliation/id, target_key: distributorAbbreviation}]
 
-- trigger: description/descriptionType
+- trigger: //description/descriptionType
   type: rule
   priority: 1
-  trigger_values: [SeriesInformation]
-  SeriesInformation: [{source_key: //description, targetKey: seriesInformation}]
+  trigger_values: [seriesInformation]
+  seriesInformation: [{source_key: //description, target_key: seriesInformation}]
 
-- trigger: dates/date/dateType
+- trigger: //dates/date/dateType
   type: rule
   priority: 1
   trigger_values: [Collected, Available]
   Collected: [{source_key: //dates/date, target_key: productionDate}]
   Available: [{source_key: //dates/date, target_key: distributionDate}]
-
-

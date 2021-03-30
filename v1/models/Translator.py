@@ -87,9 +87,13 @@ class MergeTranslator(Translator):
     def get_value(self, source_key_values):
         list_of_values = []
         for i in range(len(self.source_keys)):
-            v = source_key_values.get(self.source_keys[i])
-            if len(v) > 0:
-                list_of_values.append(v)
+            try:
+                v = source_key_values.get(self.source_keys[i])
+                if len(v) > 0:
+                    list_of_values.append(v)
+            except:
+                continue
+            
         if any(isinstance(i, list) for i in list_of_values):
             if len(list_of_values) == 2:        # case: multiple values with 2 merge items
                 list1 = list_of_values[0]

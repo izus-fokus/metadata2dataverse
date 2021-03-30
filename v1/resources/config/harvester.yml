@@ -1,7 +1,7 @@
 description: menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstützt)
 
-format: text/plain
-scheme: Harvester
+format: plain/txt
+scheme: harvester
 
 mapping:
 
@@ -469,7 +469,7 @@ rules:
   type: rule
   priority: 1
   trigger_values: [seriesInformation]
-  SeriesInformation: [{source_key: description, target_key: seriesInformation}]
+  seriesInformation: [{source_key: description, target_key: seriesInformation}]
 
 - trigger: dates.date.dateType
   type: rule

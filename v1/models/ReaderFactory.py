@@ -66,19 +66,17 @@ class XMLReader(Reader):
     def __repr__(self):
         pass
 
-    def read(self, xml_data, xpath):
+    def read(xml_data, list_of_source_keys):
         source_key_value = {}
         root = ET.fromstring(xml_data)
-
-        for source_key in xpath:
-            elements = root.findall(source_key)
+        for source_key in list_of_source_keys:
+            elements = root.findall("." + source_key)
             if len(elements) > 1:
                 source_key_value[source_key] = []
                 for element in elements:
                     source_key_value[source_key].append(element.text)
             elif len(elements) == 1:
                 source_key_value[source_key] = elements[0].text
-
         return source_key_value
 
 

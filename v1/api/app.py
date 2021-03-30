@@ -59,9 +59,12 @@ def create_app(test_config=None):
         # delete used source_keys                        
         for key in source_keys_to_delete:
             source_key_values.pop(key, None)
-            
-        for k,v in source_key_values.items():       
+        
+        print(source_key_values)    
+        for k,v in source_key_values.items():  
             translator = mapping.get_translator(k)
+            if translator == None:
+                continue
             target_key = translator.target_key
             priority = translator.get_priority()
             value = translator.get_value(source_key_values)     
@@ -248,10 +251,11 @@ def create_app(test_config=None):
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
         if reader is None:
-            abort(404, '''Content-Type {} not found. Check GET /mapping for available schemes.'''.format(scheme))
+            abort(404, '''Content-Type {} not found. Check GET /mapping for available schemes.'''.format(request.content_type))
         
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, list_of_source_keys) 
+        print(source_key_values)
         target_key_values = translate_source_keys(source_key_values, mapping)
             
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 

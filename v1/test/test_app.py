@@ -54,7 +54,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200) 
-        self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021/03/19'}]})
+        self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021/03/23'}]})
         
         # schema existiert nicht
         with open(r'./input/adder.txt', 'rb') as f:
@@ -73,7 +73,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 202) 
-        self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021/03/19'}]})
+        self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021/03/23'}]})
                 
         # input key has multiple values but is primitive field
         #with open(r'./input/single_multiple.txt', 'rb') as f:
@@ -97,12 +97,17 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200) 
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'producer', 'value': [{'producerName': {'type': 'PrimitiveField', 'typeName': 'producerName', 'value': 'Anett Seeland'},'producerAffiliation': {'type': 'PrimitiveField', 'typeName': 'producerAffiliation', 'value': 'Uni Stuttgart'},'producerAbbreviation': {'type': 'PrimitiveField', 'typeName': 'producerAbbreviation', 'value': 'FoKUS'}}]}]})
         
-        # controlledVocabulary
+        # controlledVocabulary with wrong value
         with open(r'./input/controlled_voc.txt', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 202) 
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleVocabularyField', 'typeName': 'language', 'value': ['German', 'Danish']}]})
+        
+        response = self.client.post('/metadata/harvester?method=edit&verbose=True', data=file_content, headers={'Content-Type':'plain/txt'})
+        self.assertEqual(response.status_code, 202)
+        self.assertIn('warnings', response.json)
+        self.assertEqual(response.json['response'], {'fields': [{'type': 'MultipleVocabularyField', 'typeName': 'language', 'value': ['German', 'Danish']}]})
         
         
     def test_empty_metadata(self):
