@@ -93,20 +93,20 @@ def create_app(test_config=None):
             
         return target_key_values
     
-    def get_primitive_field(k,v,multiple):
+    def get_primitive_field(k,v,multiple):        
         if multiple == True:
             if isinstance(v,list):
                 v_new = []
                 for value in v:
-                    if value != 'none':
+                    if value != 'none' and value != None:
                         v_new.append(value)
                 v = v_new
             p_field = MultiplePrimitiveField(k,v)
-        if multiple == False:
+        if multiple == False:            
             if isinstance(v, list):
                 v_new = ""
                 for value in v:
-                    if value != 'none':
+                    if value != 'none' and value != None:
                         v_new += value + ", "
                 v = v_new[:-2]
             p_field = PrimitiveField(k,v)
@@ -170,11 +170,11 @@ def create_app(test_config=None):
                 if isinstance(c_field, CompoundField):
                     primitives_dict[k] = p_field
                 parents_dict[parent] = c_field
-                
+            # has no parent    
             if parent == None:
                 mb_dict[mb_id].add_field(p_field) 
                 json_result.add_field(p_field)
-        
+                
         # build compound fields        
         for parent, c_field_outer in parents_dict.items(): 
             children = DV_CHILDREN.get(parent)             
@@ -203,7 +203,6 @@ def create_app(test_config=None):
                         c_field_outer.add_value(p_field, child)
                 json_result.add_field(c_field_outer)     
                 mb_dict[mb_id].add_field(c_field_outer)
-        
         
         if method == 'update':            
             dataset = Dataset()
@@ -257,7 +256,7 @@ def create_app(test_config=None):
         source_key_values = reader.read(request.data, list_of_source_keys) 
         print(source_key_values)
         target_key_values = translate_source_keys(source_key_values, mapping)
-            
+        print(target_key_values)    
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
         result = build_json(target_key_values, method)  
         if method == 'edit':
