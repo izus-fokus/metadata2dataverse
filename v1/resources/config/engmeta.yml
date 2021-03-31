@@ -4,7 +4,7 @@ format: text/xml
 scheme: engmeta
 
 mapping:
-- source_key: /dataset/title
+- source_key: //title
   target_key: title
 
 # otherId
@@ -12,22 +12,22 @@ mapping:
 #T: otherIdValue
 
 # author
-- source_key: [/dataset/creator/givenName, /dataset/creator/familyName]
+- source_key: [//creator/givenName, //creator/familyName]
   target_key: authorName
   type: merge
   join_symbol: " "
   priority: 1
-- source_key: /dataset/creator/name
+- source_key: //creator/name
   target_key: authorName
-- source_key: /dataset/creator/affiliation/name
+- source_key: //creator/affiliation/name
   target_key: authorAffiliation
-- source_key: /dataset/creator/role
+- source_key: //creator/role
   target_key: authorIdentifierScheme
 
 # datasetContact
-- source_key: /dataset/contact/name
+- source_key: //contact/name
   target_key: datasetContactName
-- source_key: [/dataset/contact/givenName, dataset/contact/familyName]
+- source_key: [//contact/givenName, //contact/familyName]
   target_key: datasetContactName
   type: merge
   join_symbol: " "
@@ -61,7 +61,7 @@ mapping:
 # topicClassification
 - source_key: //subjects/subject
   target_key: topicClassValue
-- source_key: subjects/subject/subjectScheme
+- source_key: //subjects/subject/subjectScheme
   target_key: topicClassVocab
 - source_key: //subjects/subject/schemeURI
   target_key: topicClassVocabURI

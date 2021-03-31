@@ -74,9 +74,11 @@ class XMLReader(Reader):
             if len(elements) > 1:
                 source_key_value[source_key] = []
                 for element in elements:
-                    source_key_value[source_key].append(element.text)
+                    if element.text != None:
+                        source_key_value[source_key].append(element.text)
             elif len(elements) == 1:
-                source_key_value[source_key] = elements[0].text
+                if elements[0].text != None:
+                    source_key_value[source_key] = [elements[0].text]
         return source_key_value
 
 

@@ -89,7 +89,7 @@ class MultipleVocabularyField(Field):
     def __repr__(self):
         return "{}: {}".format(
             self.typeName,
-            "[" + (v for v in self.value) + "]")
+            "[" + str([v for v in self.value]) + "]")
         
 class VocabularyField(Field):
     def __init__(self, typeName, value=None):
