@@ -1,6 +1,6 @@
 # MetadataMapper
 
-## How to run
+### How to run
 
 ### Requirements
 ```
