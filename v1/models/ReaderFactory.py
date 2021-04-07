@@ -68,9 +68,10 @@ class XMLReader(Reader):
 
     def read(xml_data, list_of_source_keys):
         source_key_value = {}
+        namespaces = {"pm": "http://www.loc.gov/premis/v3"}
         root = ET.fromstring(xml_data)
         for source_key in list_of_source_keys:
-            elements = root.findall("." + source_key)
+            elements = root.findall("." + source_key, namespaces)
             if len(elements) > 1:
                 source_key_value[source_key] = []
                 for element in elements:

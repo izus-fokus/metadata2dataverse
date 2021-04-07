@@ -60,7 +60,6 @@ def create_app(test_config=None):
         for key in source_keys_to_delete:
             source_key_values.pop(key, None)
         
-        print(source_key_values)    
         for k,v in source_key_values.items():  
             translator = mapping.get_translator(k)
             if translator == None:
@@ -93,6 +92,21 @@ def create_app(test_config=None):
             
         return target_key_values
     
+    def get_p_field(type_class, k, v, multiple, field):
+        # Primitive
+        if type_class == "primitive":
+            p_field = get_primitive_field(k,v,multiple)
+        # Controlled Vocabulary
+        if type_class == "controlled_vocabulary":
+            if v == "":        # special case for getEmptyDataverseJson
+                p_field = get_vocabulary_field(k, v, multiple)
+            v_checked = field.check_controlled_vocabulary(v)
+            if len(v_checked) > 0:
+                p_field = get_vocabulary_field(k, v_checked, multiple)                
+            else: 
+                g.warnings.append("Use controlled vocabulary for " + k + ": " + str(field.controlled_vocabulary))
+        return p_field
+    
     def get_primitive_field(k,v,multiple):        
         if multiple == True:
             if isinstance(v,list):
@@ -105,10 +119,15 @@ def create_app(test_config=None):
         if multiple == False:            
             if isinstance(v, list):
                 v_new = ""
+                counter = 0
                 for value in v:
                     if value != 'none' and value != None:
-                        v_new += value + ", "
-                v = v_new[:-2]
+                        counter += 1
+                        if counter == 1:
+                            v_new += value
+                        else:
+                            g.warnings.append(k + " has only one allowed value. We deleted value number " + str(counter) + ": " + value)
+                v = v_new
             p_field = PrimitiveField(k,v)
         return p_field
     
@@ -140,21 +159,7 @@ def create_app(test_config=None):
             mb_id = field.metadata_block
             if mb_id not in mb_dict:
                 mb = MetadataBlock(mb_id, DV_MB[mb_id]) 
-                mb_dict[mb_id] = mb            
-            # PrimitiveFields
-            if type_class == "primitive":
-                p_field = get_primitive_field(k, v, multiple)
-            # Controlled Vocabulary
-            if type_class == "controlled_vocabulary":
-                if v == "":        # special case for getEmptyDataverseJson
-                    p_field = get_vocabulary_field(k, v, multiple)
-                    continue
-                v_checked = field.check_controlled_vocabulary(v)
-                if len(v_checked) > 0:
-                    p_field = get_vocabulary_field(k, v_checked, multiple)                
-                else: 
-                    g.warnings.append("Use controlled vocabulary for " + k + ": " + str(field.controlled_vocabulary))
-                    continue
+                mb_dict[mb_id] = mb                        
             # has parent
             if parent != None:
                 c_field = get_compound_field(parent, k, v, multiple)
@@ -168,10 +173,12 @@ def create_app(test_config=None):
                         primitives_dict[k].append(PrimitiveField(k,v))        
                 # CompoundField
                 if isinstance(c_field, CompoundField):
-                    primitives_dict[k] = p_field
+                    # PrimitiveFields                    
+                    primitives_dict[k] = get_p_field(type_class,k,v,multiple,field)
                 parents_dict[parent] = c_field
             # has no parent    
             if parent == None:
+                p_field = get_p_field(type_class,k,v,multiple,field)
                 mb_dict[mb_id].add_field(p_field) 
                 json_result.add_field(p_field)
                 
@@ -254,9 +261,7 @@ def create_app(test_config=None):
         
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, list_of_source_keys) 
-        print(source_key_values)
         target_key_values = translate_source_keys(source_key_values, mapping)
-        print(target_key_values)    
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
         result = build_json(target_key_values, method)  
         if method == 'edit':
