@@ -1,7 +1,8 @@
 from abc import abstractstaticmethod, ABCMeta
 from flask import g
 from api.globals import MAPPINGS     # global variables
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
+from builtins import isinstance
 
 
 class ReaderFactory(object):
@@ -35,7 +36,9 @@ class TextReader(Reader):
     # gets input and scheme. 
     # reads input line by line and checks if source_key is in translators_dict of scheme.  
     # returns source_key_value dictionary with source_key as key and values as value (can be a list or a single string)   
-    def read(text_data, list_of_source_keys):
+    def read(text_data, mapping):
+        # get all source keys of scheme
+        list_of_source_keys = mapping.get_source_keys()
         source_key_value = {}
         for line in text_data.splitlines():            
             line = line.decode("utf-8")
@@ -66,20 +69,33 @@ class XMLReader(Reader):
     def __repr__(self):
         pass
 
-    def read(xml_data, list_of_source_keys):
-        source_key_value = {}
-        namespaces = {"pm": "http://www.loc.gov/premis/v3"}
+    def read(xml_data, mapping):
+        # get all source keys of scheme
+        list_of_source_keys = mapping.get_source_keys()
+        # get namespaces
+        namespaces = mapping.namespaces
+        print(namespaces)
+        
         root = ET.fromstring(xml_data)
+        print("root: ", root)
+        
+        source_key_value = {}
         for source_key in list_of_source_keys:
-            elements = root.findall("." + source_key, namespaces)
-            if len(elements) > 1:
+            print("source_key: ", source_key)           
+            elements = root.xpath("." + source_key, namespaces=namespaces)      
+            print("elements: ", elements)     
+            if len(elements) > 1:               # multiple values
                 source_key_value[source_key] = []
                 for element in elements:
                     if element.text != None:
+                        print("element.text: ", element.text)
                         source_key_value[source_key].append(element.text)
-            elif len(elements) == 1:
-                if elements[0].text != None:
-                    source_key_value[source_key] = [elements[0].text]
+            elif len(elements) == 1:            # single values or attribute value
+                if isinstance(elements[0], str):    #attribute
+                    source_key_value[source_key] = [elements[0]]
+                else:
+                    if elements[0].text != None:
+                        source_key_value[source_key] = [elements[0].text]
         return source_key_value
 
 

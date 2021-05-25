@@ -36,6 +36,7 @@ def create_app(test_config=None):
     
     def translate_source_keys(source_key_values, mapping):
         target_key_values = {}   
+        
         # check if rules can be applied to source_keys
         source_keys_to_delete = []       
         for k,v in source_key_values.items():     
@@ -56,6 +57,7 @@ def create_app(test_config=None):
                                         target_key_values[target_key] = [value_new,priority]
                                 else:
                                     target_key_values[target_key] = [value_new,priority]
+                                    
         # delete used source_keys                        
         for key in source_keys_to_delete:
             source_key_values.pop(key, None)
@@ -252,15 +254,13 @@ def create_app(test_config=None):
         # get mapping for requested scheme        
         mapping = get_mapping(scheme)
         
-        # get all source keys of scheme
-        list_of_source_keys = mapping.get_source_keys()
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
         if reader is None:
             abort(404, '''Content-Type {} not found. Check GET /mapping for available schemes.'''.format(request.content_type))
         
         # translate key-value-pairs in input to target scheme
-        source_key_values = reader.read(request.data, list_of_source_keys) 
+        source_key_values = reader.read(request.data, mapping) 
         target_key_values = translate_source_keys(source_key_values, mapping)
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
         result = build_json(target_key_values, method)  

@@ -5,6 +5,7 @@ from models.Config import Config
 from models.Field import Field
 from models.TranslatorFactory import TranslatorFactory
 from models.Translator import Translator
+from builtins import isinstance
 TranslatorFactory = TranslatorFactory()
 from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS      #global variables
 
@@ -43,6 +44,7 @@ def read_config(data):
     mapping = yaml_file["mapping"]
     rules = yaml_file["rules"]
     
+    
     # Return rules dictionary for trigger source keys (key) and associated translators (value).        
     # rules_dict = TranslatorFactory.create_rules(rules)  
     
@@ -52,10 +54,20 @@ def read_config(data):
     for translator_yaml in mapping:
         config.add_translator(translator_yaml)
     
-    # Create dict of Rules out of the mapping
+    # Create dict of Rules
     for rule_yaml in rules:
-        config.add_rules(rule_yaml)       
+        config.add_rules(rule_yaml)      
         
+    # Create dict of namespaces
+    if "namespaces" in yaml_file: 
+        namespaces = yaml_file["namespaces"]
+   
+        if isinstance(namespaces,list):     # more than one namespace
+            for namespace in namespaces:
+                config.add_namespace(namespace)
+        else:
+            config.add_namespace(namespaces) # one namespace
+    
     # Return config Object for MAPPINGS dictionary           
     return config               
    

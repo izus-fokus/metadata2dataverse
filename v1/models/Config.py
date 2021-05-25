@@ -14,6 +14,7 @@ class Config(object):
         self.target_keys = []
         self.addition_translators_dict = {}
         self.source_keys = []
+        self.namespaces = {}
 
     def __repr__(self):
         return("scheme: " + self.scheme + ", description: " + self.description + ", format: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict))
@@ -65,3 +66,18 @@ class Config(object):
             t[trigger_value] = translators            # fill inner dictionary with trigger_value and list_of_translators
             
             self.rules_dict[trigger] = t
+            
+    def add_namespace(self, name_space_string):
+        # transform string to dict
+        namespace_split = name_space_string.split(":", 1)
+        self.namespaces[namespace_split[0]]=namespace_split[1]
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
