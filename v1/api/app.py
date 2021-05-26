@@ -98,17 +98,20 @@ def create_app(test_config=None):
         # Primitive
         if type_class == "primitive":
             p_field = get_primitive_field(k,v,multiple)
+            return p_field
         # Controlled Vocabulary
         if type_class == "controlled_vocabulary":
             if v == "":        # special case for getEmptyDataverseJson
                 p_field = get_vocabulary_field(k, v, multiple)
+                return p_field
             v_checked = field.check_controlled_vocabulary(v)
-            if len(v_checked) > 0:
-                p_field = get_vocabulary_field(k, v_checked, multiple)                
-            else: 
-                g.warnings.append("Use controlled vocabulary for " + k + ": " + str(field.controlled_vocabulary))
-        return p_field
-    
+            if len(v_checked) > 0:  # v did no match controlled vocab
+                p_field = get_vocabulary_field(k, v_checked, multiple)   
+                return p_field             
+            else:                   # v did no match controlled vocab
+                p_field = get_vocabulary_field(k, 'none', multiple)   
+                return p_field   
+            
     def get_primitive_field(k,v,multiple):        
         if multiple == True:
             if isinstance(v,list):
@@ -153,7 +156,7 @@ def create_app(test_config=None):
         for k, v in target_key_values.items():    
             field = DV_FIELD.get(k)
             if field is None:
-                g.warnings.append("Field {} not in Dataverse-Konfiguration".format(k))
+                g.warnings.append("Field {} not in Dataverse-configuration. Check your YAML file.".format(k))
                 continue
             parent = field.parent
             type_class = field.type_class
@@ -170,9 +173,13 @@ def create_app(test_config=None):
                     primitives_dict[k] = []
                     if isinstance(v, list):
                         for value in v:          
-                            primitives_dict[k].append(PrimitiveField(k,value)) 
+                            p_field = get_p_field(type_class,k,value,multiple,field)       
+                            if p_field != None:            
+                                primitives_dict[k].append(p_field) 
                     else:
-                        primitives_dict[k].append(PrimitiveField(k,v))        
+                        p_field = get_p_field(type_class,k,v,multiple,field)                        
+                        if p_field != None:            
+                            primitives_dict[k].append(p_field)   
                 # CompoundField
                 if isinstance(c_field, CompoundField):
                     # PrimitiveFields                    
@@ -183,7 +190,7 @@ def create_app(test_config=None):
                 p_field = get_p_field(type_class,k,v,multiple,field)
                 mb_dict[mb_id].add_field(p_field) 
                 json_result.add_field(p_field)
-                
+        
         # build compound fields        
         for parent, c_field_outer in parents_dict.items(): 
             children = DV_CHILDREN.get(parent)             
@@ -260,8 +267,9 @@ def create_app(test_config=None):
             abort(404, '''Content-Type {} not found. Check GET /mapping for available schemes.'''.format(request.content_type))
         
         # translate key-value-pairs in input to target scheme
-        source_key_values = reader.read(request.data, mapping) 
+        source_key_values = reader.read(request.data, mapping)
         target_key_values = translate_source_keys(source_key_values, mapping)
+        
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
         result = build_json(target_key_values, method)  
         if method == 'edit':
@@ -273,7 +281,7 @@ def create_app(test_config=None):
         if len(g.warnings) > 0:
             if verbose:
                 response = verbosize(response)
-            return response, 202
+            return jsonify(response), 202
 
         else:
             return jsonify(response), 200

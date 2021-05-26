@@ -75,6 +75,7 @@ class MultiplePrimitiveField(Field):
             self.value = []
         self.value.append(value)
         
+        
 class MultipleVocabularyField(Field):
     def __init__(self, typeName, value=None):
         if value is None:

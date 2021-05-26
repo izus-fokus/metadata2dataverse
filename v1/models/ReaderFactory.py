@@ -74,21 +74,20 @@ class XMLReader(Reader):
         list_of_source_keys = mapping.get_source_keys()
         # get namespaces
         namespaces = mapping.namespaces
-        print(namespaces)
         
         root = ET.fromstring(xml_data)
-        print("root: ", root)
         
         source_key_value = {}
         for source_key in list_of_source_keys:
-            print("source_key: ", source_key)           
-            elements = root.xpath("." + source_key, namespaces=namespaces)      
-            print("elements: ", elements)     
+            try:
+                elements = root.xpath("." + source_key, namespaces=namespaces)      
+            except:
+                g.warnings.append(source_key + " not a valid X-Path. Please check your YAML File.")
+                continue
             if len(elements) > 1:               # multiple values
                 source_key_value[source_key] = []
                 for element in elements:
                     if element.text != None:
-                        print("element.text: ", element.text)
                         source_key_value[source_key].append(element.text)
             elif len(elements) == 1:            # single values or attribute value
                 if isinstance(elements[0], str):    #attribute

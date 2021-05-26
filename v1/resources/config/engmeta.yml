@@ -2,7 +2,7 @@ description: parses XML-Files coded in EngMeta up to version 0/2
 
 format: text/xml
 scheme: engmeta
-namespaces: "pm:http://www.loc.gov/premis/v3"
+namespaces: [ex=urn:exptml:schema:draft:0.5, pm=http://www.loc.gov/premis/v3]
 
 
 mapping:
@@ -176,9 +176,11 @@ mapping:
 
 # accessToSources
 
-- target_key: //worked
+- source_key: //worked
+  target_key: worked
 
-- target_key: //workedNote
+- source_key: //workedNote
+  target_key: workedNote
 
 # storage
 #- source_key: [//storage/contentLocation/value, //storage/contentLocation/link]
@@ -315,10 +317,10 @@ mapping:
   target_key: engMetaGitterScalingFormular
 - source_key: //system/grid/distance
   target_key: engMetaGitterDistance
-- source_key: [//system/grid/point/positionX, //system/grid/point/positionY, //system/grid/point/positionZ]
-  target_key: engMetaGitterPoints
-  type: merge
-  join_symbol: "; "
+#- source_key: [//system/grid/point/positionX, //system/grid/point/positionY, //system/grid/point/positionZ]
+#  target_key: engMetaGitterPoints
+#  type: merge
+#  join_symbol: "; "
 - source_key: //system/grid/unit
   target_key: engMetaGitterUnit
 

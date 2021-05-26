@@ -67,10 +67,11 @@ class Config(object):
             
             self.rules_dict[trigger] = t
             
-    def add_namespace(self, name_space_string):
+    def add_namespace(self, name_space):
         # transform string to dict
-        namespace_split = name_space_string.split(":", 1)
+        namespace_split = name_space.split("=", 1)
         self.namespaces[namespace_split[0]]=namespace_split[1]
+        print(self.namespaces)
         
         
         
