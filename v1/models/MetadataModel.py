@@ -80,7 +80,7 @@ class MultipleVocabularyField(Field):
     def __init__(self, typeName, value=None):
         if value is None:
             value = []
-        super().__init__(typeName, value, True, 'controlled_vocabulary')
+        super().__init__(typeName, value, True, 'controlledVocabulary')
 
     def add_value(self, value):
         if not isinstance(self.value, list):
@@ -96,7 +96,7 @@ class VocabularyField(Field):
     def __init__(self, typeName, value=None):
         if value is None:
             value = ''
-        super().__init__(typeName, value, False, 'controlled_vocabulary')
+        super().__init__(typeName, value, False, 'controlledVocabulary')
 
     def add_value(self, value):
         self.value = value
@@ -178,14 +178,14 @@ class MultiplePrimitiveFieldScheme(Schema):
 class VocabularyFieldScheme(Schema):
     typeName = fields.Str(required=True)
     multiple = fields.Boolean(validate=Equal(False))
-    typeClass = fields.Str(validate=Equal('controlled_vocabulary'))
+    typeClass = fields.Str(validate=Equal('controlledVocabulary'))
     value = fields.Str()
 
 
 class MultipleVocabularyFieldScheme(Schema):
     typeName = fields.Str(required=True)
     multiple = fields.Boolean(validate=Equal(True))
-    typeClass = fields.Str(validate=Equal('controlled_vocabulary'))
+    typeClass = fields.Str(validate=Equal('controlledVocabulary'))
     value = fields.List(fields.Str())
 
 

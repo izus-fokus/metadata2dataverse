@@ -163,7 +163,7 @@ def create_app(test_config=None):
             multiple = field.multiple
             mb_id = field.metadata_block
             if mb_id not in mb_dict:
-                mb = MetadataBlock(mb_id, DV_MB[mb_id]) 
+                mb = MetadataBlock(mb_id, DV_MB[mb_id])
                 mb_dict[mb_id] = mb                        
             # has parent
             if parent != None:
@@ -222,8 +222,8 @@ def create_app(test_config=None):
         
         if method == 'update':            
             dataset = Dataset()
-            for mb, block in mb_dict.items():
-                dataset.add_block(block)                
+            for mb_id, block in mb_dict.items():
+                dataset.add_block(block)        
             return dataset
             
         if method == 'edit':
