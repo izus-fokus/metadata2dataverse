@@ -150,12 +150,13 @@ class CreateDataset():
 class Dataset():
     def __init__(self, blocks=None):
         if blocks is None:
-            blocks = []
+            blocks = {}
         self.metadataBlocks = blocks
 
-    def add_block(self, block):
+    def add_block(self, mb_id, block):
         if isinstance(block, MetadataBlock):
-            self.metadataBlocks.append(block)
+            self.metadataBlocks[mb_id] = block
+            print(self.metadataBlocks)
 
     def __repr__(self):
         return "blocks: " + str(self.metadataBlocks)
@@ -281,7 +282,7 @@ class MetadataBlockSchema(Schema):
 
 
 class DatasetSchema(Schema):
-    metadataBlocks = fields.List(fields.Nested(MetadataBlockSchema))
+    metadataBlocks = fields.Dict(keys=fields.Str(), values=fields.Nested(MetadataBlockSchema))
 
 
 class CreateDatasetSchema(Schema):

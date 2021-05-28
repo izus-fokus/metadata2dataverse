@@ -223,7 +223,7 @@ def create_app(test_config=None):
         if method == 'update':            
             dataset = Dataset()
             for mb_id, block in mb_dict.items():
-                dataset.add_block(block)        
+                dataset.add_block(mb_id, block)     
             return dataset
             
         if method == 'edit':
