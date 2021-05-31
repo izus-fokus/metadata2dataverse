@@ -156,7 +156,6 @@ class Dataset():
     def add_block(self, mb_id, block):
         if isinstance(block, MetadataBlock):
             self.metadataBlocks[mb_id] = block
-            print(self.metadataBlocks)
 
     def __repr__(self):
         return "blocks: " + str(self.metadataBlocks)

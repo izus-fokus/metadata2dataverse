@@ -62,8 +62,8 @@ mapping:
   target_key: keywordVocabularyURI
 
 # topicClassification
-#- source_key: //subjects/subject
-#  target_key: topicClassValue
+- source_key: //subjects/subject
+  target_key: topicClassValue
 - source_key: //subjects/subject/subjectScheme
   target_key: topicClassVocab
 - source_key: //subjects/subject/schemeURI

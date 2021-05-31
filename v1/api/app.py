@@ -35,8 +35,9 @@ def create_app(test_config=None):
         return mapping
     
     def translate_source_keys(source_key_values, mapping):
+        print(source_key_values)
         target_key_values = {}   
-        
+        print(mapping)
         # check if rules can be applied to source_keys
         source_keys_to_delete = []       
         for k,v in source_key_values.items():     
@@ -231,8 +232,8 @@ def create_app(test_config=None):
         
         if method == 'create':
             dataset = Dataset()
-            for mb, block in mb_dict.items():
-                dataset.add_block(block)    
+            for mb_id, block in mb_dict.items():
+                dataset.add_block(mb_id,block)    
             create_dataset = CreateDataset(dataset)
             return create_dataset
                
