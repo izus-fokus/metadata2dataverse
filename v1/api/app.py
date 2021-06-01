@@ -258,7 +258,8 @@ def create_app(test_config=None):
                                   default=False)
         
         g.warnings=[]
-        
+        print(scheme)
+        print(MAPPINGS)
         # get mapping for requested scheme        
         mapping = get_mapping(scheme)
         
@@ -293,6 +294,9 @@ def create_app(test_config=None):
         method = request.args.get('method',
                                   type=str,
                                   default='update')
+        verbose = request.args.get('verbose',
+                                  type=bool,
+                                  default='False')
         g.warnings = []
         # get all target keys from scheme
         mapping = get_mapping(scheme)

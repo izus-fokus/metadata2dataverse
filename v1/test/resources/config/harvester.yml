@@ -1,11 +1,13 @@
 description: menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstützt)
 
-format: text/plain
-scheme: Harvester
+format: plain/txt
+scheme: harvester
 
 mapping:
 
 - target_key: title
+
+- target_key: title.titleType
 
 - target_key: keywordValue
   source_key: keyword.value
@@ -40,6 +42,8 @@ mapping:
   target_key: datasetContactAffiliation
 - source_key: contact.email
   target_key: datasetContactEmail
+- source_key: contact.role
+  target_key: contactRole
 
 # dsDescription
 - source_key: [description.descriptionType, description]
@@ -133,10 +137,8 @@ mapping:
 #T: timePeriodCoveredEnd
 
 # dateOfCollection
+#T: dates.date, dateOfCollectionStart
 #T: dateOfCollectionEnd
-- source_key: dates.date
-  target_key: dateOfCollectionStart
-
 
 - source_key: resourceType
   target_key: kindOfData
@@ -445,7 +447,7 @@ rules:
   type: rule
   priority: 1
   trigger_values: [Producer, Distributor]
-  Producer: [{source_key: contact.name, target_key: producerName}, {source_key: contact.affiliation.name, target_key: producerAffiliation},{source_key: contact.affiliation.id, target_key: producerAbbreviation}]
+  Producer: [{source_key: contact.name, target_key: producerName}, {source_key: contact.affiliation.name, target_key: producerAffiliation}, {source_key: contact.affiliation.id, target_key: producerAbbreviation}]
   Distributor: [{source_key: contact.name, target_key: distributorName}, {source_key: contact.affiliation.name, target_key: distributorAffiliation}, {source_key: contact.affiliation.id, target_key: distributorAbbreviation}]
 
 - trigger: title.titleType

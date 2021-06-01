@@ -2,6 +2,7 @@ import unittest
 import sys
 sys.path.append('..')
 import requests
+from lxml import etree as ET
 import json
 
 from api.app import create_app
@@ -15,15 +16,15 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.client = self.app.test_client()
         self.headers = {'X-Dataverse-key': '0f72c986-defc-486b-afe7-d4524d7d3c17'}
         
-    def test_post_engmeta_data(self):
+    def test_post_engmeta_data(self):        
         with open(r'./input/EngMeta_example_v0.2.xml', 'rb') as f:
-            file_content = f.open()
-        response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
+            file_content = f.read()
+        response = self.client.post('/metadata/engmeta?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
         self.assertEqual(response.status_code, 200)  
+        print(response.json)
         x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
         
-
     def test_post_harvester_data(self):
         # testen der priorities        
         with open(r'./input/priority_test.txt', 'rb') as f:
@@ -78,7 +79,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200) 
-        self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021-05-31'}]})
+        self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021-06-01'}]})
         x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
         
@@ -99,7 +100,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 202) 
-        self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021-05-31'}]})
+        self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021-06-01'}]})
         x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
                 
@@ -108,7 +109,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 202) 
-        self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test title 1'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021-05-31'}]})
+        self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test title 1'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021-06-01'}]})
         x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
         
@@ -159,3 +160,6 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         #response = self.client.get('/mapping')
         #self.assertEqual(response.status_code, 200)
         
+        
+
+    

@@ -76,11 +76,11 @@ class XMLReader(Reader):
         namespaces = mapping.namespaces
         
         root = ET.fromstring(xml_data)
-        
         source_key_value = {}
         for source_key in list_of_source_keys:
             try:
                 elements = root.xpath("." + source_key, namespaces=namespaces)      
+                print(elements)
             except:
                 g.warnings.append(source_key + " not a valid X-Path. Please check your YAML File.")
                 continue
