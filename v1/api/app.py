@@ -22,8 +22,7 @@ def create_app(test_config=None):
     def verbosize(response):
         return {'success': True,
                 'warnings': g.warnings,
-                'response': response
-                }
+                'response': response}
 
     def gen_message(warnings):
         return '. '.join(warnings)
@@ -296,7 +295,8 @@ def create_app(test_config=None):
                                   default='update')
         verbose = request.args.get('verbose',
                                   type=bool,
-                                  default='False')
+                                  default=False)
+        
         g.warnings = []
         # get all target keys from scheme
         mapping = get_mapping(scheme)
@@ -314,8 +314,8 @@ def create_app(test_config=None):
             response = CreateDatasetSchema().dump(result)  
             
         if len(g.warnings) > 0:
-            if verbose:
-                verbosize(response,g.warnings)
+            if verbose == True:
+                response = verbosize(response)
             return jsonify(response), 202
 
         else:

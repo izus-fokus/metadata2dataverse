@@ -150,10 +150,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
                 
         
         
-    def test_empty_metadata(self):
-        pass
-        #response = self.client.get('/metadata/harvester')
-        #self.assertEqual(response.status_code, 200)
+    
 
     def test_get_mappings(self):
         pass

@@ -7,7 +7,6 @@ mapping:
 
 - target_key: title
 
-- target_key: title.titleType
 
 - target_key: keywordValue
   source_key: keyword.value
