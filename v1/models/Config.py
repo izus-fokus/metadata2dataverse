@@ -78,11 +78,3 @@ class Config(object):
         self.namespaces[namespace_split[0]]=namespace_split[1]
         
         
-        
-        
-        
-        
-        
-        
-        
-        

@@ -16,10 +16,7 @@ def read_all_config_files():
         for file in files:
             path = os.path.join(subdir, file)
             open_yaml_file = open(path)            
-            config = read_config(open_yaml_file)    
-            scheme = file.split(".")[0]    
-            # fill global dictionary of mappings
-            MAPPINGS[scheme] = config
+            config = read_config(open_yaml_file)   
             open_yaml_file.close()
 
 # Read schema tsv files (metadatablocks nesting)      
@@ -37,6 +34,7 @@ def read_all_tsv_files():
 
 def read_config(data):
     yaml_file = yaml.safe_load(data) 
+    
     # Extracting dictionaries out of yaml-file    
     scheme = yaml_file["scheme"]   
     description = yaml_file["description"]
@@ -68,8 +66,10 @@ def read_config(data):
         else:
             config.add_namespace(namespaces) # one namespace
     
-    # Return config Object for MAPPINGS dictionary           
-    return config               
+    
+    # fill global dictionary of mappings
+    MAPPINGS[scheme] = config
+    return config
    
 
 def read_tsv(data):

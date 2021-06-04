@@ -1,6 +1,6 @@
 from flask import Flask, request, abort, jsonify, send_file, g
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
-from api.resources import read_all_config_files, read_all_tsv_files
+from api.resources import read_all_config_files, read_all_tsv_files, read_config
 from models.ReaderFactory import ReaderFactory
 from models.Translator import MergeTranslator, AdditionTranslator
 from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
@@ -329,7 +329,9 @@ def create_app(test_config=None):
 
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():         
-    
+        new_mapping = request.data
+        config = read_config(new_mapping)   
+        print(MAPPINGS)
         # read input stream and parse information in JSON Object
         # 
         # check for required fields
@@ -352,10 +354,10 @@ def create_app(test_config=None):
         # hier factory erzeugen?
         #    if len(errors) > 0:
         #        abort(422, 'Unprocessable entity - validation failed. {}'.format(gen_message(errors)))
-        #response = {'success': True,
-        #            'created': m.name}
+        response = {'success': True,
+                    'created': config.scheme}
         
-        return jsonify(response), 201, {'Location': '/mapping/{}'.format(m.name)}
+        return jsonify(response), 201, {'Location': '/mapping/{}'.format(config.scheme)}
 
 
     @app.route('/mapping/<string:scheme>', methods=["GET"])
