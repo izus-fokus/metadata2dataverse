@@ -383,14 +383,13 @@ def create_app(test_config=None):
     @app.route('/mapping/<string:scheme>', methods=["DELETE"])
     def deleteSchemeMapping(scheme):
         try:
-            del MAPPINGS[scheme]
-        
+            del MAPPINGS[scheme]        
         except:
             abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
 
         response = {'success': True,
                     'deleted': scheme}
         
-        return jsonify(response)
+        return jsonify(response), 204
 
     return app

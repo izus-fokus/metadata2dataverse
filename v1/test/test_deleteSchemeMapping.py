@@ -17,10 +17,10 @@ class TestEndpointGetEmpty(unittest.TestCase):
         
     def test_deleteSchemeMapping(self):
         response = self.client.delete('/mapping/harvester')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 204)
         
         response = self.client.delete('/mapping/engmeta')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 204)
         
         response = self.client.delete('/mapping/blubb')
         self.assertEqual(response.status_code, 404)
