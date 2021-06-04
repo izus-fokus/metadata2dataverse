@@ -13,6 +13,10 @@ mapping:
 #T: otherIdAgency
 #T: otherIdValue
 
+
+- source_key: //seriesName
+  target_key: seriesName
+
 # author
 - source_key: [//creator/givenName, //creator/familyName]
   target_key: authorName

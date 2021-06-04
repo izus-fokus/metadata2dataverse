@@ -29,14 +29,11 @@ def create_app(test_config=None):
 
     def get_mapping(scheme):
         mapping = MAPPINGS.get(scheme)
-        if mapping is None:
-            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
+        
         return mapping
     
-    def translate_source_keys(source_key_values, mapping):
-        print(source_key_values)
+    def translate_source_keys(source_key_values, mapping):        
         target_key_values = {}   
-        print(mapping)
         # check if rules can be applied to source_keys
         source_keys_to_delete = []       
         for k,v in source_key_values.items():     
@@ -257,11 +254,10 @@ def create_app(test_config=None):
                                   default=False)
         
         g.warnings=[]
-        print(scheme)
-        print(MAPPINGS)
         # get mapping for requested scheme        
         mapping = get_mapping(scheme)
-        
+        if mapping is None:
+            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
         if reader is None:
@@ -300,6 +296,8 @@ def create_app(test_config=None):
         g.warnings = []
         # get all target keys from scheme
         mapping = get_mapping(scheme)
+        if mapping is None:
+            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
         target_keys = mapping.get_target_keys()        
         
         # build empty target key dictionary
@@ -324,12 +322,10 @@ def create_app(test_config=None):
 
     @app.route('/mapping', methods=["GET"])
     def SchemasMappingInfo():
-        # get all available mappings
-        # mappings = Mapping.query.all()
         if(len(MAPPINGS) == 0):
             abort(404, 'No mappings available')
-        return jsonify({'success': True,
-                        'schemes': [MAPPINGS[m].dump() for m in MAPPINGS]})
+        return jsonify([MAPPINGS[m].dump() for m in MAPPINGS])
+
 
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():         
@@ -364,19 +360,23 @@ def create_app(test_config=None):
 
     @app.route('/mapping/<string:scheme>', methods=["GET"])
     def getSchemeMapping(scheme):
-        format = request.args.get('format', default=None)
-        # mapping = get_mappings(scheme, format)
+        #format = request.args.get('format', default=None)
+        mapping = get_mapping(scheme)
+        if mapping is None:
+            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
+        
+        return mapping.pretty_yaml()
         # if len(mappings) > 0:
         # abort(400, "Scheme'{}' exists in different formats. Check resource `/mapping` for available schemes/formats and specify format in your request.".format(scheme)) 
-        if mapping is None:
-            abort(404, "Did not find mapping schema '{}'. Check resource `/mapping` for available schemes".format(scheme))
-
+        
         # get file
-        file = mapping.file
-        try:
-            send_file(file)
-        except:
-            abort(422)
+        #file = mapping.file
+        #try:
+        #    send_file(file)
+        #except:
+        #    abort(422)
+        
+        
 
     @app.route('/mapping/<string:scheme>', methods=["PUT"])
     def editSchemeMapping(scheme):

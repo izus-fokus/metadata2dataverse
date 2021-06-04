@@ -1,10 +1,11 @@
 from models.TranslatorFactory import TranslatorFactory
 from models.Translator import BaseTranslator, MergeTranslator, AdditionTranslator
+import pyaml
 
 class Config(object):
     ''' object after parsing a mapping file '''
 
-    def __init__(self, scheme, description, format):
+    def __init__(self, scheme, description, format, yaml_file):
         ''' Constructor '''
         self.scheme = scheme
         self.description = description
@@ -15,9 +16,13 @@ class Config(object):
         self.addition_translators_dict = {}
         self.source_keys = []
         self.namespaces = {}
+        self.yaml_file = yaml_file
 
     def __repr__(self):
         return("scheme: " + self.scheme + ", description: " + self.description + ", format: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict))
+       
+    def pretty_yaml(self):
+        return pyaml.dump(self.yaml_file)
     
     def get_translator(self, source_key):
         return self.translators_dict.get(source_key)
@@ -71,7 +76,6 @@ class Config(object):
         # transform string to dict
         namespace_split = name_space.split("=", 1)
         self.namespaces[namespace_split[0]]=namespace_split[1]
-        print(self.namespaces)
         
         
         

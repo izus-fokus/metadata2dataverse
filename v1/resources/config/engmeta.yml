@@ -62,8 +62,8 @@ mapping:
   target_key: keywordVocabularyURI
 
 # topicClassification
-- source_key: //subjects/subject
-  target_key: topicClassValue
+#- source_key: //subjects/subject
+#  target_key: topicClassValue
 - source_key: //subjects/subject/subjectScheme
   target_key: topicClassVocab
 - source_key: //subjects/subject/schemeURI
@@ -144,6 +144,9 @@ mapping:
 - source_key: //resourceType
   target_key: kindOfData
 
+- source_key: //seriesName
+  target_key: seriesName
+  
 # series
 #T: seriesName
 #T: seriesInformation

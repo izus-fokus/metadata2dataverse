@@ -147,15 +147,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertEqual(response.json['response'], {'fields': [{'type': 'MultipleVocabularyField', 'typeName': 'language', 'value': ['German', 'Danish']}]})
         x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json['response']), headers=self.headers)
         self.assertEqual(x.status_code, 200)
-                
-        
-        
-    
 
-    def test_get_mappings(self):
-        pass
-        #response = self.client.get('/mapping')
-        #self.assertEqual(response.status_code, 200)
         
         
 

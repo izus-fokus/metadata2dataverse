@@ -48,7 +48,7 @@ def read_config(data):
     # Return rules dictionary for trigger source keys (key) and associated translators (value).        
     # rules_dict = TranslatorFactory.create_rules(rules)  
     
-    config = Config(scheme, description, format) 
+    config = Config(scheme, description, format, yaml_file) 
                                           
     # Create dict of translators out of the mapping    
     for translator_yaml in mapping:

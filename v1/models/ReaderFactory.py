@@ -70,8 +70,10 @@ class XMLReader(Reader):
         pass
 
     def read(xml_data, mapping):
+        print(xml_data)
         # get all source keys of scheme
         list_of_source_keys = mapping.get_source_keys()
+        print(list_of_source_keys)
         # get namespaces
         namespaces = mapping.namespaces
         
@@ -79,8 +81,7 @@ class XMLReader(Reader):
         source_key_value = {}
         for source_key in list_of_source_keys:
             try:
-                elements = root.xpath("." + source_key, namespaces=namespaces)      
-                print(elements)
+                elements = root.xpath("." + source_key, namespaces=namespaces)   
             except:
                 g.warnings.append(source_key + " not a valid X-Path. Please check your YAML File.")
                 continue
