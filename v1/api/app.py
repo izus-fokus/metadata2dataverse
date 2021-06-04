@@ -360,21 +360,11 @@ def create_app(test_config=None):
 
     @app.route('/mapping/<string:scheme>', methods=["GET"])
     def getSchemeMapping(scheme):
-        #format = request.args.get('format', default=None)
         mapping = get_mapping(scheme)
         if mapping is None:
             abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
         
         return mapping.pretty_yaml()
-        # if len(mappings) > 0:
-        # abort(400, "Scheme'{}' exists in different formats. Check resource `/mapping` for available schemes/formats and specify format in your request.".format(scheme)) 
-        
-        # get file
-        #file = mapping.file
-        #try:
-        #    send_file(file)
-        #except:
-        #    abort(422)
         
         
 
@@ -392,14 +382,15 @@ def create_app(test_config=None):
     
     @app.route('/mapping/<string:scheme>', methods=["DELETE"])
     def deleteSchemeMapping(scheme):
-        format = request.args.get('format', default=None)
-        #check, if scheme is available, otherwise abort(404)
-        # check, if scheme is identified with format, otherwise abort (400)
-
+        try:
+            del MAPPINGS[scheme]
+        
+        except:
+            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
 
         response = {'success': True,
-                    'deleted': scheme,
-                    'format': format}
+                    'deleted': scheme}
+        
         return jsonify(response)
 
     return app
