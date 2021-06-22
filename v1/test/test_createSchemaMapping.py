@@ -13,7 +13,6 @@ class TestEndpointGetEmpty(unittest.TestCase):
         self.app = create_app()
         self.app.testing = True
         self.client = self.app.test_client()
-        self.headers = {'X-Dataverse-key': '0f72c986-defc-486b-afe7-d4524d7d3c17'}
         
     def test_createSchemeMapping(self):
         with open(r'./input/new_mapping.yaml', 'rb') as f:

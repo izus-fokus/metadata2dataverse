@@ -7,8 +7,6 @@ mapping:
 
 - target_key: title
 
-- target_key: title.titleType
-
 - target_key: keywordValue
   source_key: keyword.value
 
@@ -42,8 +40,8 @@ mapping:
   target_key: datasetContactAffiliation
 - source_key: contact.email
   target_key: datasetContactEmail
-- source_key: contact.role
-  target_key: contactRole
+#- source_key: contact.role
+#  target_key: contactRole
 
 # dsDescription
 - source_key: [description.descriptionType, description]

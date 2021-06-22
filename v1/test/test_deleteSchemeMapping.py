@@ -16,12 +16,15 @@ class TestEndpointGetEmpty(unittest.TestCase):
         self.headers = {'X-Dataverse-key': '0f72c986-defc-486b-afe7-d4524d7d3c17'}
         
     def test_deleteSchemeMapping(self):
-        response = self.client.delete('/mapping/harvester')
+        response = self.client.delete('/mapping/harvester?format=plain/txt')
         self.assertEqual(response.status_code, 204)
         
-        response = self.client.delete('/mapping/engmeta')
+        response = self.client.delete('/mapping/engmeta?format=text/xml')
         self.assertEqual(response.status_code, 204)
         
         response = self.client.delete('/mapping/blubb')
         self.assertEqual(response.status_code, 404)
+        
+        response = self.client.delete('/mapping/engmeta?format=blub')
+        self.assertEqual(response.status_code, 400)
         

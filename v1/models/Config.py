@@ -1,6 +1,8 @@
 from models.TranslatorFactory import TranslatorFactory
 from models.Translator import BaseTranslator, MergeTranslator, AdditionTranslator
 import pyaml
+from api.globals import DV_FIELD
+from flask import abort
 
 class Config(object):
     ''' object after parsing a mapping file '''
@@ -42,17 +44,21 @@ class Config(object):
         translator = TranslatorFactory.create_translator(translator_yaml) 
         source_key = translator.get_source_key()
         target_key = translator.get_target_key()
-        self.target_keys.append(target_key)
-        if isinstance(translator, AdditionTranslator):      # special case: addition translators
-            self.addition_translators_dict[source_key] = translator  
-        else:
-            if type(source_key) == list:    # special case: merge translators
-                for key in source_key:
-                    self.source_keys.append(key)
-                    self.translators_dict[key] = translator
+        if target_key in DV_FIELD:
+            self.target_keys.append(target_key)
+            if isinstance(translator, AdditionTranslator):      # special case: addition translators
+                self.addition_translators_dict[source_key] = translator  
             else:
-                self.translators_dict[source_key] = translator
-                self.source_keys.append(source_key)
+                if type(source_key) == list:    # special case: merge translators
+                    for key in source_key:
+                        self.source_keys.append(key)
+                        self.translators_dict[key] = translator
+                else:
+                    self.translators_dict[source_key] = translator
+                    self.source_keys.append(source_key)
+        else:
+            abort(422, '''Target key {} does not exist. Check dv-metadata-config for existing metadata keys.'''.format(target_key))
+                
         
     def add_rules(self, rule_yaml):
         # siehe Translator Factory

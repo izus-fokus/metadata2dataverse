@@ -6,6 +6,7 @@ from models.Field import Field
 from models.TranslatorFactory import TranslatorFactory
 from models.Translator import Translator
 from builtins import isinstance
+from flask import abort
 TranslatorFactory = TranslatorFactory()
 from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS      #global variables
 
@@ -34,18 +35,15 @@ def read_all_tsv_files():
 
 def read_config(data):
     yaml_file = yaml.safe_load(data) 
-    
     # Extracting dictionaries out of yaml-file    
     scheme = yaml_file["scheme"]   
     description = yaml_file["description"]
     format = yaml_file["format"]   
     mapping = yaml_file["mapping"]
     rules = yaml_file["rules"]
-    
-    
+        
     # Return rules dictionary for trigger source keys (key) and associated translators (value).        
     # rules_dict = TranslatorFactory.create_rules(rules)  
-    
     config = Config(scheme, description, format, yaml_file) 
                                           
     # Create dict of translators out of the mapping    
@@ -66,11 +64,22 @@ def read_config(data):
         else:
             config.add_namespace(namespaces) # one namespace
     
-    
-    # fill global dictionary of mappings
-    MAPPINGS[scheme] = config
-    return config
+    fill_MAPPINGS(config)    
+    return config    
    
+def fill_MAPPINGS(config):
+    print(MAPPINGS)
+    # fill global dictionary of mappings
+    scheme = config.scheme
+    if scheme in MAPPINGS:
+        # check if mapping-format already exists
+        for mapping in MAPPINGS[scheme]:
+            if mapping.format == config.format:
+                abort(409, '''Mapping scheme {} with format {} already exists. Use PUT to change it.'''.format(scheme,config.format))
+                break
+        MAPPINGS[scheme].append(config)
+    else: 
+        MAPPINGS[scheme] = [config]
 
 def read_tsv(data):
     tsv_file = csv.reader(data, delimiter="\t")

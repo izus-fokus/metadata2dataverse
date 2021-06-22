@@ -16,9 +16,9 @@ def create_app(test_config=None):
     # helper functions
     @app.before_first_request
     def init_globals():
-        read_all_config_files()
         read_all_tsv_files()
-
+        read_all_config_files()
+        
     def verbosize(response):
         return {'success': True,
                 'warnings': g.warnings,
@@ -26,11 +26,19 @@ def create_app(test_config=None):
 
     def gen_message(warnings):
         return '. '.join(warnings)
+    
 
-    def get_mapping(scheme):
-        mapping = MAPPINGS.get(scheme)
+    def get_mapping(scheme,format):
+        mappings = MAPPINGS.get(scheme)        
+        # scheme does not exist
+        if mappings is None:
+            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
+        for mapping in mappings:
+            if mapping.format == format:
+                return mapping
+        # format does not exist
+        abort(404, '''Format {} not found. Check GET /mapping for available schemes.'''.format(format))
         
-        return mapping
     
     def translate_source_keys(source_key_values, mapping):        
         target_key_values = {}   
@@ -255,9 +263,7 @@ def create_app(test_config=None):
         
         g.warnings=[]
         # get mapping for requested scheme        
-        mapping = get_mapping(scheme)
-        if mapping is None:
-            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
+        mapping = get_mapping(scheme,request.content_type)
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
         if reader is None:
@@ -295,7 +301,7 @@ def create_app(test_config=None):
         
         g.warnings = []
         # get all target keys from scheme
-        mapping = get_mapping(scheme)
+        mapping = MAPPINGS.get(scheme)[0]
         if mapping is None:
             abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
         target_keys = mapping.get_target_keys()        
@@ -324,51 +330,31 @@ def create_app(test_config=None):
     def SchemasMappingInfo():
         if(len(MAPPINGS) == 0):
             abort(404, 'No mappings available')
-        return jsonify([MAPPINGS[m].dump() for m in MAPPINGS])
+        list_of_mappings = []
+        for m in MAPPINGS:
+            for mapping in MAPPINGS[m]:
+                list_of_mappings.append(mapping.dump())        
+        return jsonify(list_of_mappings)
 
+
+    @app.route('/mapping/<string:scheme>', methods=["GET"])
+    def getSchemeMapping(scheme):
+        format = request.args.get('format', default=None)        
+        mapping = get_mapping(scheme,format)
+        response = {'success': True,
+                    'mapping': mapping.pretty_yaml()}
+        return jsonify(response), 200
+    
 
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():         
         new_mapping = request.data
         config = read_config(new_mapping)   
-        print(MAPPINGS)
-        # read input stream and parse information in JSON Object
-        # 
-        # check for required fields
-        # add mapping to DB
-        # check, if mapping already exists
-        # mapping = Mapping.query.filter(Mapping.name == m.name).first()
-        # mapping = None
-        # if mapping is not None:
-        #    abort(409, 'A mapping with the name "{}" already exists. Use PUT /mapping/{} to change it.'.format(m.name))        
-        #else:
-        #    errors = []
-        # mapping = Mapping(name='',description='',format='',reference='')
-        # go through mapping and add translators
-        # for m in mapping:
-        # mapping.add_translator(type=m.type, m)
-        # errors beim Parsen der Translators füllen
-
-        # existenz aller target_keys in metadaten-konfiguration prüfen
-        # sonst in in Errors schreiben
-        # hier factory erzeugen?
-        #    if len(errors) > 0:
-        #        abort(422, 'Unprocessable entity - validation failed. {}'.format(gen_message(errors)))
         response = {'success': True,
                     'created': config.scheme}
         
         return jsonify(response), 201, {'Location': '/mapping/{}'.format(config.scheme)}
 
-
-    @app.route('/mapping/<string:scheme>', methods=["GET"])
-    def getSchemeMapping(scheme):
-        mapping = get_mapping(scheme)
-        if mapping is None:
-            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
-        
-        return mapping.pretty_yaml()
-        
-        
 
     @app.route('/mapping/<string:scheme>', methods=["PUT"])
     def editSchemeMapping(scheme):
@@ -382,16 +368,29 @@ def create_app(test_config=None):
                     'updated': scheme}
         return jsonify(response), 204
     
+    
     @app.route('/mapping/<string:scheme>', methods=["DELETE"])
     def deleteSchemeMapping(scheme):
+        format = request.args.get('format', default=None)   
         try:
-            del MAPPINGS[scheme]        
+            mappings = MAPPINGS[scheme]                 
         except:
             abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
-
-        response = {'success': True,
-                    'deleted': scheme}
         
-        return jsonify(response), 204
+        for mapping in mappings:
+            if mapping.format == format:
+                mappings.remove(mapping)        
+                MAPPINGS[scheme] = mappings
+                response = {'success': True,
+                            'deleted': scheme}        
+                return jsonify(response), 204
+        
+        abort(400, '''Format {} not found. Check GET /mapping for available schemes.'''.format(format))
+        
+    @app.route('/dv-metadata-config', methods=["GET"])
+    def getMetadataBlocks():
+        
+        return jsonify(DV_MB)
+        
 
     return app
