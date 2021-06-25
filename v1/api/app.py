@@ -27,17 +27,43 @@ def create_app(test_config=None):
     def gen_message(warnings):
         return '. '.join(warnings)
     
-
+    # Format missing
+    # {"message": "Scheme'engMeta' exists in different formats. Check resource `/mapping` for available schemes/formats and specify format in your request."}
+    @app.errorhandler(400)
+    def format_missing(e):
+        return jsonify(message=str(e)), 400    
+    # scheme not found
+    # {"message": "Did not find mapping schema 'engMeta'. Check resource `/mapping` for available schemes."}
+    @app.errorhandler(404)
+    def resource_not_found(e):
+        return jsonify(message=str(e)), 404    
+    # Conflict - definition already exists
+    #{ "message": "Mapping scheme 'engMeta' with format 'text/plain' already exists. Use PUT to change it."}
+    @app.errorhandler(409)
+    def already_exists(e):
+        return jsonify(message=str(e)), 409        
+    # unsupported media type:
+    # {"message": "The request media type is not supported for 'engMeta'. Check resource `/mapping/engMeta` for available media types of this metadata scheme."}
+    @app.errorhandler(415)
+    def unsupported_type(e):
+        return jsonify(message=str(e)), 415
+    # unprocessable entity - validation failed.
+    #{"message": "Target key 'author' does not exist. Check dv-metadata-config for existing metadata keys."}
+    @app.errorhandler(422)
+    def unprocessable(e):
+        return jsonify(message=str(e)), 422
+    
+    
     def get_mapping(scheme,format):
         mappings = MAPPINGS.get(scheme)        
         # scheme does not exist
         if mappings is None:
-            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
+            abort(404, "Did not find mapping schema {}. Check resource `/mapping` for available schemes.".format(scheme))
         for mapping in mappings:
             if mapping.format == format:
                 return mapping
         # format does not exist
-        abort(404, '''Format {} not found. Check GET /mapping for available schemes.'''.format(format))
+        abort(400, description="Scheme {} exists in different formats. Check resource `/mapping` for available schemes/formats and specify format in your request.".format(scheme)) 
         
     
     def translate_source_keys(source_key_values, mapping):        
@@ -267,7 +293,7 @@ def create_app(test_config=None):
         # read input depending on content-type and get all key-value-pairs in input
         reader = ReaderFactory.create_reader(request.content_type)        
         if reader is None:
-            abort(404, '''Content-Type {} not found. Check GET /mapping for available schemes.'''.format(request.content_type))
+            abort(415, "The request media type is not supported for {}. Check resource `/mapping/{}` for available media types of this metadata scheme.".format(scheme))
         
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
@@ -300,15 +326,16 @@ def create_app(test_config=None):
                                   default=False)
         
         g.warnings = []
-        # get all target keys from scheme
-        mapping = MAPPINGS.get(scheme)[0]
-        if mapping is None:
-            abort(404, '''Scheme {} not found. Check GET /mapping for available schemes.'''.format(scheme))
-        target_keys = mapping.get_target_keys()        
         
+        # get all target keys from scheme
+        try:
+            mapping = MAPPINGS.get(scheme)[0]
+        except:
+            abort(404, "Did not find mapping schema {}. Check resource `/mapping` for available schemes.".format(scheme))
+        
+        target_keys = mapping.get_target_keys()                
         # build empty target key dictionary
         target_key_values = dict.fromkeys(target_keys, "")
-
         result = build_json(target_key_values, method)         
         if method == 'edit':
             response = EditScheme().dump(result)
@@ -328,8 +355,6 @@ def create_app(test_config=None):
 
     @app.route('/mapping', methods=["GET"])
     def SchemasMappingInfo():
-        if(len(MAPPINGS) == 0):
-            abort(404, 'No mappings available')
         list_of_mappings = []
         for m in MAPPINGS:
             for mapping in MAPPINGS[m]:
@@ -343,7 +368,7 @@ def create_app(test_config=None):
         mapping = get_mapping(scheme,format)
         response = {'success': True,
                     'mapping': mapping.pretty_yaml()}
-        return jsonify(response), 200
+        return mapping.pretty_yaml()
     
 
     @app.route('/mapping', methods=["POST"])
@@ -351,23 +376,32 @@ def create_app(test_config=None):
         new_mapping = request.data
         config = read_config(new_mapping)   
         response = {'success': True,
-                    'created': config.scheme}
+                    'created': config.scheme,
+                    'location': '/mapping/{}'.format(config.scheme)}
         
-        return jsonify(response), 201, {'Location': '/mapping/{}'.format(config.scheme)}
+        return jsonify(response), 201
 
 
     @app.route('/mapping/<string:scheme>', methods=["PUT"])
     def editSchemeMapping(scheme):
         format = request.args.get('format', default=None)
-        # check, if mapping exists, otherwise abort(404)
-        # check, if mapping has more than one format and a format is specified, otherwise abort(400)
-        # parse input-file and validate, otherwise abort(422)
-        # update mapping
-        # replace file in resources 
-        response = {'success': True,
+        if format == None:
+            abort(400, "Scheme {} exists in different formats. Check resource `/mapping` for available schemes/formats and specify format in your request.".format(scheme))
+        try:
+            mappings = MAPPINGS[scheme]                 
+        except:
+            abort(404, "Did not find mapping schema {}. Check resource `/mapping` for available schemes.".format(scheme))
+        for mapping in mappings:
+            if mapping.format == format:
+                mappings.remove(mapping)        
+                MAPPINGS[scheme] = mappings
+                new_mapping = request.data
+                config = read_config(new_mapping) 
+                response = {'success': True,
                     'updated': scheme}
-        return jsonify(response), 204
-    
+                return jsonify(response), 204
+        abort(400, "Format {} for Scheme {} does not exist yet. You should use POST to create a new mapping for this format.".format(format,scheme))
+        
     
     @app.route('/mapping/<string:scheme>', methods=["DELETE"])
     def deleteSchemeMapping(scheme):
@@ -385,7 +419,7 @@ def create_app(test_config=None):
                             'deleted': scheme}        
                 return jsonify(response), 204
         
-        abort(400, '''Format {} not found. Check GET /mapping for available schemes.'''.format(format))
+        abort(400, description="Scheme {} exists in different formats. Check resource `/mapping` for available schemes/formats and specify format in your request.".format(scheme)) 
         
     @app.route('/dv-metadata-config', methods=["GET"])
     def getMetadataBlocks():

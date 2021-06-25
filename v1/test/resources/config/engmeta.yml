@@ -13,10 +13,6 @@ mapping:
 #T: otherIdAgency
 #T: otherIdValue
 
-
-- source_key: //seriesName
-  target_key: seriesName
-
 # author
 - source_key: [//creator/givenName, //creator/familyName]
   target_key: authorName
@@ -66,8 +62,8 @@ mapping:
   target_key: keywordVocabularyURI
 
 # topicClassification
-- source_key: //subjects/subject
-  target_key: topicClassValue
+#- source_key: //subjects/subject
+#  target_key: topicClassValue
 - source_key: //subjects/subject/subjectScheme
   target_key: topicClassVocab
 - source_key: //subjects/subject/schemeURI
@@ -148,6 +144,9 @@ mapping:
 - source_key: //resourceType
   target_key: kindOfData
 
+- source_key: //seriesName
+  target_key: seriesName
+  
 # series
 #T: seriesName
 #T: seriesInformation
@@ -319,8 +318,8 @@ mapping:
   target_key: engMetaGitterIntervalZ
 - source_key: //system/grid/scalingFormula
   target_key: engMetaGitterScalingFormular
-- source_key: //system/grid/distance
-  target_key: engMetaGitterDistance
+#- source_key: //system/grid/distance
+#  target_key: engMetaGitterDistance
 #- source_key: [//system/grid/point/positionX, //system/grid/point/positionY, //system/grid/point/positionZ]
 #  target_key: engMetaGitterPoints
 #  type: merge
@@ -367,20 +366,20 @@ mapping:
   target_key: processMethodsParName
 - source_key: //provenance/processingStep/method/parameter/symbol
   target_key: processMethodsParSymbol
-- source_key: //provenance/processingStep/method/parameter/encoding
-  target_key: processMethodsParEncoding
+#- source_key: //provenance/processingStep/method/parameter/encoding
+#  target_key: processMethodsParEncoding
 - source_key: //provenance/processingStep/method/parameter/value
   target_key: processMethodsParValue
 
 # processMethods
 - source_key: //provenance/processingStep/method/name/value
   target_key: processMethodsName
-- source_key: //provenance/processingStep/method/name/methodScheme
-  target_key: processMethodsScheme
-- source_key: //provenance/processingStep/method/name/schemeURI
-  target_key: processMethodsSchemeURI
-- source_key: //provenance/processingStep/method/name/valueURI
-  target_key: processMethodsValueURI
+#- source_key: //provenance/processingStep/method/name/methodScheme
+#  target_key: processMethodsScheme
+#- source_key: //provenance/processingStep/method/name/schemeURI
+#  target_key: processMethodsSchemeURI
+#- source_key: //provenance/processingStep/method/name/valueURI
+#  target_key: processMethodsValueURI
 - source_key: //provenance/processingStep/method/parameter/name
   target_key: processMethodsPars
 
