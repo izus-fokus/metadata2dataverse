@@ -57,7 +57,7 @@ class Config(object):
                     self.translators_dict[source_key] = translator
                     self.source_keys.append(source_key)
         else:
-            abort(422, '''Target key {} does not exist. Check dv-metadata-config for existing metadata keys.'''.format(target_key))
+            abort(422, target_key)
                 
         
     def add_rules(self, rule_yaml):

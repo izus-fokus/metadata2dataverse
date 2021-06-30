@@ -68,14 +68,13 @@ def read_config(data):
     return config    
    
 def fill_MAPPINGS(config):
-    print(MAPPINGS)
     # fill global dictionary of mappings
     scheme = config.scheme
     if scheme in MAPPINGS:
         # check if mapping-format already exists
         for mapping in MAPPINGS[scheme]:
             if mapping.format == config.format:
-                abort(409, '''Mapping scheme {} with format {} already exists. Use PUT to change it.'''.format(scheme,config.format))
+                abort(409, scheme + " with format " + mapping.format)
                 break
         MAPPINGS[scheme].append(config)
     else: 
