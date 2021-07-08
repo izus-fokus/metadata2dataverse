@@ -12,13 +12,20 @@ from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS     
 
 # Read config yaml files (mapping from source key to target keys)
 def read_all_config_files():  
+    g.warnings = []
     rootdir = './resources/config'
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
             path = os.path.join(subdir, file)
             open_yaml_file = open(path)            
-            config = read_config(open_yaml_file)   
-            open_yaml_file.close()
+            config = read_config(open_yaml_file)
+            open_yaml_file.close()   
+            # check if yaml file was correct    
+            if len(g.warnings) > 0:
+                warnings = ' '.join(g.warnings)
+                abort(501,warnings)
+            fill_MAPPINGS(config)
+            
 
 # Read schema tsv files (metadatablocks nesting)      
 def read_all_tsv_files():
@@ -33,67 +40,42 @@ def read_all_tsv_files():
             open_tsv_file.close()
 
 
-def read_config(data,format_request=None):    
+def read_config(data):    
     g.warnings = []
     yaml_file = yaml.safe_load(data) 
     
-    # Extracting dictionaries out of yaml-file    
-    try:
-        scheme = yaml_file["scheme"]   
-    except:
-        g.warnings.append("Scheme missing in YAML file.")
-    try:
-        description = yaml_file["description"]
-    except:
-        g.warnings.append("Description missing in YAML file.")
-    try:
-        format = yaml_file["format"]   
-        # PUT /mapping
-        if format_request != None:
-            if format_request != format:
-                abort(400, scheme)
-    except:
-        g.warnings.append("Format missing in YAML file.")
-    try:
-        mapping = yaml_file["mapping"]
-    except: 
-        g.warnings.append("Mapping missing in YAML file.")
-    try:
-        rules = yaml_file["rules"]
-    except: 
-        g.warnings.append("Rules missing in YAML file.")
-        
-    # check if yaml file is complete    
+    # check for missing content
+    content_list = ["scheme", "description", "format", "mapping"]
+    for content in content_list:
+        if content not in yaml_file:
+            g.warnings.append("{} missing in YAML file.".format(content))    
     if len(g.warnings) > 0:
-        warnings = ' '.join(g.warnings)
-        abort(422,warnings)
-        
-    config = Config(scheme, description, format, yaml_file) 
-                                          
+        return None    
+    
+    # Extracting dictionaries out of yaml-file   
+    # Check if yaml file is complete     
+    scheme = yaml_file["scheme"]   
+    description = yaml_file["description"]
+    format = yaml_file["format"]   
+    mapping = yaml_file["mapping"]
+    config = Config(scheme, description, format, yaml_file)                                               
     # Create dict of translators out of the mapping    
     for translator_yaml in mapping:
-        config.add_translator(translator_yaml)
-    
+        config.add_translator(translator_yaml)  
     # Create dict of Rules
-    for rule_yaml in rules:
-        config.add_rules(rule_yaml)      
-        
+    if "rules" in yaml_file:
+        rules = yaml_file["rules"]      
+        for rule_yaml in rules:
+            config.add_rules(rule_yaml)                  
     # Create dict of namespaces
     if "namespaces" in yaml_file: 
-        namespaces = yaml_file["namespaces"]
-   
+        namespaces = yaml_file["namespaces"]       
         if isinstance(namespaces,list):     # more than one namespace
             for namespace in namespaces:
                 config.add_namespace(namespace)
         else:
-            config.add_namespace(namespaces) # one namespace
-    
-    # check if all target keys were correct        
-    if len(g.warnings) > 0:
-        warnings = ' '.join(g.warnings)
-        abort(422,warnings)
-        
-    fill_MAPPINGS(config)    
+            config.add_namespace(namespaces) # one namespace       
+                
     return config    
    
 def fill_MAPPINGS(config):
@@ -108,6 +90,10 @@ def fill_MAPPINGS(config):
         MAPPINGS[scheme].append(config)
     else: 
         MAPPINGS[scheme] = [config]
+        
+    #f = open("{}.yaml".format(scheme), "x")
+        
+    
 
 def read_tsv(data):
     tsv_file = csv.reader(data, delimiter="\t")

@@ -1,6 +1,6 @@
 from flask import Flask, request, abort, jsonify, send_file, g
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
-from api.resources import read_all_config_files, read_all_tsv_files, read_config
+from api.resources import read_all_config_files, read_all_tsv_files, read_config, fill_MAPPINGS
 from models.ReaderFactory import ReaderFactory
 from models.Translator import MergeTranslator, AdditionTranslator
 from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
@@ -38,8 +38,10 @@ def create_app(test_config=None):
         return jsonify(message="{} does not support requested media type. Check resource `/mapping/{}` for available media types of this metadata scheme.".format(scheme)), 415
     @app.errorhandler(422)
     def error_yaml(warnings):
-        print("hallo")
         return jsonify(message="{}".format(warnings)), 422
+    @app.errorhandler(500)
+    def error_yaml_server(warnings):
+        return jsonify(message="Inform the administrators and commit the following messages: {}".format(warnings)), 500
     
         
     
@@ -363,7 +365,12 @@ def create_app(test_config=None):
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():         
         new_mapping = request.data
-        config = read_config(new_mapping)   
+        config = read_config(new_mapping)           
+        # check if yaml file was correct    
+        if len(g.warnings) > 0:
+            warnings = ' '.join(g.warnings)
+            abort(422,warnings)            
+        fill_MAPPINGS(config)            
         response = {'success': True,
                     'created': config.scheme,
                     'location': '/mapping/{}'.format(config.scheme)}        
@@ -373,23 +380,32 @@ def create_app(test_config=None):
     @app.route('/mapping/<string:scheme>', methods=["PUT"])
     def editSchemeMapping(scheme):
         format = request.args.get('format', default=None)
+        new_mapping = request.data
         try:
             mappings = MAPPINGS[scheme]          
         except:
-            abort(404, scheme)
+            abort(404, scheme) # no mappings for scheme found
         if format == None:
-            abort(400, scheme)
-        for mapping in mappings:
-            if mapping.format == format:
-                mappings.remove(mapping)        
-                MAPPINGS[scheme] = mappings
-                new_mapping = request.data
-                config = read_config(new_mapping,format) 
-                response = {'success': True,
-                    'updated': scheme}
-                return jsonify(response), 204
-        abort(400, scheme)
+            abort(400, scheme) # no format specified            
+        config = read_config(new_mapping)         
+        if config.format == format and config.scheme == scheme:
+            if len(g.warnings) > 0:
+                warnings = ' '.join(g.warnings)
+                abort(422,warnings) # wrong values in yaml file
+            else:
+                for mapping in mappings:
+                        if mapping.format == format:
+                            mappings.remove(mapping)        
+                            MAPPINGS[scheme] = mappings
+                            fill_MAPPINGS(config)
+                            response = {'success': True,
+                                        'updated': scheme}
+                            return jsonify(response), 204
+                        abort(400,scheme) # no mapping with the format found
+        else:
+            abort(400, scheme) # new format/scheme does not correspond to scheme/format in new yaml file
         
+                
     
     @app.route('/mapping/<string:scheme>', methods=["DELETE"])
     def deleteSchemeMapping(scheme):
@@ -417,5 +433,9 @@ def create_app(test_config=None):
     def getMetadataBlocks():        
         return jsonify(DV_MB)
         
-
+    @app.route('/dv-metadata-config', methods=["POST"])
+    def getMetadataBlocks():        
+        new_tsv = request.data
+        tsv = read_tsv(new_tsv)
+        
     return app
