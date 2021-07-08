@@ -2,7 +2,7 @@ from models.TranslatorFactory import TranslatorFactory
 from models.Translator import BaseTranslator, MergeTranslator, AdditionTranslator
 import pyaml
 from api.globals import DV_FIELD
-from flask import abort
+from flask import abort, g
 
 class Config(object):
     ''' object after parsing a mapping file '''
@@ -57,7 +57,7 @@ class Config(object):
                     self.translators_dict[source_key] = translator
                     self.source_keys.append(source_key)
         else:
-            abort(422, target_key)
+            g.warnings.append("Target key " + target_key + " does not exist. Check dv-metadata-config for existing metadata keys.")
                 
         
     def add_rules(self, rule_yaml):

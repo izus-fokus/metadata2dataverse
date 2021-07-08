@@ -6,7 +6,7 @@ from models.Field import Field
 from models.TranslatorFactory import TranslatorFactory
 from models.Translator import Translator
 from builtins import isinstance
-from flask import abort
+from flask import abort, g
 TranslatorFactory = TranslatorFactory()
 from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS      #global variables
 
@@ -33,17 +33,41 @@ def read_all_tsv_files():
             open_tsv_file.close()
 
 
-def read_config(data):
+def read_config(data,format_request=None):    
+    g.warnings = []
     yaml_file = yaml.safe_load(data) 
+    
     # Extracting dictionaries out of yaml-file    
-    scheme = yaml_file["scheme"]   
-    description = yaml_file["description"]
-    format = yaml_file["format"]   
-    mapping = yaml_file["mapping"]
-    rules = yaml_file["rules"]
+    try:
+        scheme = yaml_file["scheme"]   
+    except:
+        g.warnings.append("Scheme missing in YAML file.")
+    try:
+        description = yaml_file["description"]
+    except:
+        g.warnings.append("Description missing in YAML file.")
+    try:
+        format = yaml_file["format"]   
+        # PUT /mapping
+        if format_request != None:
+            if format_request != format:
+                abort(400, scheme)
+    except:
+        g.warnings.append("Format missing in YAML file.")
+    try:
+        mapping = yaml_file["mapping"]
+    except: 
+        g.warnings.append("Mapping missing in YAML file.")
+    try:
+        rules = yaml_file["rules"]
+    except: 
+        g.warnings.append("Rules missing in YAML file.")
         
-    # Return rules dictionary for trigger source keys (key) and associated translators (value).        
-    # rules_dict = TranslatorFactory.create_rules(rules)  
+    # check if yaml file is complete    
+    if len(g.warnings) > 0:
+        warnings = ' '.join(g.warnings)
+        abort(422,warnings)
+        
     config = Config(scheme, description, format, yaml_file) 
                                           
     # Create dict of translators out of the mapping    
@@ -64,6 +88,11 @@ def read_config(data):
         else:
             config.add_namespace(namespaces) # one namespace
     
+    # check if all target keys were correct        
+    if len(g.warnings) > 0:
+        warnings = ' '.join(g.warnings)
+        abort(422,warnings)
+        
     fill_MAPPINGS(config)    
     return config    
    

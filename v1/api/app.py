@@ -5,9 +5,6 @@ from models.ReaderFactory import ReaderFactory
 from models.Translator import MergeTranslator, AdditionTranslator
 from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
 from builtins import isinstance
-# from api.resources import read_all_config_files, read_all_tsv_files
-# from asn1crypto.core import Primitive
-# from pkg_resources._vendor.pyparsing import empty
 
 def create_app(test_config=None):
     # create and configure the app
@@ -40,8 +37,9 @@ def create_app(test_config=None):
     def unsupported_type(scheme):
         return jsonify(message="{} does not support requested media type. Check resource `/mapping/{}` for available media types of this metadata scheme.".format(scheme)), 415
     @app.errorhandler(422)
-    def unprocessable(target_key):
-        return jsonify(message="{} target key does not exist. Check dv-metadata-config for existing metadata keys.".format(target_key)), 422
+    def error_yaml(warnings):
+        print("hallo")
+        return jsonify(message="{}".format(warnings)), 422
     
         
     
@@ -379,19 +377,14 @@ def create_app(test_config=None):
             mappings = MAPPINGS[scheme]          
         except:
             abort(404, scheme)
-        if format == None and len(mappings) == 1:
-            MAPPINGS[scheme] = []
-            new_mapping = request.data
-            config = read_config(new_mapping) 
-            response = {'success': True,
-                    'updated': scheme}
-            return jsonify(response), 204
+        if format == None:
+            abort(400, scheme)
         for mapping in mappings:
             if mapping.format == format:
                 mappings.remove(mapping)        
                 MAPPINGS[scheme] = mappings
                 new_mapping = request.data
-                config = read_config(new_mapping) 
+                config = read_config(new_mapping,format) 
                 response = {'success': True,
                     'updated': scheme}
                 return jsonify(response), 204
