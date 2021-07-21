@@ -70,10 +70,8 @@ class XMLReader(Reader):
         pass
 
     def read(xml_data, mapping):
-        print(xml_data)
         # get all source keys of scheme
         list_of_source_keys = mapping.get_source_keys()
-        print(list_of_source_keys)
         # get namespaces
         namespaces = mapping.namespaces
         
@@ -106,5 +104,5 @@ class JSONReader(Reader):
     def __repr__(self):
         pass
 
-    def read(self, json_data):
-        return self.source_key
+    def read(json_data, mapping):
+        return source_key_value

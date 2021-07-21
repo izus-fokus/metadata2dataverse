@@ -41,7 +41,7 @@ def create_app(test_config=None):
         return jsonify(message="{}".format(warnings)), 422
     @app.errorhandler(500)
     def error_yaml_server(warnings):
-        return jsonify(message="Inform the administrators and commit the following messages: {}".format(warnings)), 500
+        return jsonify(message="Mapping is not correctly configured. Please contact the administrators at fokus@izus.uni-stuttgart.de and transmit the following information: {}.".format(warnings)), 500
     
         
     
@@ -384,7 +384,7 @@ def create_app(test_config=None):
         try:
             mappings = MAPPINGS[scheme]          
         except:
-            abort(404, scheme) # no mappings for scheme found
+            abort(404, scheme) # no existing mappings for scheme found
         if format == None:
             abort(400, scheme) # no format specified            
         config = read_config(new_mapping)         
@@ -394,7 +394,7 @@ def create_app(test_config=None):
                 abort(422,warnings) # wrong values in yaml file
             else:
                 for mapping in mappings:
-                        if mapping.format == format:
+                        if mapping.format == format: # success
                             mappings.remove(mapping)        
                             MAPPINGS[scheme] = mappings
                             fill_MAPPINGS(config)
@@ -403,7 +403,7 @@ def create_app(test_config=None):
                             return jsonify(response), 204
                         abort(400,scheme) # no mapping with the format found
         else:
-            abort(400, scheme) # new format/scheme does not correspond to scheme/format in new yaml file
+            abort(400, scheme) # format/scheme in new yaml file does not correspond to the specified scheme/format
         
                 
     
@@ -432,10 +432,5 @@ def create_app(test_config=None):
     @app.route('/dv-metadata-config', methods=["GET"])
     def getMetadataBlocks():        
         return jsonify(DV_MB)
-        
-    @app.route('/dv-metadata-config', methods=["POST"])
-    def getMetadataBlocks():        
-        new_tsv = request.data
-        tsv = read_tsv(new_tsv)
         
     return app

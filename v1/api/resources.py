@@ -23,7 +23,7 @@ def read_all_config_files():
             # check if yaml file was correct    
             if len(g.warnings) > 0:
                 warnings = ' '.join(g.warnings)
-                abort(501,warnings)
+                abort(500, warnings)
             fill_MAPPINGS(config)
             
 
@@ -42,16 +42,14 @@ def read_all_tsv_files():
 
 def read_config(data):    
     g.warnings = []
-    yaml_file = yaml.safe_load(data) 
-    
+    yaml_file = yaml.safe_load(data)     
     # check for missing content
     content_list = ["scheme", "description", "format", "mapping"]
     for content in content_list:
         if content not in yaml_file:
-            g.warnings.append("{} missing in YAML file.".format(content))    
+            g.warnings.append("{} missing in YAML file {}.".format(content, data))    
     if len(g.warnings) > 0:
-        return None    
-    
+        return None        
     # Extracting dictionaries out of yaml-file   
     # Check if yaml file is complete     
     scheme = yaml_file["scheme"]   
@@ -74,8 +72,7 @@ def read_config(data):
             for namespace in namespaces:
                 config.add_namespace(namespace)
         else:
-            config.add_namespace(namespaces) # one namespace       
-                
+            config.add_namespace(namespaces) # one namespace                       
     return config    
    
 def fill_MAPPINGS(config):
@@ -89,11 +86,11 @@ def fill_MAPPINGS(config):
                 break
         MAPPINGS[scheme].append(config)
     else: 
-        MAPPINGS[scheme] = [config]
+        MAPPINGS[scheme] = [config]    
+  
+    with open("./resources/config/{}.yml".format(scheme), "w") as f:        
+        yaml.dump(config.yaml_file, f)
         
-    #f = open("{}.yaml".format(scheme), "x")
-        
-    
 
 def read_tsv(data):
     tsv_file = csv.reader(data, delimiter="\t")
