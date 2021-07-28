@@ -41,6 +41,7 @@ def create_app(test_config=None):
         return jsonify(message="{}".format(warnings)), 422
     @app.errorhandler(500)
     def error_yaml_server(warnings):
+        print("blubb")
         return jsonify(message="Mapping is not correctly configured. Please contact the administrators at fokus@izus.uni-stuttgart.de and transmit the following information: {}.".format(warnings)), 500
     
         

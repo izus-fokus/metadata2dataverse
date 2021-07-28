@@ -1,0 +1,102 @@
+description: codemeta schema
+format: application/json
+mapping:
+- source_key: codeRepository
+  target_key: codeMetaCodeRepository
+- source_key: programmingLanguage
+  target_key: codeMetaProgrammingLanguage
+- source_key: runtimePlatform
+  target_key: codeMetaRuntimePlatform
+- source_key: applicationCategory
+  target_key: codeMetaApplicationCategory
+- source_key: operatingSystem
+  target_key: codeMetaOperatingSystem
+- source_key: releaseNotes
+  target_key: codeMetaReleaseNotes
+- source_key: softwareRequirements
+  target_key: codeMetaSoftwareRequirements
+- join_string: ' '
+  priority: 2
+  source_key:
+  - author.givenName
+  - author.familyName
+  target_key: authorName
+  type: merge
+- source_key: author.familyName
+  target_key: authorName
+- join_string: ' '
+  priority: 2
+  source_key:
+  - contributor.givenName
+  - contributor.familyName
+  target_key: contributorName
+  type: merge
+- source_key: contributor.familyName
+  target_key: contributorName
+- join_string: ' '
+  priority: 2
+  source_key:
+  - copyrightHolder.givenName
+  - copyrightHolder.familyName
+  target_key: contributorName
+  type: merge
+- source_key: copyrightHolder.familyName
+  target_key: contributorName
+- source_key: creator
+  target_key: authorName
+- source_key: dateCreated
+  target_key: productionDate
+- source_key: datePublished
+  target_key: distributionDate
+- source_key: funder
+  target_key: contributorName
+- source_key: keywords
+  target_key: keywordValue
+- source_key: provider
+  target_key: distributorName
+- source_key: isPartOf
+  target_key: relatedDatasets
+- source_key: description
+  target_key: dsDescriptionValue
+- source_key: name
+  target_key: title
+- source_key: softwareSuggestions.sameAs
+  target_key: otherIdAgency
+- source_key: relatedLink
+  target_key: relatedMaterial
+- source_key: maintainer.email
+  target_key: datasetContact
+- source_key: author.affiliation
+  target_key: authorAffiliation
+- source_key: softwareSuggestions.name
+  target_key: codeMetaSoftwareSuggestionsTitle
+- source_key: softwareSuggestions.provider.url
+  target_key: codeMetaSoftwareSuggestionsUrl
+- join_string: ' '
+  priority: 2
+  source_key:
+  - maintainer.givenName
+  - maintainer.familyName
+  target_key: datasetContactName
+  type: merge
+- source_key: maintainer.familyName
+  target_key: datasetContactName
+- source_key: contIntegration
+  target_key: codeMetaContIntegration
+- source_key: developmentStatus
+  target_key: codeMetaDevelopmentStatus
+- source_key: funding
+  target_key: grantNumberAgency
+- source_key: issueTracker
+  target_key: codeMetaIssueTracker
+- source_key: referencePublication
+  target_key: publicationCitation
+- class: contributorRole
+  source_key: funder
+  target_key: contributorType
+  type: addition
+- class: contributorRole
+  source_key: copyrightHolder
+  target_key: contributorType
+  type: addition
+scheme: codemeta

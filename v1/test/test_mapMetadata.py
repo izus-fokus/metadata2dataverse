@@ -20,7 +20,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         with open(r'./input/EngMeta_example_v0.2.xml', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/engmeta?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
-        self.assertEqual(response.status_code, 200)  
+        self.assertEqual(response.status_code, 202)  
         x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
         

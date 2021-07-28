@@ -1,6 +1,7 @@
 import yaml
 import csv
 import os
+import pyaml
 from models.Config import Config
 from models.Field import Field
 from models.TranslatorFactory import TranslatorFactory
@@ -10,8 +11,10 @@ from flask import abort, g
 TranslatorFactory = TranslatorFactory()
 from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS      #global variables
 
+
+
 # Read config yaml files (mapping from source key to target keys)
-def read_all_config_files():  
+def read_all_config_files(): 
     g.warnings = []
     rootdir = './resources/config'
     for subdir, dirs, files in os.walk(rootdir):
@@ -19,7 +22,6 @@ def read_all_config_files():
             path = os.path.join(subdir, file)
             open_yaml_file = open(path)            
             config = read_config(open_yaml_file)
-            open_yaml_file.close()   
             # check if yaml file was correct    
             if len(g.warnings) > 0:
                 warnings = ' '.join(g.warnings)

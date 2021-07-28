@@ -105,4 +105,7 @@ class JSONReader(Reader):
         pass
 
     def read(json_data, mapping):
+        list_of_source_keys = mapping.get_source_keys()
+        print(list_of_source_keys)
+        source_key_value = {}
         return source_key_value

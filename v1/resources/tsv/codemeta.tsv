@@ -22,7 +22,7 @@
 	codeMetaPermissions	Permissions	Permission(s) required to run the code (for example, a mobile app may require full internet access or may run only on wifi).		text	18	#VALUE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE		CodeMeta	
 	codeMetaProcessorRequirements	Processor Requirements	Processor architecture required to run the application (e.g. IA64).		text	19	#VALUE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE		CodeMeta	
 	codeMetaStorageRequirements	Storage Requirements	Storage requirements (e.g. free space required).		text	20	#VALUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		CodeMeta	
-	codeMetaReleseNotes	Release Notes	Link to release notes	https://...	url	21	"<a href=""#VALUE"" target=""_blank"" rel=""noopener"">#VALUE</a>"	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		CodeMeta	
+	codeMetaReleaseNotes	Release Notes	Link to release notes	https://...	url	21	"<a href=""#VALUE"" target=""_blank"" rel=""noopener"">#VALUE</a>"	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE		CodeMeta	
 	codeMetaContIntegration	Continous integration	Link to continuous integration service	https://...	url	22	"<a href=""#VALUE"" target=""_blank"" rel=""noopener"">#VALUE</a>"	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE		CodeMeta	
 	codeMetaIssueTracker	Issue Tracker	link to software bug reporting or issue tracking system	https://...	url	23	"<a href=""#VALUE"" target=""_blank"" rel=""noopener"">#VALUE</a>"	FALSE	FALSE	FALSE	TRUE	FALSE	FALSE		CodeMeta	
 #controlledVocabulary	DatasetField	Value	identifier	displayOrder												
