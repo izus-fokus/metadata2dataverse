@@ -89,10 +89,7 @@ def fill_MAPPINGS(config):
         MAPPINGS[scheme].append(config)
     else: 
         MAPPINGS[scheme] = [config]    
-  
-    with open("./resources/config/{}.yml".format(scheme), "w") as f:        
-        yaml.dump(config.yaml_file, f)
-        
+          
 
 def read_tsv(data):
     tsv_file = csv.reader(data, delimiter="\t")

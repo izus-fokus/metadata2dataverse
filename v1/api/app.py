@@ -5,6 +5,7 @@ from models.ReaderFactory import ReaderFactory
 from models.Translator import MergeTranslator, AdditionTranslator
 from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
 from builtins import isinstance
+import yaml
 
 def create_app(test_config=None):
     # create and configure the app
@@ -173,12 +174,14 @@ def create_app(test_config=None):
         return v_field
     
     def build_json(target_key_values, method):
+        print(target_key_values)
         json_result = EditFormat() 
         parents_dict = {}
         primitives_dict = {}
         single_fields = []
         mb_dict = {}
         for k, v in target_key_values.items():    
+            print(k)
             field = DV_FIELD.get(k)
             if field is None:
                 g.warnings.append("Field {} not in Dataverse-configuration. Check your YAML file.".format(k))
@@ -216,14 +219,17 @@ def create_app(test_config=None):
                 mb_dict[mb_id].add_field(p_field) 
                 json_result.add_field(p_field)
         
+        print(parents_dict)
         # build compound fields        
         for parent, c_field_outer in parents_dict.items(): 
-            children = DV_CHILDREN.get(parent)             
+            children = DV_CHILDREN.get(parent)       
+            print(parent)      
             if isinstance(c_field_outer, MultipleCompoundField):            
                 for child in children:                    
                     if child in primitives_dict:
                         number_of_values = len(primitives_dict.get(child))
-                        break                                   
+                        break            
+                    print(number_of_values)                       
                 for i in range(number_of_values):    
                     c_field_inner = CompoundField(parent)                
                     for child in children:                                                
@@ -372,6 +378,8 @@ def create_app(test_config=None):
             warnings = ' '.join(g.warnings)
             abort(422,warnings)            
         fill_MAPPINGS(config)            
+        with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:        
+            yaml.dump(yaml.safe_load(new_mapping), f)
         response = {'success': True,
                     'created': config.scheme,
                     'location': '/mapping/{}'.format(config.scheme)}        
@@ -399,6 +407,8 @@ def create_app(test_config=None):
                             mappings.remove(mapping)        
                             MAPPINGS[scheme] = mappings
                             fill_MAPPINGS(config)
+                            with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:        
+                                yaml.dump(yaml.safe_load(new_mapping), f)
                             response = {'success': True,
                                         'updated': scheme}
                             return jsonify(response), 204
@@ -422,7 +432,8 @@ def create_app(test_config=None):
             return jsonify(response), 204
         for mapping in mappings:
             if mapping.format == format:
-                mappings.remove(mapping)        
+                mappings.remove(mapping)    
+                os.remove("./resources/config/{}_{}.yml".format(scheme, format))    
                 MAPPINGS[scheme] = mappings
                 response = {'success': True,
                             'deleted': scheme}        

@@ -93,9 +93,8 @@ class MergeTranslator(Translator):
                     list_of_values.append(v)
             except:
                 continue
-        print(list_of_values)
         if any(isinstance(i, list) for i in list_of_values):
-            if len(list_of_values) == 1:        # case: multiple values with 2 merge items
+            if len(list_of_values) == 1:        # case: multiple values with 1 merge items
                 list1 = list_of_values[0]
                 v_merged = list1
             if len(list_of_values) == 2:        # case: multiple values with 2 merge items

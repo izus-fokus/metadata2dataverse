@@ -39,7 +39,7 @@ mapping:
      - author[*].familyName
      type: merge
      priority: 2
-     join_string: " "
+     join_symbol: " "
    - target_key: authorName
      source_key: author[*].familyName
    - target_key: contributorName
@@ -48,7 +48,7 @@ mapping:
      - contributor[*].familyName
      type: merge
      priority: 2
-     join_string: " "
+     join_symbol: " "
    - target_key: contributorName
      source_key: contributor[*].familyName  
    - target_key: contributorName
@@ -57,7 +57,7 @@ mapping:
      - copyrightHolder[*].familyName
      type: merge
      priority: 2
-     join_string: " "
+     join_symbol: " "
    - target_key: contributorName
      source_key: copyrightHolder[*].familyName
    - target_key: authorName
@@ -106,7 +106,7 @@ mapping:
      - maintainer[*].familyName
      type: merge
      priority: 2
-     join_string: " "
+     join_symbol: " "
    - target_key: datasetContactName
      source_key: maintainer[*].familyName  
    - target_key: codeMetaContIntegration

@@ -2,6 +2,8 @@ from abc import abstractstaticmethod, ABCMeta
 from flask import g
 from api.globals import MAPPINGS     # global variables
 from lxml import etree as ET
+from jsonpath import JSONPath
+import json
 from builtins import isinstance
 
 
@@ -105,7 +107,18 @@ class JSONReader(Reader):
         pass
 
     def read(json_data, mapping):
+        json_input = json.loads(json_data)
         list_of_source_keys = mapping.get_source_keys()
-        print(list_of_source_keys)
         source_key_value = {}
+        for source_key in list_of_source_keys:
+            print(source_key)
+            try:
+                elements = JSONPath("$.{}".format(source_key)).parse(json_input)
+                print(elements)
+            except:
+                g.warnings.append(source_key + " not a valid JSON-Path. Please check your YAML File.")
+                continue
+            if source_key not in source_key_value and len(elements) > 0:
+                source_key_value[source_key] = elements
+        print(source_key_value)    
         return source_key_value
