@@ -75,8 +75,7 @@ class XMLReader(Reader):
         # get all source keys of scheme
         list_of_source_keys = mapping.get_source_keys()
         # get namespaces
-        namespaces = mapping.namespaces
-        
+        namespaces = mapping.namespaces        
         root = ET.fromstring(xml_data)
         source_key_value = {}
         for source_key in list_of_source_keys:
@@ -109,16 +108,38 @@ class JSONReader(Reader):
     def read(json_data, mapping):
         json_input = json.loads(json_data)
         list_of_source_keys = mapping.get_source_keys()
+        list_of_source_keys = list(dict.fromkeys(list_of_source_keys))  #remove duplicates
         source_key_value = {}
-        for source_key in list_of_source_keys:
-            print(source_key)
-            try:
-                elements = JSONPath("$.{}".format(source_key)).parse(json_input)
-                print(elements)
-            except:
-                g.warnings.append(source_key + " not a valid JSON-Path. Please check your YAML File.")
-                continue
-            if source_key not in source_key_value and len(elements) > 0:
-                source_key_value[source_key] = elements
-        print(source_key_value)    
+        for source_key in list_of_source_keys:            
+            if "[*]" in source_key:                     # multiple compound source_key 
+                main_key = source_key.split(".",1)[0]   
+                try:
+                    elements = JSONPath("$.{}".format(main_key)).parse(json_input)
+                except:
+                    g.warnings.append(source_key + " not a valid JSON-Path. Please check your YAML File.")
+                    continue
+            else:                                       # single (compound) source_key
+                try:
+                    elements = JSONPath("$.{}".format(source_key)).parse(json_input)
+                except:
+                    g.warnings.append(source_key + " not a valid JSON-Path. Please check your YAML File.")
+                    continue
+            if len(elements) > 0:
+                if isinstance(elements[0], str):   # single (compound) source_key
+                    values = elements
+                elif isinstance(elements[0], list):  # single (compound) source_key
+                    values = elements[0]
+                else:                               # multiple compound source_key 
+                    number_of_childs = len(elements)  
+                    parent = source_key.split("[*]",1)[0]
+                    child = source_key.split(".",1)[1]     
+                    values = []     # values of source_key      
+                    for i in range(number_of_childs):
+                        value = JSONPath("$.{}[{}].{}".format(parent,i,child)).parse(json_input)    
+                        print(value)                   
+                        if len(value) > 0:
+                            values.append(value[0])
+                        else:
+                            values.append('none')
+                source_key_value[source_key] = values
         return source_key_value

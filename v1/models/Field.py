@@ -18,8 +18,8 @@ class Field(object):
     def set_controlled_vocabulary(self, controlled_vocabulary):
         self.controlled_vocabulary.append(controlled_vocabulary)
         
-    def check_controlled_vocabulary(self, v):  
-        if isinstance(v, list):
+    def check_controlled_vocabulary(self, v):          
+        if len(v) > 1:
             v_new = []
             for value_ in v:
                 if value_ in self.controlled_vocabulary:
@@ -28,6 +28,7 @@ class Field(object):
                     g.warnings.append(self.target_key + " has a controlled vocabulary. " + value_ + " is not part of it. It has been removed. Allowed values are: " + str(self.controlled_vocabulary))
                     continue
         else:
+            v = v[0]
             if v in self.controlled_vocabulary:      
                 return v
             else: 

@@ -383,7 +383,7 @@ mapping:
 - source_key: [provenance.processingStep.tool.license.note, provenance.processingStep.tool.license.terms]
   target_key: processSoftwareLicence
   type: merge
-  join_string: "; "
+  join_symbol: "; "
 
 # processInstru
 - source_key: provencance.processingStep.instrument.name
@@ -395,11 +395,11 @@ mapping:
 - source_key: [provencance.processingStep.instrument.partnum.vendor, provencance.processingStep.instrument.partnum.value]
   target_key: processInstruPartnum
   type: merge
-  join_string: "; "
+  join_symbol: "; "
 - source_key: [provencance.processingStep.instrument.serialnum.vendor, provencance.processingStep.instrument.serialnum.value]
   target_key: processInstruSerialnum
   type: merge
-  join_string: "; "
+  join_symbol: "; "
 - source_key: provencance.processingStep.instrument.software
   target_key: processInstruSoftware
 - source_key: provencance.processingStep.instrument.software.os
@@ -411,7 +411,7 @@ mapping:
 - source_key: [provenance.processingStep.environment.compiler.name, provenance.processingStep.environment.compiler.flags]
   target_key: processEnvCompName
   type: merge
-  join_string: "; "
+  join_symbol: "; "
 - source_key: provenance.processingStep.environment.nodes
   target_key: processEnvNodes
 - source_key: provenance.processingStep.environment.ppn
@@ -425,11 +425,11 @@ mapping:
 - source_key: [provenance.processingStep.method.parameter.name, provenance.processingStep.method.name.value]
   target_key: processStepMethods
   type: merge
-  join_string: "; "
+  join_symbol: "; "
 - source_key: [provenance.processingStep.errormethod.parameter.name, provenance.processingStep.errormethod.name.value]
   target_key: processStepErrorMethod
   type: merge
-  join_string: "; "
+  join_symbol: "; "
 - source_key: provenance.processingStep.tool.name
   target_key: processStepSoftware
 - source_key: provenance.processingStep.environment.name

@@ -127,10 +127,12 @@ def create_app(test_config=None):
             return p_field
         # Controlled Vocabulary
         if type_class == "controlled_vocabulary":
+            print(type_class, k, v, multiple, field)
             if v == "":        # special case for getEmptyDataverseJson
                 p_field = get_vocabulary_field(k, v, multiple)
                 return p_field
             v_checked = field.check_controlled_vocabulary(v)
+            print(v_checked)
             if len(v_checked) > 0:  # v did no match controlled vocab
                 p_field = get_vocabulary_field(k, v_checked, multiple)   
                 return p_field             
@@ -174,14 +176,12 @@ def create_app(test_config=None):
         return v_field
     
     def build_json(target_key_values, method):
-        print(target_key_values)
         json_result = EditFormat() 
         parents_dict = {}
         primitives_dict = {}
         single_fields = []
         mb_dict = {}
-        for k, v in target_key_values.items():    
-            print(k)
+        for k, v in target_key_values.items():   
             field = DV_FIELD.get(k)
             if field is None:
                 g.warnings.append("Field {} not in Dataverse-configuration. Check your YAML file.".format(k))
@@ -219,7 +219,6 @@ def create_app(test_config=None):
                 mb_dict[mb_id].add_field(p_field) 
                 json_result.add_field(p_field)
         
-        print(parents_dict)
         # build compound fields        
         for parent, c_field_outer in parents_dict.items(): 
             children = DV_CHILDREN.get(parent)       

@@ -38,7 +38,7 @@ mapping:
      - author[*].givenName
      - author[*].familyName
      type: merge
-     priority: 2
+     priority: 1
      join_symbol: " "
    - target_key: authorName
      source_key: author[*].familyName
@@ -92,7 +92,7 @@ mapping:
      source_key: softwareSuggestions[*].sameAs
    - target_key: relatedMaterial
      source_key: relatedLink   
-   - target_key: datasetContact
+   - target_key: datasetContactEmail
      source_key: maintainer[*].email
    - target_key: authorAffiliation
      source_key: author[*].affiliation
