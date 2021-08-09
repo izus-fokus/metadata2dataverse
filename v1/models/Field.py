@@ -19,6 +19,7 @@ class Field(object):
         self.controlled_vocabulary.append(controlled_vocabulary)
         
     def check_controlled_vocabulary(self, v):          
+        print("check_controlled_vocabularycheck_controlled_vocabulary: ", v)
         if len(v) > 1:
             v_new = []
             for value_ in v:

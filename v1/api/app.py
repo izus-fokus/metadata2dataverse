@@ -127,18 +127,15 @@ def create_app(test_config=None):
             return p_field
         # Controlled Vocabulary
         if type_class == "controlled_vocabulary":
-            print(type_class, k, v, multiple, field)
             if v == "":        # special case for getEmptyDataverseJson
                 p_field = get_vocabulary_field(k, v, multiple)
                 return p_field
             v_checked = field.check_controlled_vocabulary(v)
-            print(v_checked)
-            if len(v_checked) > 0:  # v did no match controlled vocab
+            if len(v_checked) > 0:  # v did match controlled vocab
                 p_field = get_vocabulary_field(k, v_checked, multiple)   
                 return p_field             
-            else:                   # v did no match controlled vocab
-                p_field = get_vocabulary_field(k, 'none', multiple)   
-                return p_field   
+            else:                   # v did not match controlled vocab
+                None  
             
     def get_primitive_field(k,v,multiple):        
         if multiple == True:
@@ -173,12 +170,13 @@ def create_app(test_config=None):
             if isinstance(v,list):
                 v = ", ".join(v)
             v_field = VocabularyField(k,v)   
+        print("v_field: ", v_field)
         return v_field
     
     def build_json(target_key_values, method):
         json_result = EditFormat() 
         parents_dict = {}
-        primitives_dict = {}
+        children_dict = {}
         single_fields = []
         mb_dict = {}
         for k, v in target_key_values.items():   
@@ -198,26 +196,27 @@ def create_app(test_config=None):
                 c_field = get_compound_field(parent, k, v, multiple)
                 # MultipleCompoundField
                 if isinstance(c_field, MultipleCompoundField):
-                    primitives_dict[k] = []
+                    children_dict[k] = []
                     if isinstance(v, list):
                         for value in v:          
                             p_field = get_p_field(type_class,k,value,multiple,field)       
                             if p_field != None:            
-                                primitives_dict[k].append(p_field) 
+                                children_dict[k].append(p_field) 
                     else:
                         p_field = get_p_field(type_class,k,v,multiple,field)                        
                         if p_field != None:            
-                            primitives_dict[k].append(p_field)   
+                            children_dict[k].append(p_field)   
                 # CompoundField
                 if isinstance(c_field, CompoundField):
                     # PrimitiveFields                    
-                    primitives_dict[k] = get_p_field(type_class,k,v,multiple,field)
+                    children_dict[k] = get_p_field(type_class,k,v,multiple,field)
                 parents_dict[parent] = c_field
             # has no parent    
             if parent == None:
                 p_field = get_p_field(type_class,k,v,multiple,field)
-                mb_dict[mb_id].add_field(p_field) 
-                json_result.add_field(p_field)
+                if p_field != None:
+                    mb_dict[mb_id].add_field(p_field) 
+                    json_result.add_field(p_field)
         
         # build compound fields        
         for parent, c_field_outer in parents_dict.items(): 
@@ -225,15 +224,15 @@ def create_app(test_config=None):
             print(parent)      
             if isinstance(c_field_outer, MultipleCompoundField):            
                 for child in children:                    
-                    if child in primitives_dict:
-                        number_of_values = len(primitives_dict.get(child))
+                    if child in children_dict:
+                        number_of_values = len(children_dict.get(child))
                         break            
                     print(number_of_values)                       
                 for i in range(number_of_values):    
                     c_field_inner = CompoundField(parent)                
                     for child in children:                                                
-                        if child in primitives_dict: 
-                           p_field = primitives_dict.get(child)[i]                           
+                        if child in children_dict: 
+                           p_field = children_dict.get(child)[i]                           
                            if p_field.value != 'none':                           
                                c_field_inner.add_value(p_field, child)                               
                            else:
@@ -244,8 +243,8 @@ def create_app(test_config=None):
                 mb_dict[mb_id].add_field(c_field_outer)
             else:
                 for child in children:
-                    if child in primitives_dict:  
-                        p_field = primitives_dict.get(child)
+                    if child in children_dict:  
+                        p_field = children_dict.get(child)
                         c_field_outer.add_value(p_field, child)
                 json_result.add_field(c_field_outer)     
                 mb_dict[mb_id].add_field(c_field_outer)
