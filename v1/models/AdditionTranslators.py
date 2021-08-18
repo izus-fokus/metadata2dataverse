@@ -5,7 +5,7 @@ class DateAdder(object):
     def main(self,source_key):
         today = date.today()
         date_formatted = today.strftime("%Y-%m-%d")
-        return date_formatted
+        return [date_formatted]
     
 class ContributorRole(object):
     ''' returns '''

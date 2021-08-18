@@ -74,27 +74,57 @@ class XMLReader(Reader):
     def read(xml_data, mapping):
         # get all source keys of scheme
         list_of_source_keys = mapping.get_source_keys()
+        list_of_source_keys = list(dict.fromkeys(list_of_source_keys))  #remove duplicates
         # get namespaces
         namespaces = mapping.namespaces        
         root = ET.fromstring(xml_data)
-        source_key_value = {}
+        source_key_value = {}        
         for source_key in list_of_source_keys:
+            print(source_key)
+            if source_key.count("/") > 2:
+                main_key = source_key.rsplit("/", 1)[0]
+            else:
+                main_key = source_key
             try:
-                elements = root.xpath("." + source_key, namespaces=namespaces)   
+                elements = root.xpath("." + main_key, namespaces=namespaces)   
+                print(elements)
             except:
                 g.warnings.append(source_key + " not a valid X-Path. Please check your YAML File.")
-                continue
-            if len(elements) > 1:               # multiple values
-                source_key_value[source_key] = []
-                for element in elements:
-                    if element.text != None:
-                        source_key_value[source_key].append(element.text)
-            elif len(elements) == 1:            # single values or attribute value
-                if isinstance(elements[0], str):    #attribute
-                    source_key_value[source_key] = [elements[0]]
-                else:
-                    if elements[0].text != None:
-                        source_key_value[source_key] = [elements[0].text]
+                continue            
+            if len(elements) > 0:
+                if len(elements[0].text.rstrip().lstrip()) > 0:   # single (compound) source_key
+                    values = []
+                    print("hihi ",main_key)
+                    for i in range(len(elements)):
+                        print(elements[i].text)
+                        values.append(elements[i].text)
+                    source_key_value[source_key] = values
+                else:                                   # multiple compound source_key 
+                    number_of_childs = len(elements)  
+                    parent = main_key
+                    child = source_key.rsplit("/",1)[1]     
+                    values = []     # values of source_key      
+                    if number_of_childs == 1:
+                        value = root.xpath("." + parent  + "/" + child, namespaces=namespaces)  
+                        if len(value) > 0:
+                            for i in range(len(value)):
+                                values.append(value[i].text)
+                        else:
+                            values.append('none')
+                        source_key_value[source_key] = values
+                        print(values)
+                    else:
+                        for i in range(number_of_childs):
+                            i += 1
+                            value = root.xpath("." + parent + "[" + str(i) + "]" + "/" + child, namespaces=namespaces) 
+                            print("." + parent + "[" + str(i) + "]" + "/" + child)
+                            
+                            if len(value) > 0:
+                                values.append(value[0].text)
+                            else:
+                                values.append('none')
+                            source_key_value[source_key] = values
+                            print(values)
         return source_key_value
 
 
@@ -135,8 +165,7 @@ class JSONReader(Reader):
                     child = source_key.split(".",1)[1]     
                     values = []     # values of source_key      
                     for i in range(number_of_childs):
-                        value = JSONPath("$.{}[{}].{}".format(parent,i,child)).parse(json_input)    
-                        print(value)                   
+                        value = JSONPath("$.{}[{}].{}".format(parent,i,child)).parse(json_input)  
                         if len(value) > 0:
                             values.append(value[0])
                         else:

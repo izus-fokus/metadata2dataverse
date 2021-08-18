@@ -85,9 +85,6 @@ class MergeTranslator(Translator):
         return self.target_key
     
     def get_value(self, source_key_values):
-        print(self.merge_symbol)
-        print(self.source_keys)
-        print(self.target_key)
         list_of_values = []
         for i in range(len(self.source_keys)):
             try:

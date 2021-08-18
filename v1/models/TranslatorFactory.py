@@ -16,7 +16,6 @@ class TranslatorFactory(object):
         priority = translator_yaml.get('priority', 1) 
         translator_type = translator_yaml.get('type', None)
         join_symbol = translator_yaml.get('join_symbol', None)
-        print(join_symbol)
         class_name = translator_yaml.get('class', None)    
             
         if(len(translator_yaml) == 1):                 # case 1: copy translator

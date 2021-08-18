@@ -41,33 +41,32 @@ mapping:
 
 
 # dsDescription
-- source_key: [//description/@descriptionType, //description]
-  target_key: dsDescriptionValue
-  type: merge
-  join_symbol: "; "
-  priority: 2
+#- source_key: [//description/@descriptionType, //description]
+#  target_key: dsDescriptionValue
+#  type: merge
+#  join_symbol: "; "
+#  priority: 2
 - source_key: //description
   target_key: dsDescriptionValue
 
-# hier muss noch sichergestellt werden, dass nur gueltige Werte aus dem Vocabulary angegeben werden
 - source_key: //subjects/subject
   target_key: subject
 
 # keywords
 - source_key: //keywords/keyword
   target_key: keywordValue
-- source_key: //keywords/keyword/vocabulary
-  target_key: keywordVocabulary
-- source_key: //keywords/keyword/vocabularyURL
-  target_key: keywordVocabularyURI
+#- source_key: //keywords/keyword/@vocabulary
+#  target_key: keywordVocabulary
+#- source_key: //keywords/keyword/@vocabularyURL
+#  target_key: keywordVocabularyURI
 
 # topicClassification
 #- source_key: //subjects/subject
 #  target_key: topicClassValue
 - source_key: //subjects/subject/subjectScheme
   target_key: topicClassVocab
-- source_key: //subjects/subject/schemeURI
-  target_key: topicClassVocabURI
+#- source_key: //subjects/subject/@schemeURI
+#  target_key: topicClassVocabURI
 
 # publication
 - source_key: //context/referencePublication/citation
@@ -115,8 +114,8 @@ mapping:
 # project
 - source_key: //project/value
   target_key: projectName
-- source_key: //project/level
-  target_key: projectLevel
+#- source_key: //project/@level
+#  target_key: projectLevel
 
 # distributor
 #T: distributorName
@@ -338,13 +337,13 @@ mapping:
   target_key: engMetaTempUnit
 
 # entMetaFlows
-- source_key: //system/boundaryCondition/component/name
+- source_key: //system/boundaryCondition/flow/component
   target_key: engMetaFlowsComp
-- source_key: //system/boundaryCondition/shape
+- source_key: //system/boundaryCondition/flow/shape
   target_key: engMetaFlowsShape
-- source_key: //system/boundaryCondition/size
+- source_key: //system/boundaryCondition/flow/size
   target_key: engMetaFlowsSize
-- source_key: //system/boundaryCondition/position
+- source_key: //system/boundaryCondition/flow/position
   target_key: engMetaFlowsPosition
 
 # engMetaBoundCondPar
@@ -468,11 +467,11 @@ rules:
   Producer: [{source_key: //contributor/name, target_key: producerName}, {source_key: //contributor/affiliation/name, target_key: producerAffiliation}, {source_key: //contributor/affiliation/id, target_key: producerAbbreviation}]
   Distributor: [{source_key: //contributor/name, target_key: distributorName}, {source_key: //contributor/affiliation/name, target_key: distributorAffiliation}, {source_key: //contributor/affiliation/id, target_key: distributorAbbreviation}]
 
-- trigger: //description/@descriptionType
-  type: rule
-  priority: 1
-  trigger_values: [seriesInformation]
-  seriesInformation: [{source_key: //description, target_key: seriesInformation}]
+#- trigger: //description/@descriptionType
+#  type: rule
+#  priority: 1
+#  trigger_values: [seriesInformation]
+#  seriesInformation: [{source_key: //description, target_key: seriesInformation}]
 
 - trigger: //dates/date/dateType
   type: rule

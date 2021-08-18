@@ -42,7 +42,6 @@ def create_app(test_config=None):
         return jsonify(message="{}".format(warnings)), 422
     @app.errorhandler(500)
     def error_yaml_server(warnings):
-        print("blubb")
         return jsonify(message="Mapping is not correctly configured. Please contact the administrators at fokus@izus.uni-stuttgart.de and transmit the following information: {}.".format(warnings)), 500
     
         
@@ -63,6 +62,8 @@ def create_app(test_config=None):
     
     def translate_source_keys(source_key_values, mapping):        
         target_key_values = {}   
+        # target_key_values: target_key (key), values (value)
+        
         # check if rules can be applied to source_keys
         source_keys_to_delete = []       
         for k,v in source_key_values.items():     
@@ -135,29 +136,28 @@ def create_app(test_config=None):
                 p_field = get_vocabulary_field(k, v_checked, multiple)   
                 return p_field             
             else:                   # v did not match controlled vocab
-                None  
+                p_field = get_vocabulary_field(k, ['none'], multiple)   
+                return p_field   
             
-    def get_primitive_field(k,v,multiple):        
+    def get_primitive_field(k,v,multiple):       
         if multiple == True:
-            if isinstance(v,list):
-                v_new = []
-                for value in v:
-                    if value != 'none' and value != None:
-                        v_new.append(value)
-                v = v_new
+            v_new = []
+            for value in v:
+                if value != None:
+                    v_new.append(value)
+            v = v_new
             p_field = MultiplePrimitiveField(k,v)
-        if multiple == False:            
-            if isinstance(v, list):
-                v_new = ""
-                counter = 0
-                for value in v:
-                    if value != 'none' and value != None:
-                        counter += 1
-                        if counter == 1:
-                            v_new += value
-                        else:
-                            g.warnings.append(k + " has only one allowed value. We deleted value number " + str(counter) + ": " + value)
-                v = v_new
+        if multiple == False:        
+            v_new = ""
+            counter = 0
+            for value in v:
+                if value != None:
+                    counter += 1
+                    if counter == 1:
+                        v_new += value
+                    elif value != 'none':
+                        g.warnings.append(k + " has only one allowed value. We deleted value number " + str(counter) + ": " + value)
+            v = v_new
             p_field = PrimitiveField(k,v)
         return p_field
     
@@ -170,7 +170,6 @@ def create_app(test_config=None):
             if isinstance(v,list):
                 v = ", ".join(v)
             v_field = VocabularyField(k,v)   
-        print("v_field: ", v_field)
         return v_field
     
     def build_json(target_key_values, method):
@@ -179,6 +178,11 @@ def create_app(test_config=None):
         children_dict = {}
         single_fields = []
         mb_dict = {}
+        
+        print(target_key_values)
+        # fill children_dict with target_key (key) and p_fields (value)
+        # fill parents_dict with parent_key (key) and c_fields (value)
+        # or fill mb_dict and json_result directly with no-parent-keys
         for k, v in target_key_values.items():   
             field = DV_FIELD.get(k)
             if field is None:
@@ -199,7 +203,7 @@ def create_app(test_config=None):
                     children_dict[k] = []
                     if isinstance(v, list):
                         for value in v:          
-                            p_field = get_p_field(type_class,k,value,multiple,field)       
+                            p_field = get_p_field(type_class,k,[value],multiple,field)       
                             if p_field != None:            
                                 children_dict[k].append(p_field) 
                     else:
@@ -214,28 +218,29 @@ def create_app(test_config=None):
             # has no parent    
             if parent == None:
                 p_field = get_p_field(type_class,k,v,multiple,field)
-                if p_field != None:
+                if p_field != None and p_field.value != ['none'] and p_field.value != 'none':
                     mb_dict[mb_id].add_field(p_field) 
                     json_result.add_field(p_field)
-        
+        print(target_key_values)
         # build compound fields        
         for parent, c_field_outer in parents_dict.items(): 
-            children = DV_CHILDREN.get(parent)       
-            print(parent)      
+            print(parent)
+            children = DV_CHILDREN.get(parent)    
             if isinstance(c_field_outer, MultipleCompoundField):            
                 for child in children:                    
                     if child in children_dict:
                         number_of_values = len(children_dict.get(child))
-                        break            
-                    print(number_of_values)                       
+                        break                                  
                 for i in range(number_of_values):    
                     c_field_inner = CompoundField(parent)                
                     for child in children:                                                
                         if child in children_dict: 
-                           p_field = children_dict.get(child)[i]                           
-                           if p_field.value != 'none':                           
-                               c_field_inner.add_value(p_field, child)                               
-                           else:
+                            print(child)
+                            p_field = children_dict.get(child)[i]                      
+                            if p_field != None and p_field.value != ['none'] and p_field.value != 'none' and p_field.value.strip() != '':
+                                print(p_field.value)                            
+                                c_field_inner.add_value(p_field, child)                               
+                            else:
                                 continue
                     if bool(c_field_inner.value):
                         c_field_outer.add_value(c_field_inner)
@@ -245,7 +250,9 @@ def create_app(test_config=None):
                 for child in children:
                     if child in children_dict:  
                         p_field = children_dict.get(child)
-                        c_field_outer.add_value(p_field, child)
+                        if p_field != None and p_field.value != ['none'] and p_field.value != 'none' and p_field.value.strip() != '':
+                            print(p_field.value)      
+                            c_field_outer.add_value(p_field, child)
                 json_result.add_field(c_field_outer)     
                 mb_dict[mb_id].add_field(c_field_outer)
         

@@ -26,7 +26,7 @@
 	processInstruLocation	Location	Location of the instrument.		text	22	, #NAME: #VALUE	FALSE	FALSE	FALSE	FALSE	TRUE	FALSE	processInstru	process
 	processEnv	Environments	(Computation) environments of the data generation. 		none	23	,	FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		process
 	processEnvName	Name	Name of the environment.		text	24	#VALUE	TRUE	FALSE	FALSE	TRUE	FALSE	FALSE	processEnv	process
-	processEnvCompName	Compiler Names and Flags	Name and flags of the used compilers.		text	25	#VALUE	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	processEnv	process
+	processEnvCompName	Compiler Names and Flags	Name and flags of the used compilers.		text	25	#VALUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processEnv	process
 	processEnvNodes	Number of Nodes	Number of compute nodes inside a high performance cluster environment.		int	26	#VALUE computing nodes	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processEnv	process
 	processEnvPPN	PPN	Processors per node		int	27	#NAME: #VALUE	FALSE	FALSE	FALSE	FALSE	FALSE	FALSE	processEnv	process
 	processStep	Processing Steps	Specification of the processing steps in the data life cycle.		none	28		FALSE	FALSE	TRUE	FALSE	TRUE	FALSE		process
