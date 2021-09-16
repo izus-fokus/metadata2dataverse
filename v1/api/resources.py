@@ -12,9 +12,14 @@ TranslatorFactory = TranslatorFactory()
 from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS      #global variables
 
 
-
-# Read config yaml files (mapping from source key to target keys)
 def read_all_config_files(): 
+    """ Opens all config files located in './resources/config'  and gives them to read_config() method.
+    
+    If config file has no errors, it is transferred to fill_MAPPINGS() method. 
+    Otherwise abort with file errors.
+    
+    """
+    
     g.warnings = []
     rootdir = './resources/config'
     for subdir, dirs, files in os.walk(rootdir):
@@ -22,27 +27,41 @@ def read_all_config_files():
             path = os.path.join(subdir, file)
             open_yaml_file = open(path)            
             config = read_config(open_yaml_file)
+            open_yaml_file.close()
             # check if yaml file was correct    
             if len(g.warnings) > 0:
                 warnings = ' '.join(g.warnings)
-                abort(500, warnings)
+                abort(500, warnings)            
             fill_MAPPINGS(config)
             
 
 # Read schema tsv files (metadatablocks nesting)      
-def read_all_tsv_files():
-    rootdir = './resources/tsv'
-        
+def read_all_scheme_files():
+    """ Loads all schemes from './resources/tsv' and gives them to read_scheme() method. """
+    
+    rootdir = './resources/tsv'        
     # for file in resources/resources
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
             path = os.path.join(subdir, file)
             open_tsv_file = open(path)            
-            read_tsv(open_tsv_file)
+            read_scheme(open_tsv_file)
             open_tsv_file.close()
 
 
 def read_config(data):    
+    """ Reads all information from config file, returns config object.
+    
+    Parameters
+    ------------
+    data : opened yaml file
+    
+    Returns
+    ------------
+    config : obj
+    
+    """
+    
     g.warnings = []
     yaml_file = yaml.safe_load(data)     
     # check for missing content
@@ -53,7 +72,6 @@ def read_config(data):
     if len(g.warnings) > 0:
         return None        
     # Extracting dictionaries out of yaml-file   
-    # Check if yaml file is complete     
     scheme = yaml_file["scheme"]   
     description = yaml_file["description"]
     format = yaml_file["format"]   
@@ -78,6 +96,15 @@ def read_config(data):
     return config    
    
 def fill_MAPPINGS(config):
+    """ Fills global MAPPINGS dictionary with config object.
+    
+    Checks format of config file if scheme already exists. If format already exists: Abortion.
+    
+    Parameters
+    ---------
+    config : obj      
+    """
+    
     # fill global dictionary of mappings
     scheme = config.scheme
     if scheme in MAPPINGS:
@@ -91,7 +118,14 @@ def fill_MAPPINGS(config):
         MAPPINGS[scheme] = [config]    
           
 
-def read_tsv(data):
+def read_scheme(data):
+    """ Reads all information from scheme, and saves it to global variables 
+        DV_FIELD, DV_CHILDREN, and DV_MB. 
+        
+    Parameters
+    ---------
+    data : opened tsv file    
+    """    
     tsv_file = csv.reader(data, delimiter="\t")
     
     start_metadata_block = False
