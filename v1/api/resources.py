@@ -37,7 +37,7 @@ def read_all_config_files():
 
 # Read schema tsv files (metadatablocks nesting)      
 def read_all_scheme_files():
-    """ Loads all schemes from './resources/tsv' and gives them to read_scheme() method. """
+    """ Opens all schemes from './resources/tsv' and gives them to read_scheme() method. """
     
     rootdir = './resources/tsv'        
     # for file in resources/resources
@@ -50,7 +50,7 @@ def read_all_scheme_files():
 
 
 def read_config(data):    
-    """ Reads all information from config file, returns config object.
+    """ Parses all information from config file, returns config object.
     
     Parameters
     ------------
@@ -58,7 +58,7 @@ def read_config(data):
     
     Returns
     ------------
-    config : obj
+    config : Config obj
     
     """
     
@@ -119,8 +119,8 @@ def fill_MAPPINGS(config):
           
 
 def read_scheme(data):
-    """ Reads all information from scheme, and saves it to global variables 
-        DV_FIELD, DV_CHILDREN, and DV_MB. 
+    """ Parses all information from scheme, and saves information to the global dictionaries 
+        DV_FIELD, DV_CHILDREN, and DV_MB.         
         
     Parameters
     ---------

@@ -13,6 +13,7 @@ class Translator(metaclass=ABCMeta):
     def get_priority():
         """ Translator Interface """         
         
+        
 class BaseTranslator(Translator):    
     def __init__(self, source_key, target_key, priority = 1): 
         self.source_key = source_key
@@ -34,7 +35,6 @@ class BaseTranslator(Translator):
     
     def get_priority(self):
         return self.priority
-    
     
         
 class AdditionTranslator(Translator):    

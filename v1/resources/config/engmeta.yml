@@ -114,8 +114,8 @@ mapping:
 # project
 - source_key: //project/value
   target_key: projectName
-#- source_key: //project/@level
-#  target_key: projectLevel
+- source_key: //project/@level
+  target_key: projectLevel
 
 # distributor
 #T: distributorName

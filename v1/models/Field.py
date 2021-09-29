@@ -1,7 +1,7 @@
 from flask import g
 class Field(object):
     ''' object after parsing a tsv file '''
-
+    
     
     def __init__(self, target_key, multiple, type_class, parent, metadata_block):
         ''' Constructor '''
@@ -12,13 +12,28 @@ class Field(object):
         self.parent = parent
         self.metadata_block = metadata_block
         
+        
     def __repr__(self):
         return "{multiple: " + str(self.multiple) + ", type class: " + self.type_class + ", parent: " + str(self.parent) + ", metadata block: " + self.metadata_block + ", controlled Vocabulary: " + str(self.controlled_vocabulary) +"}"
+        
         
     def set_controlled_vocabulary(self, controlled_vocabulary):
         self.controlled_vocabulary.append(controlled_vocabulary)
         
+        
     def check_controlled_vocabulary(self, v):     
+        """ Checks value v against controlled_vocabulary list. 
+        
+        Returns v if it is in controlled_vocabulary, else []. Ignores 'none' values.
+        
+        Parameters
+        ---------
+        v : str
+        
+        Returns
+        ---------
+        v : str or []
+        """
         if len(v) > 1:      # case multiple values
             v_new = []
             for value_ in v:
