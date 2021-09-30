@@ -16,10 +16,8 @@ def read_all_config_files():
     """ Opens all config files located in './resources/config'  and gives them to read_config() method.
     
     If config file has no errors, it is transferred to fill_MAPPINGS() method. 
-    Otherwise abort with file errors.
-    
-    """
-    
+    Otherwise abort with file errors.    
+    """    
     g.warnings = []
     rootdir = './resources/config'
     for subdir, dirs, files in os.walk(rootdir):
@@ -37,8 +35,7 @@ def read_all_config_files():
 
 # Read schema tsv files (metadatablocks nesting)      
 def read_all_scheme_files():
-    """ Opens all schemes from './resources/tsv' and gives them to read_scheme() method. """
-    
+    """ Opens all schemes from './resources/tsv' and gives them to read_scheme() method. """    
     rootdir = './resources/tsv'        
     # for file in resources/resources
     for subdir, dirs, files in os.walk(rootdir):
@@ -58,10 +55,8 @@ def read_config(data):
     
     Returns
     ------------
-    config : Config obj
-    
-    """
-    
+    config : Config obj    
+    """    
     g.warnings = []
     yaml_file = yaml.safe_load(data)     
     # check for missing content
@@ -126,8 +121,7 @@ def read_scheme(data):
     ---------
     data : opened tsv file    
     """    
-    tsv_file = csv.reader(data, delimiter="\t")
-    
+    tsv_file = csv.reader(data, delimiter="\t")    
     start_metadata_block = False
     start_schema = False
     start_vocabulary = False    
@@ -144,8 +138,7 @@ def read_scheme(data):
                 except ValueError:
                     print("Check TSV #datasetField column names. Should contain name, allowmultiples, metadatablock_id, fieldType, parent and allowControlledVocabulary.")
                 start_schema = True
-                continue
-        
+                continue        
             if(row[0] == "#controlledVocabulary"):
                 try:
                     index_valuecontrolledvoc = row.index("Value")
@@ -153,8 +146,7 @@ def read_scheme(data):
                         print("Check TSV #controlledVocabulary column names. Should contain Value.")
                 start_vocabulary = True
                 start_schema = False
-                continue
-        
+                continue        
             if(row[0] == "#metadataBlock"):
                 try:
                     index_mbname = row.index("name")
@@ -162,20 +154,17 @@ def read_scheme(data):
                 except ValueError:
                     print("Check TSV #metadataBlock column names. Should contain displayName.")
                 start_metadata_block = True  
-                continue
-                                  
+                continue                                  
             if (start_metadata_block):
                 DV_MB[row[index_mbname]]=row[index_displayname]
                 start_metadata_block = False
-                continue
-                    
+                continue                    
             if (start_schema):        
                 multiple = row[index_multiple]
                 parent = row[index_parent]
                 target_key = row[index_targetkey]            
                 if(parent == ""):
-                    parent = None
-            
+                    parent = None            
                 # check type (primitive, compound, controlled vocabulary)
                 type_class = "primitive"
                 metadata_block = row[index_metadatablock]
@@ -183,15 +172,12 @@ def read_scheme(data):
                     type_class = "compound"      
                     DV_CHILDREN[target_key] = []      
                 if(row[index_hascontrolledvoc] == "TRUE"):
-                    type_class = "controlled_vocabulary"
-            
+                    type_class = "controlled_vocabulary"            
                 # create parent/children map
                 if parent in DV_CHILDREN:
-                    DV_CHILDREN[parent].append(target_key)
-                
+                    DV_CHILDREN[parent].append(target_key)                
                 field = Field(target_key, multiple, type_class, parent, metadata_block)             
-                DV_FIELD[target_key] = field 
-                
+                DV_FIELD[target_key] = field                 
             if(start_vocabulary):
                 field = DV_FIELD[row[index_targetkey]]
                 field.set_controlled_vocabulary(row[index_valuecontrolledvoc])

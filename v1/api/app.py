@@ -1,6 +1,6 @@
 from flask import Flask, request, abort, jsonify, send_file, g
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
-from api.resources import read_all_config_files, read_all_tsv_files, read_config, fill_MAPPINGS
+from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS
 from models.ReaderFactory import ReaderFactory
 from models.Translator import MergeTranslator, AdditionTranslator
 from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
@@ -15,7 +15,7 @@ def create_app(test_config=None):
     # helper functions
     @app.before_first_request
     def init_globals():
-        read_all_tsv_files()
+        read_all_scheme_files()
         read_all_config_files()
         
     @app.errorhandler(400)
@@ -375,6 +375,18 @@ def create_app(test_config=None):
  
     @app.route('/metadata/<string:scheme>', methods=["POST"])
     def mapMetadata(scheme):
+        """Fills a Dataverse compatible JSON template with all mappable values from the input metadata. 
+        
+        Requires the mapping for scheme and content_type of request to exist.
+        
+        Parameters
+        ----------
+        scheme : str
+        
+        Returns
+        ----------
+        response : json        
+        """
         method = request.args.get('method',
                                   type=str,
                                   default='update')
@@ -409,6 +421,18 @@ def create_app(test_config=None):
 
     @app.route('/metadata/<string:scheme>')
     def getEmptyDataverseJson(scheme):
+        """ Returns an empty JSON template for Dataverse with all mappable fields of the input metadata scheme. 
+        
+        Requires the mapping for scheme to exist.
+        
+        Parameters
+        ----------
+        scheme : str
+        
+        Returns
+        ----------
+        response : json              
+        """
         method = request.args.get('method',
                                   type=str,
                                   default='update')
@@ -442,6 +466,7 @@ def create_app(test_config=None):
 
     @app.route('/mapping', methods=["GET"])
     def SchemasMappingInfo():
+        """ Returns a general overview of existing mappings and formats. """
         list_of_mappings = []
         for m in MAPPINGS:
             for mapping in MAPPINGS[m]:
@@ -451,6 +476,9 @@ def create_app(test_config=None):
 
     @app.route('/mapping/<string:scheme>', methods=["GET"])
     def getSchemeMapping(scheme):
+        """ Returns a mapping file for scheme. 
+        If the scheme exists in several formats the query parameter has to be given. 
+        """
         format = request.args.get('format', default=None)    
         mapping = get_mapping(scheme,format)
         return mapping.pretty_yaml()
@@ -458,6 +486,7 @@ def create_app(test_config=None):
 
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():         
+        """ Adds a new mapping. Aborts if target keys do not exist in DV_FIELDS. """
         new_mapping = request.data
         config = read_config(new_mapping)           
         # check if yaml file was correct    
@@ -475,6 +504,16 @@ def create_app(test_config=None):
 
     @app.route('/mapping/<string:scheme>', methods=["PUT"])
     def editSchemeMapping(scheme):
+        """ Change an existing mapping configuration. Aborts if target keys do not exist in DV_FIELDS. 
+        
+        Parameters
+        ---------
+        scheme : str
+        
+        Returns
+        ---------
+        response : json
+        """
         format = request.args.get('format', default=None)
         new_mapping = request.data
         try:
@@ -507,6 +546,16 @@ def create_app(test_config=None):
     
     @app.route('/mapping/<string:scheme>', methods=["DELETE"])
     def deleteSchemeMapping(scheme):
+        """ Deletes a mapping for a metadata scheme. Fails if scheme or format not found. 
+        
+        Parameters
+        ---------
+        scheme : str
+        
+        Returns
+        ---------
+        response : json
+        """
         format = request.args.get('format', default=None)   
         try:
             mappings = MAPPINGS[scheme]                 
@@ -524,12 +573,18 @@ def create_app(test_config=None):
                 MAPPINGS[scheme] = mappings
                 response = {'success': True,
                             'deleted': scheme}        
-                return jsonify(response), 204
-        
+                return jsonify(response), 204        
         abort(400, scheme) 
+        
         
     @app.route('/dv-metadata-config', methods=["GET"])
     def getMetadataBlocks():        
+        """ Returns available metadata blocks. 
+        
+        Returns
+        --------
+        DV_MB : json
+        """
         return jsonify(DV_MB)
         
     return app
