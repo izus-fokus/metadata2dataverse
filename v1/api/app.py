@@ -59,6 +59,10 @@ def create_app(test_config=None):
         ----------
         scheme : str
         format : str        
+        
+        Returns
+        ----------
+        mapping : Config obj
         """
         mappings = MAPPINGS.get(scheme)        
         # scheme does not exist
