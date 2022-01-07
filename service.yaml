@@ -1,0 +1,1118 @@
+openapi: 3.0.2
+info:
+  title: MetadataMapper
+  description: Mapping Service generating Dataverse conform JSON-documents from structured metadata files
+  version: '0.4'
+  termsOfService: ''
+  contact:
+    name: FoKUS Competence Center for Research Data Management
+    url: 'https://www.izus.uni-stuttgart.de/fokus/'
+    email: fokus@izus.uni-stuttgart.de
+  license: # is there a specific reason for this license?
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'https://darus.uni-stuttgart.de/metadataMapper/'
+    description: Production server
+  - url: 'https://demodarus.izus.uni-stuttgart.de/metadataMapper/'
+    description: Staging server
+tags:
+  - name: metadata
+    description: operations to get Dataverse compatible metadata
+  - name: mapping
+    description: operations on the mapping of metadata formats to Dataverse JSON format
+  - name: dv-metadata-config
+    description: operations on the available metadata fields within a Dataverse installation
+paths:
+  '/metadata/{scheme}': # or dv-metadata
+    get: # empty dv-json will crash in dv, because of required fields. What is the intention of this endpoint?
+      tags:
+        - metadata
+      summary: Get empty Dataverse compatible JSON
+      description: Returns an empty JSON template for Dataverse with all mappable fields of the input metadata scheme. Requires the resource `/mapping/{scheme}?format={content-type}` to exist. 
+      operationId: getEmptyDataverseJson
+      parameters:
+        - $ref: '#/components/parameters/scheme'
+        - $ref: '#/components/parameters/method'
+      responses: # do i need 400 (bad request) when method not edit/update?
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/update'
+                  - $ref: '#/components/schemas/edit'
+              examples:
+                update:
+                  summary: Example of an output for method=update
+                  value:
+                    metadataBlocks:
+                      citation:
+                        displayName: Citation Metadata
+                        fields:
+                          - typeName: title
+                            multiple: false
+                            typeClass: primitive
+                            value: ""
+                          - typeName: author
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - authorName:
+                                  typeName: authorName
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: ''
+                          - typeName: datasetContact
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - datasetContactName:
+                                  typeName: datasetContactName
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: ''
+                                datasetContactEmail:
+                                  typeName: datasetContactEmail
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: ''
+                          - typeName: dsDescription
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - dsDescriptionValue:
+                                  typeName: dsDescriptionValue
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: ""
+                          - typeName: subject
+                            multiple: true
+                            typeClass: controlledVocabulary
+                            value: []
+                          - typeName: depositor
+                            multiple: false
+                            typeClass: primitive
+                            value: ''
+                          - typeName: dateOfDeposit
+                            multiple: false
+                            typeClass: primitive
+                            value: ''
+                edit:
+                  summary: Example of an output for method=edit
+                  value:
+                    fields:
+                      - typeName: subject
+                        value: []
+                      - typeName: subtitle
+                        value: ""
+                      - typeName: title
+                        value: ""
+                      - typeName: author
+                        value:
+                          - authorName:
+                              typeName: authorName
+                              value: ''
+                            authorAffiliation:
+                              typeName: authorAffiliation
+                              value: ""
+                          - authorName:
+                              typeName: authorName
+                              value: ''
+                            authorAffiliation:
+                              typeName: authorAffiliation
+                              value: ""
+                      - typeName: producer
+                        value:
+                          - producerName:
+                              typeName: producerName
+                              value: ''
+                            producerAffiliation:
+                              typeName: producerAffiliation
+                              value: ''
+                          - producerName:
+                              typeName: producerName
+                              value: ''
+                            producerAffiliation:
+                              typeName: producerAffiliation
+                              value: ""
+            application/json+verbose:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items: 
+                      type: string
+                  result:
+                    oneOf:
+                      - $ref: '#/components/schemas/update'
+                      - $ref: '#/components/schemas/edit'
+        '202':
+          description: Accepted - there are warnings
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/update'
+                  - $ref: '#/components/schemas/edit'
+              examples:
+                update:
+                  summary: Example of an output for method=update
+                  value:
+                    metadataBlocks:
+                      citation:
+                        displayName: Citation Metadata
+                        fields:
+                          - typeName: title
+                            multiple: false
+                            typeClass: primitive
+                            value: ""
+                          - typeName: author
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - authorName:
+                                  typeName: authorName
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: ''
+                          - typeName: datasetContact
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - datasetContactName:
+                                  typeName: datasetContactName
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: ''
+                                datasetContactEmail:
+                                  typeName: datasetContactEmail
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: ''
+                          - typeName: dsDescription
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - dsDescriptionValue:
+                                  typeName: dsDescriptionValue
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: ""
+                          - typeName: subject
+                            multiple: true
+                            typeClass: controlledVocabulary
+                            value: []
+                          - typeName: depositor
+                            multiple: false
+                            typeClass: primitive
+                            value: ''
+                          - typeName: dateOfDeposit
+                            multiple: false
+                            typeClass: primitive
+                            value: ''
+                edit:
+                  summary: Example of an output for method=edit
+                  value:
+                    fields:
+                      - typeName: subject
+                        value: []
+                      - typeName: subtitle
+                        value: ""
+                      - typeName: title
+                        value: ""
+                      - typeName: author
+                        value:
+                          - authorName:
+                              typeName: authorName
+                              value: ''
+                            authorAffiliation:
+                              typeName: authorAffiliation
+                              value: ""
+                          - authorName:
+                              typeName: authorName
+                              value: ''
+                            authorAffiliation:
+                              typeName: authorAffiliation
+                              value: ""
+                      - typeName: producer
+                        value:
+                          - producerName:
+                              typeName: producerName
+                              value: ''
+                            producerAffiliation:
+                              typeName: producerAffiliation
+                              value: ''
+                          - producerName:
+                              typeName: producerName
+                              value: ''
+                            producerAffiliation:
+                              typeName: producerAffiliation
+                              value: ""
+            application/json+verbose:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items: 
+                      type: string
+                  result:
+                    oneOf:
+                      - $ref: '#/components/schemas/update'
+                      - $ref: '#/components/schemas/edit'
+        '404':
+          $ref: '#/components/responses/schemeNotFound'
+    post:
+      tags:
+        - metadata
+      summary: Convert metadata into Dataverse compatible JSON
+      description: Fills a Dataverse compatible JSON template with all mappable values from the input metadata. Requires the resource `/mapping/{scheme}/{content-type}` to exist.
+      operationId: mapMetadata
+      parameters:
+        - $ref: '#/components/parameters/scheme'
+        - $ref: '#/components/parameters/method'
+      requestBody:
+        description: Metadata in structured format.
+        content:
+          application/xml:
+            schema:
+              type: string
+              format: binary
+          text/plain:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/update'
+                  - $ref: '#/components/schemas/edit'
+              examples:
+                edit:
+                  summary: Example of a JSON-File for the edit-Endpoint of Dataverse
+                  value:
+                    fields:
+                      - typeName: subject
+                        value:
+                          - Astronomy and Astrophysics
+                      - typeName: subtitle
+                        value: More Birds and Trees
+                      - typeName: title
+                        value: Post Publish Title Change
+                      - typeName: author
+                        value:
+                          - authorName:
+                              typeName: authorName
+                              value: 'Poe, Edgar Allen'
+                            authorAffiliation:
+                              typeName: authorAffiliation
+                              value: Baltimore Poets
+                          - authorName:
+                              typeName: authorName
+                              value: 'Mulligan, Hercules'
+                            authorAffiliation:
+                              typeName: authorAffiliation
+                              value: Sons of Liberty
+                      - typeName: producer
+                        value:
+                          - producerName:
+                              typeName: producerName
+                              value: 'Allen, Irwin'
+                            producerAffiliation:
+                              typeName: producerAffiliation
+                              value: MGM
+                          - producerName:
+                              typeName: producerName
+                              value: 'Lucas, George'
+                            producerAffiliation:
+                              typeName: producerAffiliation
+                              value: ILM
+                update:
+                  summary: Example of a JSON-Output for the update-Endpoint of Dataverse
+                  value:
+                    metadataBlocks:
+                      citation:
+                        displayName: Citation Metadata
+                        fields:
+                          - typeName: title
+                            multiple: false
+                            typeClass: primitive
+                            value: newTitle
+                          - typeName: author
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - authorName:
+                                  typeName: authorName
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: 'Spruce, Sabrina'
+                          - typeName: datasetContact
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - datasetContactName:
+                                  typeName: datasetContactName
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: 'Spruce, Sabrina'
+                                datasetContactEmail:
+                                  typeName: datasetContactEmail
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: spruce@mailinator.com
+                          - typeName: dsDescription
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - dsDescriptionValue:
+                                  typeName: dsDescriptionValue
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: test
+                          - typeName: subject
+                            multiple: true
+                            typeClass: controlledVocabulary
+                            value:
+                              - Other
+                          - typeName: depositor
+                            multiple: false
+                            typeClass: primitive
+                            value: 'Spruce, Sabrina'
+                          - typeName: dateOfDeposit
+                            multiple: false
+                            typeClass: primitive
+                            value: '2017-04-19'
+            application/json+verbose:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items: 
+                      type: string
+                  result:
+                    oneOf:
+                      - $ref: '#/components/schemas/update'
+                      - $ref: '#/components/schemas/edit'
+        '202':
+          description: Accepted - there are warnings
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/update'
+                  - $ref: '#/components/schemas/edit'
+              examples:
+                edit:
+                  summary: Example of a JSON-File for the edit-Endpoint of Dataverse
+                  value:
+                    fields:
+                      - typeName: subject
+                        value:
+                          - Astronomy and Astrophysics
+                      - typeName: subtitle
+                        value: More Birds and Trees
+                      - typeName: title
+                        value: Post Publish Title Change
+                      - typeName: author
+                        value:
+                          - authorName:
+                              typeName: authorName
+                              value: 'Poe, Edgar Allen'
+                            authorAffiliation:
+                              typeName: authorAffiliation
+                              value: Baltimore Poets
+                          - authorName:
+                              typeName: authorName
+                              value: 'Mulligan, Hercules'
+                            authorAffiliation:
+                              typeName: authorAffiliation
+                              value: Sons of Liberty
+                      - typeName: producer
+                        value:
+                          - producerName:
+                              typeName: producerName
+                              value: 'Allen, Irwin'
+                            producerAffiliation:
+                              typeName: producerAffiliation
+                              value: MGM
+                          - producerName:
+                              typeName: producerName
+                              value: 'Lucas, George'
+                            producerAffiliation:
+                              typeName: producerAffiliation
+                              value: ILM
+                update:
+                  summary: Example of a JSON-Output for the update-Endpoint of Dataverse
+                  value:
+                    metadataBlocks:
+                      citation:
+                        displayName: Citation Metadata
+                        fields:
+                          - typeName: title
+                            multiple: false
+                            typeClass: primitive
+                            value: newTitle
+                          - typeName: author
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - authorName:
+                                  typeName: authorName
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: 'Spruce, Sabrina'
+                          - typeName: datasetContact
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - datasetContactName:
+                                  typeName: datasetContactName
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: 'Spruce, Sabrina'
+                                datasetContactEmail:
+                                  typeName: datasetContactEmail
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: spruce@mailinator.com
+                          - typeName: dsDescription
+                            multiple: true
+                            typeClass: compound
+                            value:
+                              - dsDescriptionValue:
+                                  typeName: dsDescriptionValue
+                                  multiple: false
+                                  typeClass: primitive
+                                  value: test
+                          - typeName: subject
+                            multiple: true
+                            typeClass: controlledVocabulary
+                            value:
+                              - Other
+                          - typeName: depositor
+                            multiple: false
+                            typeClass: primitive
+                            value: 'Spruce, Sabrina'
+                          - typeName: dateOfDeposit
+                            multiple: false
+                            typeClass: primitive
+                            value: '2017-04-19'
+            application/json+verbose:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items: 
+                      type: string
+                  result:
+                    oneOf:
+                      - $ref: '#/components/schemas/update'
+                      - $ref: '#/components/schemas/edit'
+        '404':
+          $ref: '#/components/responses/schemeNotFound'
+        '415':
+          description: Unsupported media type
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/errorMessage' 
+              example:
+                message: "The request media type is not supported for 'engMeta'. Check resource `/mapping/engMeta` for available media types of this metadata scheme."
+  '/mapping':
+    get:
+      tags: [mapping]
+      summary: Information about existing mapping configurations
+      description: Returns a general overview of existing mappings and formats.
+      operationId: getSchemesMappingInfo
+      responses: 
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/mappingSchemeInfo'
+              example:
+                - name: engMeta
+                  description: Metadata scheme for engineering metadata.
+                  format: text/plain
+                - name: enzymeML
+                  description: EnzymeML is a free and open standard based XML markup interchange format for enzyme kinetics. The purpose of EnzymeML is to store and exchange enzyme kinetic data between databases, instruments and software tools. EnzymeML will allow scientists to share their experimental protocols and results even if they are using different instruments, electronic laboratory notebooks, or databases.
+                  reference: "http://www.med.umich.edu/schnell-lab/project/enzymeml/"
+                  format: application/xml
+    post:
+      tags:
+        - mapping
+      description: Adds a new mapping configuration. Fails if the target keys do not exist in any `dv-metadata-config`.
+      summary: Upload mapping for a metadata scheme
+      operationId: createSchemeMapping
+      requestBody:
+        description: Mapping in structured (yaml) format.
+        content:
+          application/yaml:
+            schema:
+              $ref: '#/components/schemas/mappingConfig'
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              description: The url of the created resource
+              schema:
+                type: string
+              example: "/mapping/EngMetaCitation?format=text-plain"
+        '409': 
+          description: Conflict - definition already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMessage'
+              example:
+                message: "Mapping scheme 'engMeta' with format 'text/plain' already exists. Use PUT to change it."
+        '422':
+          description: Unprocessable entity - validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMessage'
+              example:
+                message: "Target key 'author' does not exist. Check dv-metadata-config for existing metadata keys."
+  '/mapping/{scheme}':
+    get:
+      tags:
+        - mapping
+      summary: Return mapping configuration of a scheme
+      description: Return a mapping file for `scheme`. If the scheme exists in several formats the query parameter has to be given.
+      operationId: getSchemeMapping
+      parameters:
+        - $ref: '#/components/parameters/scheme'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/yaml: 
+              schema:
+                $ref: '#/components/schemas/mappingConfig'
+        '400':
+          $ref: '#/components/responses/formatMissing'
+        '404':
+          $ref: '#/components/responses/schemeNotFound'
+    put:
+      tags:
+        - mapping
+      description: Change an existing mapping configuration. Fails if the target keys do not exist in any `dv-metadata-config`.
+      summary: Change the mapping of a metadata scheme
+      operationId: editSchemeMapping
+      parameters:
+        - $ref: '#/components/parameters/scheme'
+        - $ref: '#/components/parameters/format'
+      requestBody:
+        description: Mapping in structured (yaml) format.
+        content:
+          application/yaml:
+            schema:
+              $ref: '#/components/schemas/mappingConfig'
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/formatMissing'
+        '404':
+          $ref: '#/components/responses/schemeNotFound'
+        '422':
+          description: Unprocessable entity - validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMessage'
+              example:
+                message: "Target key 'author' does not exist. Check dv-metadata-config for existing metadata keys."
+    delete:
+      tags:
+        - mapping
+      description: ''
+      summary: Delete a mapping for a metadata scheme
+      operationId: deleteSchemeMapping
+      parameters:
+        - $ref: '#/components/parameters/scheme'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/formatMissing'
+        '404':
+          $ref: '#/components/responses/schemeNotFound'
+  '/dv-metadata-config':
+    get:
+      tags: [dv-metadata-config]
+      summary: Return avaiable metadata blocks
+      operationId: getMetedataBlocks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: ["name"]
+                  properties:
+                    name: 
+                      type: string
+                    displayName:
+                      type: string
+                    blockURI:
+                      type: string
+                  example:
+                    name: Citation
+                    displayName: Citation Metadata
+                    blockURI: https://dataverse.org/schema/citation/
+    post:
+      tags:
+        - dv-metadata-config
+      description: "Create a new metadata block `/dv-metadata-config/{block}` with name 'block'"
+      summary: Upload configuration of new metadata block
+      operationId: createMetadataBlock
+      requestBody:
+        description: Configuration of metadata block in form of a tsv file.
+        content:
+          application/tsv:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              description: The url of the created resource
+              schema:
+                type: string
+              example: "/dv-metadata-config/citation"
+        '409':
+          description: Conflict - metadata block already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMessage'
+              example:
+                message: "Metadata block 'citation' already exists. Use PUT to change it."
+  '/dv-metadata-config/{block}':
+    get:
+      tags:
+        - dv-metadata-config
+      summary: Return the metadata block in Dataverse as tsv file
+      operationId: getMetadataBlock
+      parameters:
+        - name: block
+          in: path
+          description: Name of the metadata block. See `/dv-metadata-config` (get)
+          required: true
+          schema:
+            type: string
+          example: citation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/tsv:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Block not found
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/errorMessage' 
+              example:
+                message: "Did not find metadata block 'citation'. Check resource `/dv-metadata-config` for available blocks."
+    put:
+      tags:
+        - dv-metadata-config
+      summary: Change the configuration of a metadata block
+      description: Change an existing metadata block definition.
+      operationId: editMetadataBlock
+      parameters:
+        - name: block
+          in: path
+          description: Name of the metadata block. See `/metadata-block` (get)
+          required: true
+          schema:
+            type: string
+            example: citation
+      requestBody:
+        description: Configuration of metadata block in form of a tsv file.
+        content:
+          application/tsv:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '204':
+          description: No content
+        '404':
+          description: Block not found
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/errorMessage' 
+              example:
+                message: "Did not find metadata block 'citation'. Check resource `/dv-metadata-config` for available blocks."
+    delete:
+      tags:
+        - dv-metadata-config
+      description: ''
+      summary: Deletes configuration of metadata block
+      operationId: deleteMetadataBlock
+      parameters:
+        - name: block
+          in: path
+          description: Name of the metadata block. See `/metadata-block` (get)
+          required: true
+          schema:
+            type: string
+            example: citation 
+      responses:
+        '204':
+          description: No content
+        '404':
+          description: Block not found
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/errorMessage' 
+              example:
+                message: "Did not find metadata block 'citation'. Check resource `/dv-metadata-config` for available blocks."
+components:
+  parameters:
+    scheme:
+      name: scheme
+      description: Name of input metadata scheme. Functions as a key for the mapping.
+      in: path
+      required: true
+      schema:
+        type: string
+      example: engMeta
+    method:
+      name: method # or dv-method
+      in: query
+      description: 'Specifies the desired format of the response: edit for the edit-Endpoint of Dataverse (edits individual fields), update for the update-Endpoint (updates/creates whole dataset entry).'
+      required: false
+      schema:
+        type: string
+        enum: [edit, update]
+        default: update
+    format:
+      name: format
+      description: Mimetype of input metadata scheme. Functions as a key for the mapping.
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [text-plain, application-xml]
+      example: text-plain
+  responses:
+    schemeNotFound:
+      description: Scheme not found
+      content:
+        application/json:
+          schema: 
+            $ref: '#/components/schemas/errorMessage' 
+          example:
+            message: "Did not find mapping schema 'engMeta'. Check resource `/mapping` for available schemes."
+    formatMissing:
+      description: Format missing
+      content:
+        application/json:
+          schema: 
+            $ref: '#/components/schemas/errorMessage' 
+          example:
+            message: "Scheme'engMeta' exists in different formats. Check resource `/mapping` for available schemes/formats and specify format in your request."
+  schemas:
+    update:
+      type: object
+      required: [metadataBlocks]
+      properties:
+        metadataBlocks:
+          type: object
+          additionalProperties:
+            type: object
+            required: [displayName, fields]
+            properties:
+              displayName:
+                type: string
+              fields:
+                type: array
+                items:
+                  type: object
+                  required: [typeName, multiple, typeClass, value]
+                  properties:
+                    typeName:
+                      type: string
+                    multiple: # required?
+                      type: boolean
+                    typeClass: # required?
+                      type: string
+                      enum: [primitive, compound, controlledVocabulary]
+                    value:
+                      oneOf:
+                        # multiple false, primitive
+                        - type: string # integer, number not used!
+                        # multiple true, primitive/controlledVoc
+                        - type: array 
+                          items:
+                            type: string
+                        # multiple true, compound
+                        - type: array
+                          items:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              required: [typeName, multiple, typeClass, value]
+                              properties:
+                                typeName:
+                                  type: string
+                                multiple:
+                                  type: boolean
+                                typeClass:
+                                  type: string
+                                  enum: [primitive, controlledVocabulary]
+                                value:
+                                  oneOf:
+                                    # multiple false, primitive
+                                    - type: string # integer, number not used!
+                                    # multiple true, primitive/controlledVoc
+                                    - type: array 
+                                      items:
+                                        type: string
+                        # multiple false, compound
+                        - type: object
+                          additionalProperties:
+                            type: object
+                            required: [typeName, multiple, typeClass, value]
+                            properties:
+                              typeName:
+                                type: string
+                              multiple:
+                                type: boolean
+                              typeClass:
+                                type: string
+                                enum: [primitive, controlledVocabulary]
+                              value:
+                                oneOf:
+                                  # multiple false, primitive
+                                  - type: string # integer, number not used!
+                                  # multiple true, primitive/controlledVoc
+                                  - type: array 
+                                    items:
+                                      type: string
+    edit:
+      type: object
+      required: [fields]
+      properties:
+        fields:
+          type: array
+          items:
+            type: object
+            required: [typeName, value]
+            properties:
+              typeName:
+                type: string
+              value:
+                oneOf:
+                  # multiple false, primitive
+                  - type: string # integer, number not used!
+                  # multiple true, primitive/controlledVoc
+                  - type: array 
+                    items:
+                      type: string
+                  # multiple true, compound
+                  - type: array
+                    items:
+                      type: object
+                      additionalProperties:
+                        type: object
+                        required: [typeName, value]
+                        properties:
+                          typeName:
+                            type: string
+                          value:
+                            oneOf:
+                              # multiple false, primitive
+                              - type: string # integer, number not used!
+                              # multiple true, primitive/controlledVoc
+                              - type: array 
+                                items:
+                                  type: string
+                  # multiple false, compound
+                  - type: object
+                    additionalProperties:
+                      type: object
+                      required: [typeName, value]
+                      properties:
+                        typeName:
+                          type: string
+                        value:
+                          oneOf:
+                            # multiple false, primitive
+                            - type: string # integer, number not used!
+                            # multiple true, primitive/controlledVoc
+                            - type: array 
+                              items:
+                                type: string
+    mappingSchemeInfo:
+      type: object
+      required: ["name", "description", "format"]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        reference:
+          type: string
+        format:
+          type: string
+    mappingConfig:
+      type: object
+      required : ["name", "description", "format", "mapping"]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        reference:
+          type: string
+        format:
+          type: string # mime type
+        mapping:
+          type: array
+          minItems: 1
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/mappingConfigCopy'
+              - $ref: '#/components/schemas/mappingConfigTranslate'
+              - $ref: '#/components/schemas/mappingConfigMerge'
+              - $ref: '#/components/schemas/mappingConfigAddition'
+              - type: object # rule
+                required: ["source_key"]
+                properties:
+                  source_key:
+                    type: string
+                  type:
+                    type: string
+                    enum: ["rule"]
+                  priority:
+                    type: integer
+                additionalProperties:
+                  type: array
+                  minItems: 1
+                  items: 
+                    oneOf:
+                      - $ref: '#/components/schemas/mappingConfigCopy'
+                      - $ref: '#/components/schemas/mappingConfigTranslate'
+                      - $ref: '#/components/schemas/mappingConfigMerge'
+                      - $ref: '#/components/schemas/mappingConfigAddition'
+      example:
+        name: EngMetaCitation
+        description: Mapping of the citation metadata fields to Dataverse citation metadata fields
+        format: "text/plain"
+        mapping:
+        - target_key: title # which rule is applied first, this or the next??
+        - source_key: title.titleType
+          type: rule
+          priority: 1
+          Title: [{target_key: title}]
+          AlternativeTitle: [{source_key: title, target_key: alternativeTitle}]
+          Subtitle: [{source_key: title, target_key: subtitle}]
+        - source_key: [creator.givenName, creator.familyName]
+          target_key: authorName
+          type: merge
+          join_symbol: " "
+          priority: 1
+        - source_key: creator.name
+          target_key: authorName
+        - source_key: creator.affiliation.name
+          target_key: authorAffiliation
+        - source_key: creator.role
+          target_key: authorIdentifierScheme
+    mappingConfigCopy:
+      type: object
+      required: ["target_key"]
+      properties:
+        target_key:
+          type: string
+        source_key:
+          type: string
+        type:
+          type: string
+          enum: ["copy"]
+        priority:
+          type: integer
+    mappingConfigTranslate:
+      type: object
+      required: ["target_key", "source_key"]
+      properties:
+        target_key:
+          type: string
+        source_key:
+          type: string
+        type:
+          type: string
+          enum: ["translate"]
+        priority:
+          type: integer
+    mappingConfigMerge:
+      type: object
+      required: ["target_key", "source_key", "join_symbol"]
+      properties:
+        target_key:
+          type: string
+        source_key:
+          type: array
+          items:
+            type: string
+          minItems: 2
+        type:
+          type: string
+          enum: ["merge"]
+        priority:
+          type: integer
+        join_symbol:
+          type: string
+    mappingConfigAddition:
+      type: object
+      required: ["target_key", "source_key", "class"]
+      properties:
+        target_key:
+          type: string
+        source_key:
+          type: string
+        type:
+          type: string
+          enum: ["addition"]
+        priority:
+          type: integer
+        class:
+          type: string
+          enum: ["DateAdder"] # do we have more?
+    errorMessage:
+      type: object
+      required: [message]
+      properties: 
+        message:
+          type: string
