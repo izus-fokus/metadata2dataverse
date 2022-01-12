@@ -6,8 +6,8 @@
 ```
 pip install flask
 pip install python-dotenv
-pip install marshmellow
-pip install marshmellow-oneofschema
+pip install marshmallow
+pip install marshmallow-oneofschema
 ```
 
 Run server (in the folder v1): ```flask run```  or ```python __init__.py```
