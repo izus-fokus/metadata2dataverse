@@ -472,9 +472,10 @@ def create_app(test_config=None):
     def SchemasMappingInfo():
         """ Returns a general overview of existing mappings and formats. """
         list_of_mappings = []
+        print((type(MAPPINGS['engmeta'][0])))
         for m in MAPPINGS:
             for mapping in MAPPINGS[m]:
-                list_of_mappings.append(mapping.dump())        
+                list_of_mappings.append(mapping.dump()) 
         return jsonify(list_of_mappings)
 
 
