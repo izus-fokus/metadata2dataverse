@@ -41,7 +41,7 @@ def read_all_scheme_files():
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
             path = os.path.join(subdir, file)
-            open_tsv_file = open(path)            
+            open_tsv_file = open(path, encoding="utf8")            
             read_scheme(open_tsv_file)
             open_tsv_file.close()
 
@@ -106,7 +106,7 @@ def fill_MAPPINGS(config):
         # check if mapping-format already exists
         for mapping in MAPPINGS[scheme]:
             if mapping.format == config.format:
-                abort(409, scheme + " with format " + mapping.format)
+                abort(409, scheme + " with format" + mapping.format)
                 break
         MAPPINGS[scheme].append(config)
     else: 

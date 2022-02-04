@@ -14,10 +14,10 @@ class TestTranslatorFactory(unittest.TestCase):
     def test_create_translator(self):      
         #test engMeta yaml with merge  
         t = self.f.create_translator({"source_key": ["/dataset/creator/givenName", "/dataset/creator/familyName"], "target_key": "authorName", "type": "merge", "join_symbol": " ", "priority": 2})
-        self.assertEqual(t.source_key, ["/dataset/creator/givenName", "/dataset/creator/familyName"])
+        self.assertEqual(t.source_keys, ["/dataset/creator/givenName", "/dataset/creator/familyName"])
         self.assertEqual(t.target_key, "authorName")
         self.assertEqual(t.translator_type, "merge")
-        self.assertEqual(t.join_symbol, " ")
+        self.assertEqual(t.merge_symbol, " ")
         self.assertEqual(t.priority, 2)
         # test copy translator
         tc = self.f.create_translator({'target_key': 'dates.date'})
@@ -31,7 +31,7 @@ class TestTranslatorFactory(unittest.TestCase):
         self.assertEqual(t2.priority, 2)
         # test merge translator
         t3 = self.f.create_translator({"source_key": ["creator.givenName", "creator.familyName"],"target_key": "authorName", "type": "merge", "join_symbol": " "})
-        self.assertEqual(t3.source_key, ["creator.givenName", "creator.familyName"])
+        self.assertEqual(t3.source_keys, ["creator.givenName", "creator.familyName"])
         self.assertEqual(t3.target_key, "authorName")
         self.assertEqual(t3.priority, 1)
         self.assertEqual(t3.translator_type, "merge")

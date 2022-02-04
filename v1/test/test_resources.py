@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append('..')
 
-from api.resources import read_config, read_all_config_files, read_tsv
+from api.resources import read_config, read_all_config_files, read_scheme
 from api.globals import DV_FIELD, DV_MB, DV_CHILDREN
 
 class TestResources(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestResources(unittest.TestCase):
             for file in files:
                 path = os.path.join(subdir, file)
                 test_tsv = open(path)            
-                read_tsv(test_tsv)
+                read_scheme(test_tsv)
                 test_tsv.close()
         # test primitive without parent
         self.assertIn("title", DV_FIELD)

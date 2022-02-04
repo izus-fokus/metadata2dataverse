@@ -17,5 +17,5 @@ class TestEndpointGetEmpty(unittest.TestCase):
         
     def test_get_mappings(self):
         response = self.client.get('/mapping')
-        print(response.json)
+        #print(response.json)
         self.assertEqual(response.status_code, 200)
