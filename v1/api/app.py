@@ -407,7 +407,7 @@ def create_app(test_config=None):
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
         target_key_values = translate_source_keys(source_key_values, mapping)   
-        print(target_key_values)     
+        #print(target_key_values)     
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
         result = build_json(target_key_values, method)  
         if method == 'edit':
