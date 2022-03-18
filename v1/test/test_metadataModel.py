@@ -11,7 +11,7 @@ from models.MetadataModel import MultipleCompoundField
 from models.MetadataModel import EditFormat, EditScheme, EditFieldSchema
 from models.MetadataModel import Field, FieldSchema
 from models.MetadataModel import MetadataBlock, MetadataBlockSchema
-from models.MetadataModel import VocabularyField, VocabularyFieldScheme, MultipleVocabularyFieldScheme
+from models.MetadataModel import VocabularyField, VocabularyFieldScheme, MultipleVocabularyFieldScheme, MultipleVocabularyField
 # from models.MetadataModel import SimpleFieldSchema, FieldsScheme, EditScheme, MetadataBlockSchema, DatasetSchema, CreateDatasetSchema
 
 
@@ -29,12 +29,25 @@ class TestMetadataModel(unittest.TestCase):
         self.multiple_compound_child2 = {'typeName': 'authorCity', 'value': ['Büdingen', 'Stuttgart']}
         
     def test_vocabField(self):
-        v_field = VocabularyField("subject", multiple=True, value=['Chemistry'])
-        v_field2 = VocabularyField("testField", multiple=False, value='testvalue')
-        error_field = VocabularyField("multipleField", multiple=True, value="testvalue")
-        error_field2 = VocabularyField("primitiveField", multiple=False, value=["val1", "val2"])
+        v_field = VocabularyField("subject", value=['Chemistry'])
+        v_field2 = VocabularyField("testField", value='testvalue')
+        error_field = VocabularyField("multipleField", value="testvalue")
+        error_field2 = VocabularyField("primitiveField", value=["val1", "val2"])
 
-        self.assertEqual(v_field.get_typeClass(), 'controlled_vocabulary')
+        self.assertEqual(v_field.get_typeClass(), 'controlledVocabulary')
+
+    def test_MultiplevocabField(self):
+        m_field = MultipleVocabularyField("subject", value=['Chemistry'])
+        m_field2 = MultipleVocabularyField("m_testField", value='m_testvalue')
+
+        #print('testing multiple vocab now')
+        #print(self.assertEqual(m_field.get_value(), ['Chemistry']))
+        self.assertEqual(m_field.get_value(), ['Chemistry'])
+        self.assertEqual(m_field.get_typeName(),'subject')
+
+        self.assertEqual(m_field2.get_value(), 'm_testvalue')
+
+        self.assertEqual(m_field.get_typeClass(), 'controlledVocabulary')
 
     def test_primitiveField(self):
         p_field = PrimitiveField(
