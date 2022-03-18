@@ -95,7 +95,7 @@ mapping:
    - target_key: datasetContactEmail
      source_key: maintainer[*].email
    - target_key: authorAffiliation
-     source_key: author[*].affiliation
+     source_key: author[*].affiliation.name
    - target_key: codeMetaSoftwareSuggestionsTitle   
      source_key: softwareSuggestions[*].name
    - target_key: codeMetaSoftwareSuggestionsUrl
