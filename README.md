@@ -2,17 +2,18 @@
 
 ## How to run
 
-### Requirements
-```
-pip install flask
-pip install python-dotenv
-pip install marshmallow
-pip install marshmallow-oneofschema
-```
+Install dependencies: ```pip install requirements.txt```
 
 Run server (in the folder v1): ```flask run```  or ```python __init__.py```
 
 Run tests (in the folder test): ```python -m unittest ```
+
+Build and run as docker container: 
+```
+docker build -t <image-name> .
+docker run -e HOST_IP='0.0.0.0' -p 5000:5000/tcp <image-name> 
+```
+where ```<image-name>``` is a name of your choice, e.g. "metadata-mapper".
 
 ## Tasks
 - Conversion of structured metadata into a Dataverse-compliant JSON file
