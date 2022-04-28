@@ -6,6 +6,7 @@ from models.Translator import MergeTranslator, AdditionTranslator
 from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
 from builtins import isinstance
 import yaml
+import validators
 
 def create_app(test_config=None):
     # create and configure the app
@@ -377,6 +378,18 @@ def create_app(test_config=None):
             return create_dataset
                
  
+    def check_value(relnot_value):
+        
+        print(relnot_value)
+        print("aboveme")
+        if validators.url(relnot_value):
+            url_valid = 1
+            print("passed and valid")
+        else: 
+            url_valid = 0
+            print("invalid will be removed") 
+        return url_valid 
+
     @app.route('/metadata/<string:scheme>', methods=["POST"])
     def mapMetadata(scheme):
         """Fills a Dataverse compatible JSON template with all mappable values from the input metadata. 
@@ -406,6 +419,21 @@ def create_app(test_config=None):
             abort(415, scheme)        
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
+        
+        
+        # code for URL checking of Release Notes
+        #**************#
+        if "releaseNotes" in source_key_values:
+
+            relnot_value = source_key_values["releaseNotes"]
+            relnot_value_s = ''.join(relnot_value)
+
+            resp_url = check_value(relnot_value_s)
+
+            if resp_url == 0:
+                source_key_values.pop('releaseNotes')
+        #**************#
+
         target_key_values = translate_source_keys(source_key_values, mapping)   
         #print(target_key_values)     
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
