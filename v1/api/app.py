@@ -48,7 +48,7 @@ def create_app(test_config=None):
     def gen_message(warnings):
         return '. '.join(warnings)
     
-    def check_value(relnot_value):
+    def check_value(relnot_value): #This function checks if value of release notes is valid or not?
         #print(relnot_value)
         #print("aboveme")
         if validators.url(relnot_value):
@@ -420,13 +420,13 @@ def create_app(test_config=None):
         
         #**************#
         # code for URL checking of Release Notes Field
-        if "releaseNotes" in source_key_values: 
-            relnot_value = source_key_values["releaseNotes"]
-            relnot_value_s = ''.join(relnot_value)
+        if "releaseNotes" in source_key_values: #if release notes field in codemeta json then come inside this if 
+            relnot_value = source_key_values["releaseNotes"] #take value of release notes
+            relnot_value_s = ''.join(relnot_value) #convert from list to string 
 
-            resp_url = check_value(relnot_value_s)
+            resp_url = check_value(relnot_value_s) #check if value of release notes is valid or not?
 
-            if resp_url == 0:
+            if resp_url == 0: #if url not valid then remove releaseNotes from output JSON and put warning 
                 source_key_values.pop('releaseNotes')
                 g.warnings.append("Wrong format of Release Notes, this field should be a URL. Release notes removed")
                 print(g.warnings)
