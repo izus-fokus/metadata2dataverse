@@ -48,6 +48,16 @@ def create_app(test_config=None):
     def gen_message(warnings):
         return '. '.join(warnings)
     
+    def check_value(relnot_value):
+        #print(relnot_value)
+        #print("aboveme")
+        if validators.url(relnot_value):
+            url_valid = 1
+            #print("passed and valid")
+        else: 
+            url_valid = 0
+            #print("invalid will be removed") 
+        return url_valid    
     
     def get_mapping(scheme,format=None):
         """ Returns config (mapping) from MAPPINGS dictionary with scheme as key.
@@ -376,18 +386,7 @@ def create_app(test_config=None):
                 dataset.add_block(mb_id,block)    
             create_dataset = CreateDataset(dataset)
             return create_dataset
-               
-     def check_value(relnot_value):
         
-        print(relnot_value)
-        print("aboveme")
-        if validators.url(relnot_value):
-            url_valid = 1
-            print("passed and valid")
-        else: 
-            url_valid = 0
-            print("invalid will be removed") 
-        return url_valid
 
     @app.route('/metadata/<string:scheme>', methods=["POST"])
     def mapMetadata(scheme):
@@ -421,7 +420,7 @@ def create_app(test_config=None):
         
         #**************#
         # code for URL checking of Release Notes Field
-        if "releaseNotes" in source_key_values:
+        if "releaseNotes" in source_key_values: 
             relnot_value = source_key_values["releaseNotes"]
             relnot_value_s = ''.join(relnot_value)
 
@@ -429,6 +428,8 @@ def create_app(test_config=None):
 
             if resp_url == 0:
                 source_key_values.pop('releaseNotes')
+                g.warnings.append("Wrong format of Release Notes, this field should be a URL. Release notes removed")
+                print(g.warnings)
         #**************#
 
         target_key_values = translate_source_keys(source_key_values, mapping)   
