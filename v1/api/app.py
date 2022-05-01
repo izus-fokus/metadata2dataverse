@@ -377,8 +377,7 @@ def create_app(test_config=None):
             create_dataset = CreateDataset(dataset)
             return create_dataset
                
- 
-    def check_value(relnot_value):
+     def check_value(relnot_value):
         
         print(relnot_value)
         print("aboveme")
@@ -388,7 +387,7 @@ def create_app(test_config=None):
         else: 
             url_valid = 0
             print("invalid will be removed") 
-        return url_valid 
+        return url_valid
 
     @app.route('/metadata/<string:scheme>', methods=["POST"])
     def mapMetadata(scheme):
@@ -420,11 +419,9 @@ def create_app(test_config=None):
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
         
-        
-        # code for URL checking of Release Notes
         #**************#
+        # code for URL checking of Release Notes Field
         if "releaseNotes" in source_key_values:
-
             relnot_value = source_key_values["releaseNotes"]
             relnot_value_s = ''.join(relnot_value)
 
