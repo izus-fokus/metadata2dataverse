@@ -138,6 +138,10 @@ mapping:
      target_key: contributorType
      type: addition    
      
+   - class: DateAdder
+     source_key: name
+     target_key: dateOfDeposit
+     type: addition
   
   
 
