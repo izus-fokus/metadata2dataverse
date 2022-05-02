@@ -429,7 +429,7 @@ def create_app(test_config=None):
             if resp_url == 0: #if url not valid then remove releaseNotes from output JSON and put warning 
                 source_key_values.pop('releaseNotes')
                 g.warnings.append("Wrong format of Release Notes, this field should be a URL. Release notes removed")
-                print(g.warnings)
+                #print(g.warnings)
         #**************#
 
         target_key_values = translate_source_keys(source_key_values, mapping)   
