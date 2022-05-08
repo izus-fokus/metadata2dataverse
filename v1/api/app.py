@@ -5,8 +5,10 @@ from models.ReaderFactory import ReaderFactory
 from models.Translator import MergeTranslator, AdditionTranslator
 from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
 from builtins import isinstance
+from datetime import datetime
 import yaml
-import validators
+import validators #for checking url and email 
+import re #for checking text
 
 def create_app(test_config=None):
     # create and configure the app
@@ -47,17 +49,98 @@ def create_app(test_config=None):
 
     def gen_message(warnings):
         return '. '.join(warnings)
+
+    def isAllPresent(str):
+        # ReGex to check if a string                        # I think this is not what "text" fieldtype says, it wants any text, so can we just check this with None?
+        # contains uppercase, lowercase
+        # special character & numeric value
+        
+        regex = ("^(?=.*[a-z])(?=." +
+             "*[A-Z])(?=.*\\d)" +
+             "(?=.*[-+_!@#$%^&*., ?]).+$")
+        
+        #Compile the ReGex
+        p = re.compile(regex)
+        
+        # If the string is empty
+        # return false
+        if (str == None):
+            #print("No")
+            text_valid = 0
+            return text_valid
+            
+            # Print Yes if string
+            # matches ReGex
+        
+        if(re.search(p, str)):
+            #print("Yes")
+            text_valid = 1     
+        else:
+            #print("No")
+            text_valid = 0
+        
+        return text_valid 
     
-    def check_value(relnot_value): #This function checks if value of release notes is valid or not?
-        #print(relnot_value)
+    def check_value(value, fieldtype): #This function checks if value of a field type is valid or not? 
+        #print(value)
         #print("aboveme")
-        if validators.url(relnot_value):
-            url_valid = 1
-            #print("passed and valid")
-        else: 
-            url_valid = 0
-            #print("invalid will be removed") 
-        return url_valid    
+        if fieldtype == "url":
+            if validators.url(value):
+                valid = 1
+                #print("passed and valid")
+                
+                #for keys, values in DV_FIELD.items():         ##For viewing field type of diff fields in DV_FIELD dictionary
+                #    print(keys)
+
+            else: 
+                valid = 0
+                #print("invalid will be removed")     
+        
+        elif fieldtype == "email":
+            if validators.email(value):
+                valid = 1
+            else:
+                valid = 0
+
+        elif fieldtype == "date":
+            format_d = "%d-%m-%Y"
+            try:
+                res = bool(datetime.strptime(value, format))
+                valid = 1
+            except ValueError:
+                    res=False    
+                    valid = 0
+
+        elif fieldtype == "int":
+            check_int = isinstance(value, int)
+            if check_int == True:
+                valid = 1
+            else:
+                valid = 0
+
+        elif fieldtype == "float":
+            check_float = isinstance(value, float)
+            if check_float == True:
+                valid = 1
+            else:
+                valid = 0
+
+        elif fieldtype == "none":
+            if value is None:
+                valid = 1
+            else:
+                valid = 0
+
+        elif fieldtype == "text":
+            check_text = isAllPresent(value)
+            if check_text == 1:
+                valid = 1
+            else:
+                valid = 0
+
+        return valid        
+        
+
     
     def get_mapping(scheme,format=None):
         """ Returns config (mapping) from MAPPINGS dictionary with scheme as key.
@@ -424,13 +507,15 @@ def create_app(test_config=None):
             relnot_value = source_key_values["releaseNotes"] #take value of release notes
             relnot_value_s = ''.join(relnot_value) #convert from list to string 
 
-            resp_url = check_value(relnot_value_s) #check if value of release notes is valid or not?
+            resp_url = check_value(relnot_value_s, "url") #check if value of release notes is valid or not?
 
             if resp_url == 0: #if url not valid then remove releaseNotes from output JSON and put warning 
                 source_key_values.pop('releaseNotes')
                 g.warnings.append("Wrong format of Release Notes, this field should be a URL. Release notes removed")
                 #print(g.warnings)
         #**************#
+
+        #resp_url = check_value("Geeksoreeks1", "text")     testing text 
 
         target_key_values = translate_source_keys(source_key_values, mapping)   
         #print(target_key_values)     
