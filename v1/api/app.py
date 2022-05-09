@@ -505,15 +505,15 @@ def create_app(test_config=None):
 
                 #**************#
         # code for URL checking of Release Notes Field
-        if "codeMetaReleaseNotes" in  target_key_values: #if codeMetaReleaseNotes field in codemeta json then come inside this if 
-            relnot_value = target_key_values["codeMetaReleaseNotes"] #take value of release notes
+        if "codeMetaReleaseNotes" in  target_key_values: #if codeMetaReleaseNotes field in dataverse's json then come inside this if 
+            relnot_value = target_key_values["codeMetaReleaseNotes"] #take value of codeMetaReleaseNotes field
             relnot_value_s = ''.join(relnot_value) #convert from list to string 
 
-            resp_url = check_value(relnot_value_s, "url") #check if value of release notes is valid or not?
+            resp_url = check_value(relnot_value_s, "url") #check if value is valid or not?
 
-            if resp_url == 0: #if url not valid then remove releaseNotes from output JSON and put warning 
+            if resp_url == 0: #if url not valid then remove codeMetaReleaseNotes from output JSON and put warning 
                 target_key_values.pop('codeMetaReleaseNotes')
-                g.warnings.append("Wrong format of Release Notes, this field should be a URL. Release notes removed")
+                g.warnings.append("Wrong format of Release Notes, this field should be a URL. codeMetaReleaseNotes field removed")
                 #print(g.warnings)
         #**************#
 
