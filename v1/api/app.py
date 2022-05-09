@@ -500,25 +500,25 @@ def create_app(test_config=None):
             abort(415, scheme)        
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
-        
-        #**************#
+
+        target_key_values = translate_source_keys(source_key_values, mapping)   
+
+                #**************#
         # code for URL checking of Release Notes Field
-        if "releaseNotes" in source_key_values: #if release notes field in codemeta json then come inside this if 
-            relnot_value = source_key_values["releaseNotes"] #take value of release notes
+        if "codeMetaReleaseNotes" in  target_key_values: #if codeMetaReleaseNotes field in codemeta json then come inside this if 
+            relnot_value = target_key_values["codeMetaReleaseNotes"] #take value of release notes
             relnot_value_s = ''.join(relnot_value) #convert from list to string 
 
             resp_url = check_value(relnot_value_s, "url") #check if value of release notes is valid or not?
 
             if resp_url == 0: #if url not valid then remove releaseNotes from output JSON and put warning 
-                source_key_values.pop('releaseNotes')
+                target_key_values.pop('codeMetaReleaseNotes')
                 g.warnings.append("Wrong format of Release Notes, this field should be a URL. Release notes removed")
                 #print(g.warnings)
         #**************#
 
         #resp_url = check_value("Geeksoreeks1", "text")     testing text 
-
-        target_key_values = translate_source_keys(source_key_values, mapping)   
-        #print(target_key_values)     
+    
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
         result = build_json(target_key_values, method)  
         if method == 'edit':
