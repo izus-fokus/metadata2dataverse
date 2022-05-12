@@ -1,0 +1,27 @@
+# action.yml
+name: 'MetadataMapper'
+description: 'Start MetadataMapper and make Request'
+inputs:
+  path:  # id of input
+    description: 'path to codemeta-json in repo'
+    required: true
+    default: 'codemeta.json'
+outputs:
+  post-result: # id of output
+    description: 'result of the post request'
+    value: ${{ steps.result.outputs.post-result }}
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v2
+    - name: Start MetadataMapper
+      run: | 
+        docker build -t metadatamapper .
+        docker run -e HOST_IP='0.0.0.0' -p 5000:5000/tcp metadatamapper &
+      shell: bash
+    - id: result
+      run: |
+        sudo apt-get update >/dev/null; sudo apt-get install -y curl >/dev/null
+        response=$(curl --location --request POST http://localhost:5000/metadata/codemeta --header 'Content-Type:application/json' --data-binary '@${{ inputs.path }}')
+        echo ::set-output name=post-result::$response
+      shell: sh
