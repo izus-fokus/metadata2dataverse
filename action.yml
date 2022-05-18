@@ -21,6 +21,7 @@ runs:
         docker build -t metadatamapper .
         docker run -e HOST_IP='0.0.0.0' -p 5000:5000/tcp metadatamapper &
       shell: bash
+    - uses: actions/checkout@v2
     - id: result
       run: |
         sudo apt-get update >/dev/null; sudo apt-get install -y curl >/dev/null
