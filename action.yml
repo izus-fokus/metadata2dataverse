@@ -25,6 +25,6 @@ runs:
     - id: result
       run: |
         sudo apt-get update >/dev/null; sudo apt-get install -y curl >/dev/null
-        response=$(curl --location --request POST http://localhost:5000/metadata/codemeta --header 'Content-Type:application/json' --data-binary '@${{ inputs.path }}')
+        response=$(curl --location --request POST http://localhost:5000/metadata/codemeta/edit --header 'Content-Type:application/json' --data-binary '@${{ inputs.path }}')
         echo ::set-output name=post-result::$response
       shell: sh
