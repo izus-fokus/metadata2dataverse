@@ -2,7 +2,7 @@
 
 ## How to run
 
-Install dependencies: ```pip install requirements.txt```
+Install dependencies: ```pip install -r requirements.txt```
 
 Run server (in the folder v1): ```flask run```  or ```python __init__.py```
 
