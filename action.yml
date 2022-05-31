@@ -25,7 +25,8 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - uses: actions/checkout@v2
+    - name: Checkout MetadataMapper-Repo, that contains Action
+      uses: actions/checkout@v2
       with:
         repository: KatLily-74656/metadata2dataverse
     - name: Start MetadataMapper
@@ -34,14 +35,16 @@ runs:
         docker run -e HOST_IP='0.0.0.0' -p 5000:5000/tcp metadatamapper &
       shell: bash
     - uses: actions/checkout@v2
-    - id: mm-result
+    - name: Make Request to MetadataMapper
+      id: mm-result
       run: |
         sudo apt-get update >/dev/null; sudo apt-get install -y curl >/dev/null
         response=$(curl --location --request POST http://localhost:5000/metadata/codemeta?method=edit --header 'Content-Type:application/json' --data-binary '@${{ inputs.path }}')
         echo ::set-output name=post-result::$response
         printf "$response" > metadata.json
       shell: sh
-    - id: result
+    - name: Make Edit-Request to existing Dataverse-Dataset
+      id: result
       working-directory: ./
       run: |
         cat metadata.json
