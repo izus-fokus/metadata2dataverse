@@ -2,7 +2,26 @@
     "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
     "@type": "SoftwareSourceCode",
     "license": "https://spdx.org/licenses/MIT",
-    "dateCreated": "2022-05-12",
-    "datePublished": "2022-05-12",
-    "name": "My Test File"
+    "codeRepository": "https://github.com/KatLily-74656/dataverse-upload-dataset-action/",
+    "dateCreated": "2022-05-30",
+    "datePublished": "2022-05-30",
+    "dateModified": "2022-05-30",
+    "downloadUrl": "https://github.com/KatLily-74656/dataverse-upload-dataset-action/",
+    "name": "My CodeMeta Test",
+    "version": "0.0.1",
+    "description": "This is a CodeMeta-Test-File of a non existing Software",
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "Cinnamon",
+            "familyName": "Cat",
+            "email": "cinnamon.cat@mail.de"
+        },
+        {
+            "@type": "Person",
+            "givenName": "Smartie",
+            "familyName": "Cat",
+            "email": "smartie.cat@mail.de"
+        }
+    ]
 }

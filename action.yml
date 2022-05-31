@@ -3,10 +3,22 @@ name: 'MetadataMapper'
 description: 'Start MetadataMapper and make Request'
 inputs:
   path:  # id of input
-    description: 'path to codemeta-json in repo'
+    description: 'path to codemeta-json-file in repo'
     required: true
     default: 'codemeta.json'
+  dataverse-url:
+    description: 'URL of the dataverse you want to save data to'
+    required: true
+  doi:
+    description: 'doi of dataset'
+    required: true
+  api-key:
+    description: 'API Key for Dataverse'
+    required: true
 outputs:
+  metadata-mapper-result:
+    description: 'result of the post request to metadata mapper'
+    value: ${{ steps.mm-result.outputs.post-result }}
   post-result: # id of output
     description: 'result of the post request'
     value: ${{ steps.result.outputs.post-result }}
@@ -22,9 +34,20 @@ runs:
         docker run -e HOST_IP='0.0.0.0' -p 5000:5000/tcp metadatamapper &
       shell: bash
     - uses: actions/checkout@v2
-    - id: result
+    - id: mm-result
       run: |
         sudo apt-get update >/dev/null; sudo apt-get install -y curl >/dev/null
         response=$(curl --location --request POST http://localhost:5000/metadata/codemeta?method=edit --header 'Content-Type:application/json' --data-binary '@${{ inputs.path }}')
         echo ::set-output name=post-result::$response
+        printf ' ${{ steps.mm-result.outputs.post-result }}' > metadata.json
+        ls -la
+      shell: sh
+    - id: result
+      working-directory: ./
+      run: |
+        sudo apt-get update >/dev/null; sudo apt-get install -y curl >/dev/null
+        response=$(curl -H 'X-Dataverse-key: ${{ inputs.api-key }}' -H 'Content-Type: application/json' -X PUT "${{ inputs.dataverse-url }}/api/datasets/:persistentId/editMetadata/?persistentId=doi:${{ inputs.doi }}&replace=true" --upload-file "metadata.json")
+        echo test
+        echo $response
+        echo "::set-output name=post-result::$response"
       shell: sh
