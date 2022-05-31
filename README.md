@@ -85,11 +85,23 @@ Each mapping file starts with some header keys providing general information:
 |format| MIME type of the structured metadata. One of: ```text/xml```, ```application/json```, ```text/plain```. |
 |namespaces (optional)| List of xml namespaces in the form ```abbreviation=URI```. Example: ```[pm=http://www.loc.gov/premis/v3]``` |
 
-Then, below the key ```mapping```, the rules for mapping source keys to target keys are defined in a list. Most of the parameters of each rule have defaults to facilitate compact definitions.
-Each mapping rule can have the following keys:
+Then, the lists below keys ```mapping``` and ```rules``` express the translation of source keys to target keys. Most of the parameters of each item have defaults to facilitate compact definitions.
+
+Each ```mapping``` list item can have the following keys:
 
 |Key | Required? | Value | Default
 |----|-------|-----------|---------|
-|source_key | mandatory | string or list of strings, depending on ```type```. The values are written as keys in case format is text/plain, in xpath syntax in case format is text/xml, and in json path syntax in case format is application/json. | - |
-|target_key | optional | The dataverse metadata dataset field name as specified in a tsv file. | source_key |
-|type | optional | One of copy, merge, addition or rule | copy
+|target_key | mandatory | dataverse metadata dataset field name as specified in a tsv file. | - |
+|source_key | optional | string or list of strings, depending on ```type```. The values are written as keys in case format is 'text/plain', in xpath syntax in case format is 'text/xml', and in json path syntax in case format is 'application/json'. | target_key |
+|type | optional | One of 'copy', 'translate', 'merge', 'addition' | 'copy' if ```target_key``` is given, but not ```source_key```; 'translate' if both ```target_key``` and ```source_key``` are given. |
+|priority | optional | integer specifying which definition should be preferred if more than one has the same ```target_key``` | 1 |
+|join_symbol | optional | if several ```source_keys``` shall be combined (```type``` 'merge'), the symbol between the values. | ' ' (space) |
+|class | optional | class name inside the [AdditonTranslators module](/v1/models/AdditionTranslators.py), to generate values when a specific ```source key``` occurs (```type``` 'addition'). One of 'DateAdder', 'ContributorRole'. | - |
+
+Each ```rules``` list item can have the following keys:
+
+|Key | Required? | Value | Default
+|----|-------|-----------|---------|
+|trigger | mandatory | ```source_key```; the values of this define the mapping. | - |
+|priority | optional | integer specifying which definition should be preferred if more than one has the same ```trigger``` | 1 |
+| \*; values of ```trigger``` | mandatory | list of mapping definitions (see table above) | - |
