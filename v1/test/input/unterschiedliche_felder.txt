@@ -1,2 +1,0 @@
-contact.name: Dorothea Iglezakis, Anett Seeland, Max Mustermann
-contact.affiliation.name: Uni Stuttgart, IZUS, 

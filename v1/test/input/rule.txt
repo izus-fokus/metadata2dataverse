@@ -1,2 +1,0 @@
-description.descriptionType: seriesInformation
-description: Hallo geht das hier?

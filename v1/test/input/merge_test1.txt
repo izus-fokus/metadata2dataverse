@@ -1,3 +1,0 @@
-description.descriptionType: Abstract, , ,
-description: Dies ist die Abstract Description!, , ,
-

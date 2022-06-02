@@ -1,3 +1,0 @@
-system.grid.point.positionX: 1, , , 
-system.grid.point.positionY: 2, , ,
-system.grid.point.positionZ: 3, , ,

@@ -1,2 +1,0 @@
-creator.familyName: Kreuter, , Iglezakis
-creator.givenName: Anne, , Dorothea

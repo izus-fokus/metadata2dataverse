@@ -1,4 +1,0 @@
-contact.role: Producer
-contact.name: Anett Seeland
-contact.affiliation.name: Uni Stuttgart
-contact.affiliation.id: FoKUS

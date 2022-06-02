@@ -1,4 +1,0 @@
-creator.name: Selent
-creator.givenName: Dorothea
-creator.familyName: Iglezakis
-
