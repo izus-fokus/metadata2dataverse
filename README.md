@@ -16,6 +16,8 @@ You need to know the base URL where the tool is deployed to get started. Ask you
 Then you can find a specification of all endpoints here.
 
 #### Endpoints
+see [OpenAPI documentation for more details](https://izus-fokus.github.io/metadata2dataverse/)
+
 ##### Metadata conversion
 
 ###### POST /metadata/<string:scheme>
