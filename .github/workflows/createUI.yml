@@ -29,5 +29,5 @@ jobs:
       - name: Generate Swagger UI
         uses: Legion2/swagger-ui-action@v1
         with:
-          output: documentation
+          output: docs
           spec-file: service.yaml
