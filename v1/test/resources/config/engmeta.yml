@@ -1,0 +1,405 @@
+description: parses XML-Files coded in EngMeta up to version 0/2
+format: text/xml
+mapping:
+- source_key: //title
+  target_key: title
+- join_symbol: ' '
+  priority: 1
+  source_key:
+  - //creator/givenName
+  - //creator/familyName
+  target_key: authorName
+  type: merge
+- source_key: //creator/name
+  target_key: authorName
+- source_key: //creator/affiliation/name
+  target_key: authorAffiliation
+- source_key: //creator/role
+  target_key: authorIdentifierScheme
+- source_key: //contact/name
+  target_key: datasetContactName
+- join_symbol: ' '
+  priority: 1
+  source_key:
+  - //contact/givenName
+  - //contact/familyName
+  target_key: datasetContactName
+  type: merge
+- source_key: //contact/affiliation/name
+  target_key: datasetContactAffiliation
+- source_key: //contact/email
+  target_key: datasetContactEmail
+- join_symbol: '; '
+  priority: 2
+  source_key:
+  - //description/@descriptionType
+  - //description
+  target_key: dsDescriptionValue
+  type: merge
+- source_key: //description
+  target_key: dsDescriptionValue
+- source_key: //subjects/subject
+  target_key: subject
+- source_key: //keywords/keyword
+  target_key: keywordValue
+- source_key: //keywords/keyword/vocabulary
+  target_key: keywordVocabulary
+- source_key: //keywords/keyword/vocabularyURL
+  target_key: keywordVocabularyURI
+- source_key: //subjects/subject/subjectScheme
+  target_key: topicClassVocab
+- source_key: //subjects/subject/schemeURI
+  target_key: topicClassVocabURI
+- source_key: //context/referencePublication/citation
+  target_key: publicationCitation
+- source_key: //context/referencePublication/id/type
+  target_key: publicationIDType
+- source_key: //context/referencePublication/id
+  target_key: publicationIDNumber
+- source_key: //context/referencePublication/url
+  target_key: publicationURL
+- source_key: //subjects/subject/lang
+  target_key: language
+- source_key: //contributor/name
+  target_key: contributorName
+- join_symbol: ' '
+  priority: 1
+  source_key:
+  - //contributor/givenName
+  - //contributor/familyName
+  target_key: contributorName
+  type: merge
+- source_key: //contributor/role
+  target_key: contributorType
+- source_key: //fundingReference/funderName
+  target_key: grantNumberAgency
+- source_key: //fundingReference/awardNumber
+  target_key: grantNumberValue
+- source_key: //project/value
+  target_key: projectName
+- source_key: //project/level
+  target_key: projectLevel
+- class: DateAdder
+  source_key: //title
+  target_key: dateOfDeposit
+  type: addition
+- source_key: //resourceType
+  target_key: kindOfData
+- source_key: //seriesName
+  target_key: seriesName
+- source_key: //provenance/processingStep/tool/name
+  target_key: softwareName
+- source_key: //provenance/processingStep/tool/softwareVersion
+  target_key: softwareVersion
+- join_symbol: '; '
+  source_key:
+  - //context/relatedResource/id
+  - //context/relatedResource/link
+  target_key: relatedMaterial
+  type: merge
+- source_key: //context/relatedIdenfier
+  target_key: otherReferences
+- join_symbol: '; '
+  source_key:
+  - //context/relatedResource/id/type
+  - //context/relatedResource/id
+  target_key: dataSources
+  type: merge
+- source_key: //context/relatedResource/link
+  target_key: originOfSources
+- source_key: //worked
+  target_key: worked
+- source_key: //workedNote
+  target_key: workedNote
+- source_key: //storage/pm:contentLocation/pm:contentLocationValue
+  target_key: storageLocation
+- source_key: /size
+  target_key: storageSize
+- source_key: //mode
+  target_key: engMetaMode
+- source_key: //measuredVariable/name
+  target_key: engMetaMeasuredVarName
+- source_key: //measuredVariable/symbol
+  target_key: engMetaMeasuredVarSymbol
+- source_key: //measuredVariable/unit
+  target_key: engMetaMeasuredVarUnit
+- source_key: //measuredVariable/error
+  target_key: engMetaMeasuredVarError
+- source_key: //measuredVariable/valueFrom
+  target_key: engMetaMeasuredVarValueFrom
+- source_key: //measuredVariable/valueTo
+  target_key: engMetaMeasuredVarValueTo
+- source_key: //controlledVariable/name
+  target_key: engMetaControlledVarName
+- source_key: //controlledVariable/symbol
+  target_key: engMetaControlledVarSymbol
+- source_key: //controlledVariable/value
+  target_key: engMetaControlledVarValue
+- source_key: //controlledVariable/valueFrom
+  target_key: engMetaControlledVarValueFrom
+- source_key: //controlledVariable/valueTo
+  target_key: engMetaControlledVarValueTo
+- source_key: //controlledVariable/unit
+  target_key: engMetaControlledVarUnit
+- source_key: //system/phase/component/forcefield/parameter/name
+  target_key: engMetaForcefieldParName
+- source_key: //system/phase/component/forcefield/parameter/symbol
+  target_key: engMetaForcefieldParSymbol
+- source_key: //system/phase/component/forcefield/parameter/value
+  target_key: engMetaForcefieldParValue
+- source_key: //system/phase/component/forcefield/parameter/unit
+  target_key: engMetaForcefieldParUnit
+- source_key: //system/component/forcefield/parameter/name
+  target_key: engMetaForcefieldParName
+- source_key: //system/component/forcefield/parameter/symbol
+  target_key: engMetaForcefieldParSymbol
+- source_key: //system/component/forcefield/parameter/value
+  target_key: engMetaForcefieldParValue
+- source_key: //system/component/forcefield/parameter/unit
+  target_key: engMetaForcefieldParUnit
+- source_key: //system/parameter/name
+  target_key: engMetaSystemParName
+- source_key: //system/parameter/symbol
+  target_key: engMetaSystemParSymbol
+- source_key: //system/parameter/unit
+  target_key: engMetaSystemParUnit
+- source_key: //system/parameter/value
+  target_key: engMetaSystemParValue
+- source_key: //system/phase/component/name
+  target_key: engMetaCompName
+- source_key: //system/phase/component/smilesCode
+  target_key: engMetaCompSmilesCode
+- source_key: //system/phase/component/IUPAC
+  target_key: engMetaCompIUPAC
+- source_key: //system/phase/component/INCHI
+  target_key: engMetaCompInChI
+- source_key: //system/phase/component/quantity
+  target_key: engMetaCompQuantity
+- source_key: //system/phase/component/unit
+  target_key: engMetaCompUnit
+- source_key: //system/phase/component/forcefield/name
+  target_key: engMetaCompForcefield
+- priority: 1
+  source_key: //system/component/name
+  target_key: engMetaCompName
+- priority: 1
+  source_key: //system/component/smilesCode
+  target_key: engMetaCompSmilesCode
+- priority: 1
+  source_key: //system/component/IUPAC
+  target_key: engMetaCompIUPAC
+- priority: 1
+  source_key: //system/component/INCHI
+  target_key: engMetaCompInChI
+- priority: 1
+  source_key: //system/component/quantity
+  target_key: engMetaCompQuantity
+- priority: 1
+  source_key: //system/component/unit
+  target_key: engMetaCompUnit
+- priority: 1
+  source_key: //system/component/forcefield/name
+  target_key: engMetaCompForcefield
+- source_key: //system/grid/countCells
+  target_key: engMetaGitterCountCells
+- source_key: //system/grid/countBlocks
+  target_key: engMetaGitterCountBlocks
+- source_key: //system/grid/countX
+  target_key: engMetaGitterCountX
+- source_key: //system/grid/countY
+  target_key: engMetaGitterCountY
+- source_key: //system/grid/countZ
+  target_key: engMetaGitterCountZ
+- source_key: //system/grid/intervalX
+  target_key: engMetaGitterIntervalX
+- source_key: //system/grid/intervalY
+  target_key: engMetaGitterIntervalY
+- source_key: //system/grid/intervalZ
+  target_key: engMetaGitterIntervalZ
+- source_key: //system/grid/scalingFormula
+  target_key: engMetaGitterScalingFormular
+- source_key: //system/grid/unit
+  target_key: engMetaGitterUnit
+- source_key: //system/temporalResolution/timestep
+  target_key: engMetaTempPoints
+- source_key: //system/temporalResolution/numberOfTimesteps
+  target_key: engMetaTempCountPoints
+- source_key: //system/temporalResolution/interval
+  target_key: engMetaTempInterval
+- source_key: //system/temporalResolution/unit
+  target_key: engMetaTempUnit
+- source_key: //system/boundaryCondition/component/name
+  target_key: engMetaFlowsComp
+- source_key: //system/boundaryCondition/shape
+  target_key: engMetaFlowsShape
+- source_key: //system/boundaryCondition/size
+  target_key: engMetaFlowsSize
+- source_key: //system/boundaryCondition/position
+  target_key: engMetaFlowsPosition
+- source_key: //system/boundaryCondition/parameter/name
+  target_key: engMetaBoundCondParName
+- source_key: //system/boundaryCondition/parameter/symbol
+  target_key: engMetaBoundCondParSymbol
+- source_key: //system/boundaryCondition/parameter/unit
+  target_key: engMetaBoundCondParUnit
+- source_key: //system/boundaryCondition/parameter/value
+  target_key: engMetaBoundCondParValue
+- source_key: //system/boundaryCondition/parameter/name
+  target_key: engMetaBoundCondPars
+- source_key: //provenance/processingStep/method/parameter/name
+  target_key: processMethodsParName
+- source_key: //provenance/processingStep/method/parameter/symbol
+  target_key: processMethodsParSymbol
+- source_key: //provenance/processingStep/method/parameter/value
+  target_key: processMethodsParValue
+- source_key: //provenance/processingStep/method/name/value
+  target_key: processMethodsName
+- source_key: //provenance/processingStep/method/parameter/name
+  target_key: processMethodsPars
+- source_key: //provenance/processingStep/tool/name
+  target_key: processSoftwareName
+- source_key: //provenance/processingStep/tool/citation
+  target_key: processSoftwareCitation
+- source_key: //provenance/processingStep/tool/softwareVersion
+  target_key: processSoftwareVersion
+- join_string: '; '
+  source_key:
+  - //provenance/processingStep/tool/license/note
+  - //provenance/processingStep/tool/license/terms
+  target_key: processSoftwareLicence
+  type: merge
+- source_key: //provencance/processingStep/instrument/name
+  target_key: processInstruName
+- source_key: //provencance/processingStep/instrument/description
+  target_key: processInstruDescr
+- source_key: //provencance/processingStep/instrument/type
+  target_key: processInstruType
+- join_string: '; '
+  source_key:
+  - //provencance/processingStep/instrument/partnum/vendor
+  - //provencance/processingStep/instrument/partnum/value
+  target_key: processInstruPartnum
+  type: merge
+- join_string: '; '
+  source_key:
+  - //provencance/processingStep/instrument/serialnum/vendor
+  - //provencance/processingStep/instrument/serialnum/value
+  target_key: processInstruSerialnum
+  type: merge
+- source_key: //provencance/processingStep/instrument/software
+  target_key: processInstruSoftware
+- source_key: //provencance/processingStep/instrument/software/os
+  target_key: processInstruLocation
+- source_key: //provenance/processingStep/environment/name
+  target_key: processEnvName
+- join_string: '; '
+  source_key:
+  - //provenance/processingStep/environment/compiler/name
+  - //provenance/processingStep/environment/compiler/flags
+  target_key: processEnvCompName
+  type: merge
+- source_key: //provenance/processingStep/environment/nodes
+  target_key: processEnvNodes
+- source_key: //provenance/processingStep/environment/ppn
+  target_key: processEnvPPN
+- source_key: //provenance/processingStep/type
+  target_key: processStepType
+- source_key: //provenance/processingStep/date
+  target_key: processStepDate
+- join_string: '; '
+  source_key:
+  - //provenance/processingStep/method/parameter/name
+  - //provenance/processingStep/method/name/value
+  target_key: processStepMethods
+  type: merge
+- join_string: '; '
+  source_key:
+  - //provenance/processingStep/errormethod/parameter/name
+  - //provenance/processingStep/errormethod/name/value
+  target_key: processStepErrorMethod
+  type: merge
+- source_key: //provenance/processingStep/tool/name
+  target_key: processStepSoftware
+- source_key: //provenance/processingStep/environment/name
+  target_key: processStepEnvironment
+namespaces:
+- ex=urn:exptml:schema:draft:0.5
+- pm=http://www.loc.gov/premis/v3
+rules:
+- Distributor:
+  - source_key: //contact/name
+    target_key: distributorName
+  - source_key: //contact/affiliation/name
+    target_key: distributorAffiliation
+  - source_key: //contact/affiliation/id
+    target_key: distributorAbbreviation
+  Producer:
+  - source_key: //contact/name
+    target_key: producerName
+  - source_key: //contact/affiliation/name
+    target_key: producerAffiliation
+  - source_key: //contact/affiliation/id
+    target_key: producerAbbreviation
+  priority: 1
+  trigger: //contact/role
+  trigger_values:
+  - Producer
+  - Distributor
+  type: rule
+- AlternativeTitle:
+  - source_key: //title
+    target_key: alternativeTitle
+  Subtitle:
+  - source_key: //title
+    target_key: subtitle
+  Title:
+  - source_key: //title
+    target_key: title
+  priority: 1
+  trigger: //title/titleType
+  trigger_values:
+  - Title
+  - AlternativeTitle
+  - Subtitle
+  type: rule
+- Distributor:
+  - source_key: //contributor/name
+    target_key: distributorName
+  - source_key: //contributor/affiliation/name
+    target_key: distributorAffiliation
+  - source_key: //contributor/affiliation/id
+    target_key: distributorAbbreviation
+  Producer:
+  - source_key: //contributor/name
+    target_key: producerName
+  - source_key: //contributor/affiliation/name
+    target_key: producerAffiliation
+  - source_key: //contributor/affiliation/id
+    target_key: producerAbbreviation
+  priority: 1
+  trigger: //contributor/role
+  trigger_values:
+  - Producer
+  - Distributor
+  type: rule
+- priority: 1
+  seriesInformation:
+  - source_key: //description
+    target_key: seriesInformation
+  trigger: //description/@descriptionType
+  trigger_values:
+  - seriesInformation
+  type: rule
+- Available:
+  - source_key: //dates/date
+    target_key: distributionDate
+  Collected:
+  - source_key: //dates/date
+    target_key: productionDate
+  priority: 1
+  trigger: //dates/date/dateType
+  trigger_values:
+  - Collected
+  - Available
+  type: rule
+scheme: engmeta

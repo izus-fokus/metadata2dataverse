@@ -1,0 +1,67 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "license": "https://spdx.org/licenses/0BSD",
+  "codeRepository": "https://github.com/usman747",
+  "contIntegration": "https://darus.com",
+  "dateCreated": "2018-10-12",
+  "datePublished": "2018-11-12",
+  "dateModified": "2019-11-12",
+  "downloadUrl": "https://uni-stuttgart/darus ",
+  "issueTracker": "https://github.com/usman747/Issue",
+  "name": "Usman Sikander Mirza",
+  "version": "1.0",
+  "identifier": "10.151.115",
+  "description": "Developed with care",
+  "applicationCategory": "Technology",
+  "releaseNotes": "Fixed some tests. Added dependencies  ",
+  "funding": "PRA-102",
+  "developmentStatus": "inactive",
+  "referencePublication": "https://goggle/ref",
+  "funder": {
+      "@type": "Organization",
+      "name": "University of Stuttgart "
+  },
+  "keywords": [
+      "internet",
+      "speed",
+      "quantum"
+  ],
+  "programmingLanguage": [
+      "Python 3"
+  ],
+  "runtimePlatform": [
+      ".net"
+  ],
+  "operatingSystem": [
+      "Windows"
+  ],
+  "softwareRequirements": [
+      "Python 3.8",
+      "YAML 2"
+  ],
+  "author": [
+      {
+          "@type": "Person",
+          "givenName": "Usman",
+          "familyName": "Mirza",
+          "email": "usmansikandermirza@gmail.com",
+          "affiliation": {
+              "@type": "Organization",
+              "name": "University of Stuttgart"
+          }
+      }
+  ],
+  "contributor": [
+      {
+          "@type": "Person",
+          "givenName": "Jane ",
+          "familyName": "Doe",
+          "email": "jane.doe@gmail.com",
+          "affiliation": {
+              "@type": "Organization",
+              "name": "Biblio"
+          }
+      }
+  ]
+}
