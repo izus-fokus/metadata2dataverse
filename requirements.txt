@@ -18,3 +18,5 @@ Werkzeug==2.0.2
 zipp==3.7.0
 jsonpath-python==1.0.5
 requests==2.27.1
+validators==0.18.2
+requests==2.27.1

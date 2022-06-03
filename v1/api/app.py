@@ -5,7 +5,10 @@ from models.ReaderFactory import ReaderFactory
 from models.Translator import MergeTranslator, AdditionTranslator
 from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
 from builtins import isinstance
+from datetime import datetime
 import yaml
+import validators #for checking url and email 
+import re #for checking text
 
 def create_app(test_config=None):
     # create and configure the app
@@ -46,7 +49,98 @@ def create_app(test_config=None):
 
     def gen_message(warnings):
         return '. '.join(warnings)
+
+    def isAllPresent(str):
+        # ReGex to check if a string                        # I think this is not what "text" fieldtype says, it wants any text, so can we just check this with None?
+        # contains uppercase, lowercase
+        # special character & numeric value
+        
+        regex = ("^(?=.*[a-z])(?=." +
+             "*[A-Z])(?=.*\\d)" +
+             "(?=.*[-+_!@#$%^&*., ?]).+$")
+        
+        #Compile the ReGex
+        p = re.compile(regex)
+        
+        # If the string is empty
+        # return false
+        if (str == None):
+            #print("No")
+            text_valid = 0
+            return text_valid
+            
+            # Print Yes if string
+            # matches ReGex
+        
+        if(re.search(p, str)):
+            #print("Yes")
+            text_valid = 1     
+        else:
+            #print("No")
+            text_valid = 0
+        
+        return text_valid 
     
+    def check_value(value, fieldtype): #This function checks if value of a field type is valid or not? 
+        #print(value)
+        #print("aboveme")
+        if fieldtype == "url":
+            if validators.url(value):
+                valid = 1
+                #print("passed and valid")
+                
+                #for keys, values in DV_FIELD.items():         ##For viewing field type of diff fields in DV_FIELD dictionary
+                #    print(keys)
+
+            else: 
+                valid = 0
+                #print("invalid will be removed")     
+        
+        elif fieldtype == "email":
+            if validators.email(value):
+                valid = 1
+            else:
+                valid = 0
+
+        elif fieldtype == "date":
+            format_d = "%d-%m-%Y"
+            try:
+                res = bool(datetime.strptime(value, format))
+                valid = 1
+            except ValueError:
+                    res=False    
+                    valid = 0
+
+        elif fieldtype == "int":
+            check_int = isinstance(value, int)
+            if check_int == True:
+                valid = 1
+            else:
+                valid = 0
+
+        elif fieldtype == "float":
+            check_float = isinstance(value, float)
+            if check_float == True:
+                valid = 1
+            else:
+                valid = 0
+
+        elif fieldtype == "none":
+            if value is None:
+                valid = 1
+            else:
+                valid = 0
+
+        elif fieldtype == "text":
+            check_text = isAllPresent(value)
+            if check_text == 1:
+                valid = 1
+            else:
+                valid = 0
+
+        return valid        
+        
+
     
     def get_mapping(scheme,format=None):
         """ Returns config (mapping) from MAPPINGS dictionary with scheme as key.
@@ -375,8 +469,8 @@ def create_app(test_config=None):
                 dataset.add_block(mb_id,block)    
             create_dataset = CreateDataset(dataset)
             return create_dataset
-               
- 
+        
+
     @app.route('/metadata/<string:scheme>', methods=["POST"])
     def mapMetadata(scheme):
         """Fills a Dataverse compatible JSON template with all mappable values from the input metadata. 
@@ -406,8 +500,25 @@ def create_app(test_config=None):
             abort(415, scheme)        
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
+
         target_key_values = translate_source_keys(source_key_values, mapping)   
-        #print(target_key_values)     
+
+                #**************#
+        # code for URL checking of Release Notes Field
+        if "codeMetaReleaseNotes" in  target_key_values: #if codeMetaReleaseNotes field in dataverse's json then come inside this if 
+            relnot_value = target_key_values["codeMetaReleaseNotes"] #take value of codeMetaReleaseNotes field
+            relnot_value_s = ''.join(relnot_value) #convert from list to string 
+
+            resp_url = check_value(relnot_value_s, "url") #check if value is valid or not?
+
+            if resp_url == 0: #if url not valid then remove codeMetaReleaseNotes from output JSON and put warning 
+                target_key_values.pop('codeMetaReleaseNotes')
+                g.warnings.append("Wrong format of Release Notes, this field should be a URL. codeMetaReleaseNotes field removed")
+                #print(g.warnings)
+        #**************#
+
+        #resp_url = check_value("Geeksoreeks1", "text")     testing text 
+    
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
         result = build_json(target_key_values, method)  
         if method == 'edit':
