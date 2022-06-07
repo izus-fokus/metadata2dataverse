@@ -28,7 +28,7 @@ runs:
     - name: Checkout MetadataMapper-Repo, that contains Action
       uses: actions/checkout@v2
       with:
-        repository: KatLily-74656/metadata2dataverse
+        repository: izus-fokus/metadata2dataverse
     - name: Start MetadataMapper
       run: | 
         docker build -t metadatamapper .
