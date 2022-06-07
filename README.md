@@ -111,17 +111,37 @@ Each ```rules``` list item can have the following keys:
 
 GitHub Action that can be used to first start the MetadataMapper and then make a post-request to it. This way one can convert metadata in the form of a codemeta-json-file into a Dataverse compatiple json-file. 
 
+Before the using this action, the following actions have to be taken:
+First create a CodeMeta-file, then create a dataset on dataverse, that you want to update using the CodeMeta-file in your repo.
+Finally, add your API-Token from Dataverse as Secret to your Repository and call it DATAVERSE_API_TOKEN.
+
 ### Inputs
 
 #### 'path'
 
 **Required** path to the codemeta-json file in the repository. Default 'codemeta.json'.
 
+#### 'dataverse-url'
+
+**Required** URL to Dataverse, e.g. 'https://darus.uni-stuttgart.de'.
+
+#### 'doi'
+
+**Required** doi of the dataset in Dataverse, you created beforehand.
+
+#### 'api-key'
+
+**Required** API-Token from Dataverse, you entered to the Repo as secret. Enter it to the action in the from of: "api-key: '${{ secrets.DATAVERSE_API_TOKEN }}'".
+
 ### Outputs
+
+#### 'metadata-mapper-result'
+
+The result of the post-request to the MetadataMapper.
 
 #### 'post-result'
 
-The result of the post-request to the MetadataMapper.
+The result of the post-request to Dataverse.
 
 ### Example Usage
 
@@ -133,17 +153,19 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to make a post request to the MetadataMapper
     steps:
-      # To use this repository's private action,
-      # you must check out the repository
       - name: Checkout
         uses: actions/checkout@v3
       - name: MetadataMapper Action Step
-        uses: ./ # Uses an action in the root directory
+        uses: izus-fokus/metadata2dataverse@v0
         id: api
         with:
           path: 'codemeta.json'
+          dataverse-url: 'https://darus.uni-stuttgart.de'
+          doi: '10.18419/darus-2935'
+          api-key: '${{ secrets.DATAVERSE_API_TOKEN }}'
       # Use the output from the `MetadataMapper` step
       - name: Get the output
         run: |
+          echo ${{ steps.api.outputs.metadata-mapper-result }}
           echo ${{ steps.api.outputs.post-result }}
 ```
