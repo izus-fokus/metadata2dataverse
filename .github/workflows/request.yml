@@ -1,15 +1,37 @@
-on: [push]
+name: Use "Metadata To Dataverse"-Action
+
+on: 
+  release:
+    types: [published]
 
 jobs:
-  api_request_job:
+  api_request_job-1:
     runs-on: ubuntu-latest
-    name: A job to make a post request to the MetadataMapper
+    name: Request to MetadataMapper
     steps:
       # To use this repository's private action,
       # you must check out the repository
       - name: Checkout
         uses: actions/checkout@v3
-      - name: MetadataMapper Action Step
+      - name: Metadata2Dataverse Action Step
+        uses: ./ # Uses an action in the root directory
+        id: api
+        with:
+          path: 'codemeta.json'
+      # Use the output from the `MetadataMapper` step
+      - name: Get the output
+        run: |
+          echo ${{ steps.api.outputs.metadata-mapper-result }}
+          echo ${{ steps.api.outputs.post-result }}
+  api_request_job-2:
+    runs-on: ubuntu-latest
+    name: Request to MetadataMapper and Update Dataset
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Metadata2Dataverse Action Step
         uses: ./ # Uses an action in the root directory
         id: api
         with:

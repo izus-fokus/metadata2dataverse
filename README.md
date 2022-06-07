@@ -109,11 +109,11 @@ Each ```rules``` list item can have the following keys:
 
 ## GitHub Action
 
-GitHub Action that can be used to first start the MetadataMapper and then make a post-request to it. This way one can convert metadata in the form of a codemeta-json-file into a Dataverse compatiple json-file. 
+GitHub Action that can be used to first start the MetadataMapper and then optionally make a post-request to it. This way one can convert metadata in the form of a codemeta-json-file into a Dataverse compatiple json-file. After this, the result can then be used to update an existing dataset in Dataverse.
 
 Before the using this action, the following actions have to be taken:
-First create a CodeMeta-file, then create a dataset on dataverse, that you want to update using the CodeMeta-file in your repo.
-Finally, add your API-Token from Dataverse as Secret to your Repository and call it DATAVERSE_API_TOKEN.
+First, you have to create a CodeMeta-file.
+If you want to update metadata of an existing dataset, create a dataset on dataverse, that you want to update using the CodeMeta-file in your repo and additionally, add your API-Token from Dataverse as Secret to your Repository and call it DATAVERSE_API_TOKEN (or give it a different name, but remember to use the corrent designation as input for api-key).
 
 ### Inputs
 
@@ -123,15 +123,15 @@ Finally, add your API-Token from Dataverse as Secret to your Repository and call
 
 #### 'dataverse-url'
 
-**Required** URL to Dataverse, e.g. 'https://darus.uni-stuttgart.de'.
+**Optional** URL to Dataverse, e.g. 'https://darus.uni-stuttgart.de'.
 
 #### 'doi'
 
-**Required** doi of the dataset in Dataverse, you created beforehand.
+**Optional** doi of the dataset in Dataverse, you created beforehand.
 
 #### 'api-key'
 
-**Required** API-Token from Dataverse, you entered to the Repo as secret. Enter it to the action in the from of: "api-key: '${{ secrets.DATAVERSE_API_TOKEN }}'".
+**Optional** API-Token from Dataverse, you entered to the Repo as secret. Enter it to the action in the form of: "api-key: '${{ secrets.DATAVERSE_API_TOKEN }}'".
 
 ### Outputs
 

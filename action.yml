@@ -1,5 +1,5 @@
 # action.yml
-name: 'MetadataMapper'
+name: 'Metadata To Dataverse'
 description: 'Start MetadataMapper and make Request'
 inputs:
   path:  # id of input
@@ -8,13 +8,16 @@ inputs:
     default: 'codemeta.json'
   dataverse-url:
     description: 'URL of the dataverse you want to save data to'
-    required: true
+    required: false
+    default: ""
   doi:
     description: 'doi of dataset'
-    required: true
+    required: false
+    default: ""
   api-key:
     description: 'API Key for Dataverse'
-    required: true
+    required: false
+    default: ""
 outputs:
   metadata-mapper-result:
     description: 'result of the post request to metadata mapper'
@@ -47,10 +50,15 @@ runs:
       id: result
       working-directory: ./
       run: |
-        cat metadata.json
-        sudo apt-get update >/dev/null; sudo apt-get install -y curl >/dev/null
-        response=$(curl -H 'X-Dataverse-key: ${{ inputs.api-key }}' -H 'Content-Type: application/json' -X PUT "${{ inputs.dataverse-url }}/api/datasets/:persistentId/editMetadata/?persistentId=doi:${{ inputs.doi }}&replace=true" --upload-file "metadata.json")
-        echo test
-        echo $response
-        echo "::set-output name=post-result::$response"
+        if [ ${{ inputs.api-key }} != '' ] && [ ${{ inputs.doi }} != '' ] && [ ${{ inputs.dataverse-url }} != '' ]
+        then
+          cat metadata.json
+          sudo apt-get update >/dev/null; sudo apt-get install -y curl >/dev/null
+          response=$(curl -H 'X-Dataverse-key: ${{ inputs.api-key }}' -H 'Content-Type: application/json' -X PUT "${{ inputs.dataverse-url }}/api/datasets/:persistentId/editMetadata/?persistentId=doi:${{ inputs.doi }}&replace=true" --upload-file "metadata.json")
+          echo $response
+          echo "::set-output name=post-result::$response"
+        else
+          response="Update of dataset was not requested"
+          echo "::set-output name=post-result::$response"
+        fi
       shell: sh
