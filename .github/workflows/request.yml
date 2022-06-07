@@ -15,7 +15,7 @@ jobs:
         with:
           path: 'codemeta.json'
           dataverse-url: 'https://darus.uni-stuttgart.de'
-          doi: '10.18419/darus-2935'
+          doi: '10.18419/darus-2985'
           api-key: '${{ secrets.DATAVERSE_API_TOKEN }}'
       # Use the output from the `MetadataMapper` step
       - name: Get the output
