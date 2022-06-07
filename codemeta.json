@@ -2,26 +2,64 @@
     "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
     "@type": "SoftwareSourceCode",
     "license": "https://spdx.org/licenses/MIT",
-    "codeRepository": "https://github.com/KatLily-74656/dataverse-upload-dataset-action/",
-    "dateCreated": "2022-05-30",
-    "datePublished": "2022-05-30",
-    "dateModified": "2022-05-30",
-    "downloadUrl": "https://github.com/KatLily-74656/dataverse-upload-dataset-action/",
-    "name": "My CodeMeta Test",
+    "codeRepository": "https://github.com/izus-fokus/metadata2dataverse",
+    "dateCreated": "2020-05-20",
+    "datePublished": "2022-05-31",
+    "dateModified": "2022-05-31",
+    "downloadUrl": "https://github.com/izus-fokus/metadata2dataverse",
+    "issueTracker": "https://github.com/izus-fokus/metadata2dataverse/issues",
+    "name": "metadata2dataverse",
     "version": "0.0.1",
-    "description": "This is a CodeMeta-Test-File of a non existing Software",
+    "description": "Conversion of structured metadata into a Dataverse-compliant JSON file",
+    "isPartOf": "https://github.com/izus-fokus",
+    "funder": {
+        "@type": "Organization",
+        "name": "Universität Stuttgart"
+    },
+    "programmingLanguage": [
+        "Python"
+    ],
+    "operatingSystem": [
+        "Linux",
+        "Windows",
+        "MacOS"
+    ],
     "author": [
         {
             "@type": "Person",
-            "givenName": "Cinnamon",
-            "familyName": "Cat",
-            "email": "cinnamon.cat@mail.de"
+            "givenName": "Anett",
+            "familyName": "Seeland",
+            "email": "anett.seeland@tik.uni-stuttgart.de"
         },
         {
             "@type": "Person",
-            "givenName": "Smartie",
-            "familyName": "Cat",
-            "email": "smartie.cat@mail.de"
+            "givenName": "Dorothea",
+            "familyName": "Iglezakis",
+            "email": "dorothea.iglezakis@ub.uni-stuttgart.de"
+        }
+    ],
+    "contributor": [
+        {
+            "@type": "Person",
+            "givenName": "Anett",
+            "familyName": "Seeland",
+            "email": "anett.seeland@tik.uni-stuttgart.de"
+        },
+        {
+            "@type": "Person",
+            "givenName": "Dorothea",
+            "familyName": "Iglezakis",
+            "email": "dorothea.iglezakis@ub.uni-stuttgart.de"
+        },
+        {
+            "@type": "Person",
+            "givenName": "Usman",
+            "familyName": "Mirza"
+        },
+        {
+            "@type": "Person",
+            "givenName": "Anne",
+            "familyName": "Kreuter"
         }
     ]
 }
