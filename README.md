@@ -40,7 +40,6 @@ Identification of the scheme in which the posted metadata file is stored.
    ]
   ```
 
-
 ### Host your own service
 
 #### Deploy
@@ -107,3 +106,44 @@ Each ```rules``` list item can have the following keys:
 |trigger | mandatory | ```source_key```; the values of this define the mapping. | - |
 |priority | optional | integer specifying which definition should be preferred if more than one has the same ```trigger``` | 1 |
 | \*; values of ```trigger``` | mandatory | list of mapping definitions (see table above) | - |
+
+## GitHub Action
+
+GitHub Action that can be used to first start the MetadataMapper and then make a post-request to it. This way one can convert metadata in the form of a codemeta-json-file into a Dataverse compatiple json-file. 
+
+### Inputs
+
+#### 'path'
+
+**Required** path to the codemeta-json file in the repository. Default 'codemeta.json'.
+
+### Outputs
+
+#### 'post-result'
+
+The result of the post-request to the MetadataMapper.
+
+### Example Usage
+
+```
+on: [push]
+
+jobs:
+  api_request_job:
+    runs-on: ubuntu-latest
+    name: A job to make a post request to the MetadataMapper
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: MetadataMapper Action Step
+        uses: ./ # Uses an action in the root directory
+        id: api
+        with:
+          path: 'codemeta.json'
+      # Use the output from the `MetadataMapper` step
+      - name: Get the output
+        run: |
+          echo ${{ steps.api.outputs.post-result }}
+```
