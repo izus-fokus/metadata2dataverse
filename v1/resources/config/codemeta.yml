@@ -1,147 +1,254 @@
-description: codemeta schema
 scheme: codemeta
 format: application/json
+description: a minimal metadata schema for science software and code, version 2.0
+reference: https://codemeta.github.io/
 
 mapping:
+   # map codemeta tsv target keys
    - target_key: codeMetaCodeRepository
      source_key: codeRepository
+   - target_key: codeMetaSoftwareVersion
+     source_key: softwareVersion
+   - target_key: codeMetaDevelopmentStatus
+     source_key: developmentStatus
    - target_key: codeMetaProgrammingLanguage
      source_key: programmingLanguage.name
-   - target_key: codeMetaRuntimePlatform
-     source_key: runtimePlatform
-   #- target_key: codeMetaTargetProduct
-   #  source_key: targetProduct
-   - target_key: codeMetaApplicationCategory
-     source_key: applicationCategory
-   #- target_key: codeMetaMemoryRequirements
-   #  source_key: memoryRequirements
+     priority: 2
+   - target_key: codeMetaProgrammingLanguage
+     source_key: programmingLanguage[*].name
+     priority: 2
+   - target_key: codeMetaProgrammingLanguage
+     source_key: programmingLanguage
    - target_key: codeMetaOperatingSystem
      source_key: operatingSystem
-   #- target_key: codeMetaPermissions
-   #  source_key: permissions
-   #- target_key: codeMetaProcessorRequirements
-   #  source_key: processorRequirements
-   - target_key: codeMetaReleaseNotes
-     source_key: releaseNotes
-   #- target_key: codeMetaSoftwareHelp
-   #  source_key: softwareHelp
+   - target_key: codeMetaApplicationCategory
+     source_key: applicationCategory
+   - target_key: codeMetaApplicationSubCategory
+     source_key: applicationSubCategory
+   - target_key: codeMetaSoftwareHelp
+     source_key: softwareHelp.url
+   - target_key: codeMetaSoftwareHelp
+     source_key: softwareHelp[*].url
+   - target_key: codeMetaBuildInstructions
+     source_key: buildInstructions
+   - target_key: codeMetaRuntimePlatform
+     source_key: runtimePlatform
+   - target_key: codeMetaTargetProduct
+     source_key: targetProduct.name
+   - target_key: codeMetaTargetProduct
+     source_key: targetProduct[*].name
+   - target_key: codeMetaSoftwareRequirementsTitle
+     source_key: softwareRequirements.name
+     priority: 2
    - target_key: codeMetaSoftwareRequirementsTitle
      source_key: softwareRequirements[*].name
+     priority: 2
+   - target_key: codeMetaSoftwareRequirementsTitle
+     source_key: softwareRequirements
    - target_key: codeMetaSoftwareRequirementsUrl
-     source_key: softwareRequirements[*].provider.url
-   #- target_key: codeMetaStorageRequirements
-   #  source_key: storageRequirements
-   #- target_key: relatedDatasets
-   #  source_key: supportingData
-   - target_key: authorName
-     source_key: 
-     - author[*].givenName
-     - author[*].familyName
+     source_key: softwareRequirements.url
+   - target_key: codeMetaSoftwareRequirementsUrl
+     source_key: softwareRequirements[*].url
+   - target_key: codeMetaSoftwareSuggestionsTitle   
+     source_key: softwareSuggestions.name
+   - target_key: codeMetaSoftwareSuggestionsTitle   
+     source_key: softwareSuggestions[*].name
+   - target_key: codeMetaSoftwareSuggestionsUrl
+     source_key: [softwareSuggestions.url, softwareSuggestions.codeRepository]
      type: merge
-     priority: 1
-     join_symbol: " "
+     join_symbol: ", "
+     # would benefit from template feature
+     # template: "{{ key1 }}{{#key1}}{{#key2}} ({{/key2}}{{/key1}}{{ key2 }}{{#key1}}{{#key2}}){{/key2}}{{/key1}}"
+   # will only work properly with template feature
+   #- target_key: codeMetaSoftwareSuggestionsUrl
+   #  source_key: [key1#softwareSuggestions[*].(url), key2#softwareSuggestions[*].(codeRepository)]
+   #  template: "{{ key1.url }}{{#key1.url}}{{#key2.codeRepository}} ({{/key2.codeRepository}}{{/key1.codeRepository}}{{ key2.codeRepository }}{{#key1.url}}{{#key2.codeRepository}}){{/key2.codeRepository}}{{/key1.codeRepository}}"
+   - target_key: codeMetaSoftwareSuggestionsUrl
+     source_key: softwareSuggestions[*].url
+   - target_key: codeMetaPermissions
+     source_key: permissions
+   - target_key: codeMetaMemoryRequirements
+     source_key: memoryRequirements
+   - target_key: codeMetaProcessorRequirements
+     source_key: processorRequirements
+   - target_key: codeMetaStorageRequirements
+     source_key: storageRequirements
+   - target_key: codeMetaReleaseNotes
+     source_key: releaseNotes
+   - target_key: codeMetaContIntegration
+     source_key: contIntegration
+   - target_key: codeMetaIssueTracker
+     source_key: issueTracker
+     
+   # map other codemeta source keys if possible
+   - target_key: relatedDatasets
+     source_key: supportingData.url
+     # create citation with template feature, e.g.,
+     # template: "{{#authors}}{{ authors.familyName }}, {{ authors.givenName }}{{/authors}}; {{name}}; {{ issn }}; {{publisher}}; {{copyright-holder}}; {{date-published}}; {{identifier}}; {{url}}."
+   # this will only work if every author has both, family name and given name, specified; otherwise the arrays have different length
+   # to correctly do this template feature is needed as, see e.g. codeMetaSoftwareSuggestionsUrl
+   # also include organization names to the array to be able to mix between persons and organizations, and not to overwride
    - target_key: authorName
-     source_key: author[*].familyName
-   - target_key: contributorName
-     source_key: 
-     - contributor[*].givenName
-     - contributor[*].familyName
+     source_key: [author[*].familyName, author[*].givenName]
      type: merge
+     join_symbol: ", "
      priority: 2
-     join_symbol: " "
-   - target_key: contributorName
-     source_key: contributor[*].familyName  
-   - target_key: contributorName
-     source_key: 
-     - copyrightHolder[*].givenName
-     - copyrightHolder[*].familyName
-     type: merge
-     priority: 2
-     join_symbol: " "
-   - target_key: contributorName
-     source_key: copyrightHolder[*].familyName
    - target_key: authorName
-     source_key: creator
+     # for organizations
+     source_key: author[*].name
+     priority: 2
+   - target_key: authorName
+     source_key: [creator[*].familyName, creator[*].givenName]
+     type: merge
+     join_symbol: ", "
+   - target_key: authorName
+     source_key: creator[*].name
+   # this will only work if each author has specified an affiliation?
+   - target_key: authorAffiliation
+     source_key: author[*].affiliation.name
+   - target_key: [authorIdentifierScheme, authorIdentifier]
+     source_key: author[*].@id
+     type: addition
+     # to be implemented!
+     class: IdentifierAdder
+   # if text
+   - target_key: relatedMaterial
+     source_key: citation
+   # elif creative work, use template like, e.g. supportingData
+   - target_key: relatedMaterial
+     source_key: citation[*].name
+     priority: 2
+   # contributior has same problem as author, see above
+   - target_key: contributorName
+     source_key: [contributor[*].familyName, contributor[*].givenName]
+     type: merge
+     join_symbol: ", "
+   - target_key: contributorName
+     source_key: contributor[*].name
+   - target_key: [contributorName, contributorType]
+     source_key: 
+       - "norole#contributor[*].(name,familyName,givenName)"
+       - "Rights Holder#copyrightHolder[*].(name,familyName,givenName)"
+       - "Editor#editor[*].(familyName,givenName)"
+       - "Funder#funder[*].(name,familyName,givenName)"
+       - "Sponsor#sponsor[*].(name,familyName,givenName)"
+     type: addition
+     # to be implemented!
+     class: RoleNameAdder
    - target_key: productionDate
      source_key: dateCreated
+     type: addition
+     class: DateFormatter
+     priority: 2
+   - target_key: productionDate
+     source_key: copyrightYear
+     type: addition
+     class: DateFormatter
    - target_key: distributionDate
      source_key: datePublished
-   #- target_key: contributorName
-   #  source_key: editor
-   - target_key: contributorName
-     source_key: funder[*].name
+     type: addition
+     class: DateFormatter
    - target_key: keywordValue
      source_key: keywords
-   #- target_key: producerName
-   #  source_key: producer
+   # Producer has same problems as author, see above
+   - target_key: producerName
+     source_key: [producer[*].familyName, producer[*].givenName]
+     type: merge
+     join_symbol: ", "
+     priority: 2
+   - target_key: producerName
+     source_key: producer[*].name
+     priority: 2
+   - target_key: producerAffiliation
+     source_key: producer[*].affiliation.name
+   - target_key: producerURL
+     source_key: producer[*].url
+   - target_key: producerLogoURL
+     source_key: producer[*].logo
+     priority: 2
+   - target_key: producerLogoURL
+     source_key: producer[*].image
+   # provider has same problems as author, see above
    - target_key: distributorName
-     source_key: provider.name
-   #- target_key: distributorName
-   #  source_key: publisher
-   #- target_key: contributorName
-   #  source_key: sponsor
-   - target_key: relatedDatasets
-     source_key: isPartOf
-   #- target_key: relatedDatasets
-   #  source_key: hasPart
+     source_key: [provider[*].familyName, provider[*].givenName]
+     type: merge
+     join_symbol: ", "
+     priority: 2
+   - target_key: distributorName
+     source_key: provider[*].name
+     priority: 2
+   - target_key: distributorAffiliation
+     source_key: provider[*].affiliation.name
+   - target_key: distributorURL
+     source_key: provider[*].url
+   - target_key: distributorLogoURL
+     source_key: provider[*].logo
+     priority: 2
+   - target_key: distributorLogoURL
+     source_key: provider[*].image   
+   - target_key: distributorName
+     source_key: [publisher[*].familyName, publisher[*].givenName]
+     type: merge
+     join_symbol: ", "
+     priority: 2
+   - target_key: distributorName
+     source_key: publisher[*].name
+     priority: 2
+   - target_key: distributorAffiliation
+     source_key: publisher[*].affiliation.name
+   - target_key: distributorURL
+     source_key: publisher[*].url
+   - target_key: distributorLogoURL
+     source_key: publisher[*].logo
+     priority: 2
+   - target_key: distributorLogoURL
+     source_key: publisher[*].image     
+   # todo: rule if isPartOf[*].@type == Dataset, map to relatedDataset, in all other cases to relatedMaterial
+   - target_key: relatedMaterial
+     source_key: isPartOf[*].name
+   - target_key: relatedMaterial
+     source_key: isPartOf.name
+   - target_key: relatedDataset
+     source_key: hasPart[*].name
+   - target_key: relatedDataset
+     source_key: hasPart.name
    - target_key: dsDescriptionValue
      source_key: description
    - target_key: title
      source_key: name
-   - target_key: otherIdAgency
-     source_key: softwareSuggestions[*].sameAs
+   - target_key: alternativeURL
+     source_key: sameAs
    - target_key: relatedMaterial
-     source_key: relatedLink   
+     source_key: relatedLink
+     # to sum all hits mapping to related material, instead of overwriting it
+     # todo: priority: "append"     
    - target_key: datasetContactEmail
      source_key: maintainer[*].email
-   - target_key: authorAffiliation
-     source_key: author[*].affiliation.name
-   - target_key: codeMetaSoftwareSuggestionsTitle   
-     source_key: softwareSuggestions[*].name
-   - target_key: codeMetaSoftwareSuggestionsUrl
-     source_key: softwareSuggestions[*].provider.url
    - target_key: datasetContactName
-     source_key: 
-     - maintainer[*].givenName
-     - maintainer[*].familyName
+     source_key: [maintainer[*].familyName, maintainer[*].givenName]
      type: merge
-     priority: 2
-     join_symbol: " "
+     join_symbol: ", "
    - target_key: datasetContactName
-     source_key: maintainer[*].familyName  
-   - target_key: codeMetaContIntegration
-     source_key: contIntegration
-   #- target_key: codeMetaBuildInstructions
-   #  source_key: buildInstructions
-   - target_key: codeMetaDevelopmentStatus
-     source_key: developmentStatus
-   - target_key: grantNumberAgency
+     source_key: maintainer[*].name
+   - target_key: datasetContactAffiliation
+     source_key: maintainer[*].affiliation.name
+   - target_key: datasetContactEmail
+     source_key: email
+   - target_key: datasetContactName
+     source_key: [familyName, givenName]
+     type: merge
+     join_symbol: ", "
+   - target_key: datasetContactAffiliation
+     source_key: affiliation.name     
+   - target_key: grantNumberValue
      source_key: funding
-   - target_key: codeMetaIssueTracker
-     source_key: issueTracker
+   # see examples of https://schema.org/ScholarlyArticle for how to extract good properties; refer also to template feature above (supportingData.url)
    - target_key: publicationCitation
-     source_key: referencePublication
-   #- class: contributorRole
-   #  source_key: sponsor
-   #  target_key: contributorType
-   #  type: addition
-   - class: contributorRole
-     source_key: funder
-     target_key: contributorType
-     type: addition  
-   #- class: contributorRole
-   #  source_key: editor
-   #  target_key: contributorType
-   #  type: addition   
-   - class: contributorRole
-     source_key: copyrightHolder
-     target_key: contributorType
-     type: addition    
-     
+     source_key: referencePublication[*].name
+   - target_key: publicationCitation
+     source_key: referencePublication.name         
    - class: DateAdder
      source_key: name
      target_key: dateOfDeposit
      type: addition
-  
-  
-
+   
