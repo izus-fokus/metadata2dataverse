@@ -58,20 +58,20 @@ class Config(object):
         translator = TranslatorFactory.create_translator(translator_yaml) 
         source_key = translator.get_source_key()
         target_key = translator.get_target_key()
-        if target_key in DV_FIELD:
-            self.target_keys.append(target_key)
-            if isinstance(translator, AdditionTranslator):      # special case: addition translators
-                self.addition_translators_dict[source_key] = translator  
+        target_key = [target_key] if not isinstance(target_key, list) else target_key
+        source_key = [source_key] if not isinstance(source_key, list) else source_key
+        for key in target_key:
+            if key in DV_FIELD:
+                self.target_keys.append(key)
             else:
-                if type(source_key) == list:    # special case: merge translators
-                    for key in source_key:
-                        self.source_keys.append(key)
-                        self.translators_dict[key] = translator
-                else:
-                    self.translators_dict[source_key] = translator
-                    self.source_keys.append(source_key)
-        else:
-            g.warnings.append("Target key " + target_key + " does not exist. Check dv-metadata-config for existing metadata keys.")
+                g.warnings.append("Target key " + key + " does not exist. Check dv-metadata-config for existing metadata keys.")
+                return
+
+        for key in source_key:
+            if isinstance(translator, AdditionTranslator):      # special case: addition translators
+                self.addition_translators_dict[key] = translator  
+            self.source_keys.append(key)
+            self.translators_dict[key] = translator
                 
         
     def add_rules(self, rule_yaml):

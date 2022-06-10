@@ -89,7 +89,7 @@ mapping:
    # to correctly do this template feature is needed as, see e.g. codeMetaSoftwareSuggestionsUrl
    # also include organization names to the array to be able to mix between persons and organizations, and not to overwride
    - target_key: authorName
-     source_key: [author[*].familyName, author[*].givenName]
+     source_key: ["author[*].familyName", "author[*].givenName"]
      type: merge
      join_symbol: ", "
      priority: 2
@@ -98,7 +98,7 @@ mapping:
      source_key: author[*].name
      priority: 2
    - target_key: authorName
-     source_key: [creator[*].familyName, creator[*].givenName]
+     source_key: ["creator[*].familyName", "creator[*].givenName"]
      type: merge
      join_symbol: ", "
    - target_key: authorName
@@ -120,7 +120,7 @@ mapping:
      priority: 2
    # contributior has same problem as author, see above
    - target_key: contributorName
-     source_key: [contributor[*].familyName, contributor[*].givenName]
+     source_key: ["contributor[*].familyName", "contributor[*].givenName"]
      type: merge
      join_symbol: ", "
    - target_key: contributorName
@@ -152,7 +152,7 @@ mapping:
      source_key: keywords
    # Producer has same problems as author, see above
    - target_key: producerName
-     source_key: [producer[*].familyName, producer[*].givenName]
+     source_key: ["producer[*].familyName", "producer[*].givenName"]
      type: merge
      join_symbol: ", "
      priority: 2
@@ -170,7 +170,7 @@ mapping:
      source_key: producer[*].image
    # provider has same problems as author, see above
    - target_key: distributorName
-     source_key: [provider[*].familyName, provider[*].givenName]
+     source_key: ["provider[*].familyName", "provider[*].givenName"]
      type: merge
      join_symbol: ", "
      priority: 2
@@ -187,7 +187,7 @@ mapping:
    - target_key: distributorLogoURL
      source_key: provider[*].image   
    - target_key: distributorName
-     source_key: [publisher[*].familyName, publisher[*].givenName]
+     source_key: ["publisher[*].familyName", "publisher[*].givenName"]
      type: merge
      join_symbol: ", "
      priority: 2
@@ -208,9 +208,9 @@ mapping:
      source_key: isPartOf[*].name
    - target_key: relatedMaterial
      source_key: isPartOf.name
-   - target_key: relatedDataset
+   - target_key: relatedDatasets
      source_key: hasPart[*].name
-   - target_key: relatedDataset
+   - target_key: relatedDatasets
      source_key: hasPart.name
    - target_key: dsDescriptionValue
      source_key: description
@@ -225,7 +225,7 @@ mapping:
    - target_key: datasetContactEmail
      source_key: maintainer[*].email
    - target_key: datasetContactName
-     source_key: [maintainer[*].familyName, maintainer[*].givenName]
+     source_key: ["maintainer[*].familyName", "maintainer[*].givenName"]
      type: merge
      join_symbol: ", "
    - target_key: datasetContactName
@@ -251,4 +251,3 @@ mapping:
      source_key: name
      target_key: dateOfDeposit
      type: addition
-   
