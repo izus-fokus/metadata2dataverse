@@ -9,6 +9,9 @@ mapping:
      source_key: codeRepository
    - target_key: codeMetaSoftwareVersion
      source_key: softwareVersion
+     priority: 2
+   - target_key: codeMetaSoftwareVersion
+     source_key: version
    - target_key: codeMetaDevelopmentStatus
      source_key: developmentStatus
    - target_key: codeMetaProgrammingLanguage
@@ -59,10 +62,11 @@ mapping:
      join_symbol: ", "
      # would benefit from template feature
      # template: "{{ key1 }}{{#key1}}{{#key2}} ({{/key2}}{{/key1}}{{ key2 }}{{#key1}}{{#key2}}){{/key2}}{{/key1}}"
-   # will only work properly with template feature
-   #- target_key: codeMetaSoftwareSuggestionsUrl
-   #  source_key: [key1#softwareSuggestions[*].(url), key2#softwareSuggestions[*].(codeRepository)]
-   #  template: "{{ key1.url }}{{#key1.url}}{{#key2.codeRepository}} ({{/key2.codeRepository}}{{/key1.codeRepository}}{{ key2.codeRepository }}{{#key1.url}}{{#key2.codeRepository}}){{/key2.codeRepository}}{{/key1.codeRepository}}"
+   - target_key: codeMetaSoftwareSuggestionsUrl
+     source_key: ["softwareSuggestions[*].url", "softwareSuggestions[*].codeRepository"]
+     type: merge
+     join_symbol: ", "
+     #  template: "{{ key1.url }}{{#key1.url}}{{#key2.codeRepository}} ({{/key2.codeRepository}}{{/key1.codeRepository}}{{ key2.codeRepository }}{{#key1.url}}{{#key2.codeRepository}}){{/key2.codeRepository}}{{/key1.codeRepository}}"
    - target_key: codeMetaSoftwareSuggestionsUrl
      source_key: softwareSuggestions[*].url
    - target_key: codeMetaPermissions
@@ -81,13 +85,14 @@ mapping:
      source_key: issueTracker
      
    # map other codemeta source keys if possible
+   - class: DateAdder
+     source_key: name
+     target_key: dateOfDeposit
+     type: addition
    - target_key: relatedDatasets
      source_key: supportingData.url
      # create citation with template feature, e.g.,
      # template: "{{#authors}}{{ authors.familyName }}, {{ authors.givenName }}{{/authors}}; {{name}}; {{ issn }}; {{publisher}}; {{copyright-holder}}; {{date-published}}; {{identifier}}; {{url}}."
-   # this will only work if every author has both, family name and given name, specified; otherwise the arrays have different length
-   # to correctly do this template feature is needed as, see e.g. codeMetaSoftwareSuggestionsUrl
-   # also include organization names to the array to be able to mix between persons and organizations, and not to overwride
    - target_key: authorName
      source_key: ["author[*].familyName", "author[*].givenName"]
      type: merge
@@ -103,13 +108,12 @@ mapping:
      join_symbol: ", "
    - target_key: authorName
      source_key: creator[*].name
-   # this will only work if each author has specified an affiliation?
+   # this will only work if each author has specified an affiliation
    - target_key: authorAffiliation
      source_key: author[*].affiliation.name
-   - target_key: [authorIdentifierScheme, authorIdentifier]
+   - target_key: [authorIdentifier, authorIdentifierScheme]
      source_key: author[*].@id
      type: addition
-     # to be implemented!
      class: IdentifierAdder
    # if text
    - target_key: relatedMaterial
@@ -118,36 +122,33 @@ mapping:
    - target_key: relatedMaterial
      source_key: citation[*].name
      priority: 2
-   # contributior has same problem as author, see above
-   - target_key: contributorName
-     source_key: ["contributor[*].familyName", "contributor[*].givenName"]
-     type: merge
-     join_symbol: ", "
-   - target_key: contributorName
-     source_key: contributor[*].name
    - target_key: [contributorName, contributorType]
      source_key: 
        - "norole#contributor[*].(name,familyName,givenName)"
+       - "norole#contributor.(name,familyName,givenName)"
        - "Rights Holder#copyrightHolder[*].(name,familyName,givenName)"
+       - "Rights Holder#copyrightHolder.(name,familyName,givenName)"
        - "Editor#editor[*].(familyName,givenName)"
+       - "Editor#editor.(familyName,givenName)"
        - "Funder#funder[*].(name,familyName,givenName)"
+       - "Funder#funder.(name,familyName,givenName)"
        - "Sponsor#sponsor[*].(name,familyName,givenName)"
+       - "Sponsor#sponsor.(name,familyName,givenName)"
      type: addition
-     # to be implemented!
      class: RoleNameAdder
    - target_key: productionDate
      source_key: dateCreated
-     type: addition
-     class: DateFormatter
+     #type: addition
+     #class: DateFormatter
      priority: 2
    - target_key: productionDate
      source_key: copyrightYear
-     type: addition
-     class: DateFormatter
+     #type: addition
+     #class: DateFormatter
    - target_key: distributionDate
      source_key: datePublished
-     type: addition
-     class: DateFormatter
+     #type: addition
+     #class: DateFormatter
    - target_key: keywordValue
      source_key: keywords
    # Producer has same problems as author, see above
@@ -224,30 +225,47 @@ mapping:
      # todo: priority: "append"     
    - target_key: datasetContactEmail
      source_key: maintainer[*].email
+     priority: 3
    - target_key: datasetContactName
      source_key: ["maintainer[*].familyName", "maintainer[*].givenName"]
      type: merge
      join_symbol: ", "
+     priority: 3
    - target_key: datasetContactName
      source_key: maintainer[*].name
+     priority: 3
    - target_key: datasetContactAffiliation
      source_key: maintainer[*].affiliation.name
+     priority: 3
    - target_key: datasetContactEmail
      source_key: email
+     priority: 2
    - target_key: datasetContactName
      source_key: [familyName, givenName]
      type: merge
      join_symbol: ", "
+     priority: 2
    - target_key: datasetContactAffiliation
-     source_key: affiliation.name     
+     source_key: affiliation.name 
+     priority: 2
+   - target_key: datasetContactEmail
+     source_key: author[0].email
+   - target_key: datasetContactName
+     source_key: ["author[0].familyName", "author[0].givenName"]
+     type: merge
+     join_symbol: ", "
+   - target_key: datasetContactName
+     source_key: author[0].name
+   - target_key: datasetContactAffiliation
+     source_key: author[0].affiliation.name
    - target_key: grantNumberValue
      source_key: funding
    # see examples of https://schema.org/ScholarlyArticle for how to extract good properties; refer also to template feature above (supportingData.url)
    - target_key: publicationCitation
      source_key: referencePublication[*].name
+     priority: 2
    - target_key: publicationCitation
-     source_key: referencePublication.name         
-   - class: DateAdder
-     source_key: name
-     target_key: dateOfDeposit
-     type: addition
+     source_key: referencePublication.name   
+     priority: 2
+   - target_key: publicationCitation
+     source_key: referencePublication

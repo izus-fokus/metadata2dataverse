@@ -1,5 +1,5 @@
 from abc import abstractstaticmethod, ABCMeta
-from models.AdditionTranslators import DateAdder, ContributorRole
+from models.AdditionTranslators import *
 
 class Translator(metaclass=ABCMeta):
     """ Factory-Class """
@@ -46,7 +46,7 @@ class AdditionTranslator(Translator):
         self.translator_type = translator_type
     
     def __repr__(self):
-        return ("source key: " + self.source_key + ", target key: " + self.target_key)
+        return ("source key: " + str(self.source_key) + ", target key: " + str(self.target_key))
     
     def get_translator_type(self):    
         return self.translator_type
@@ -57,11 +57,13 @@ class AdditionTranslator(Translator):
     def get_target_key(self):
         return self.target_key
     
-    def get_value(self):
+    def get_value(self, source_key_values, t_key=None):
         klass = globals()[self.class_name]
-        value = klass().main(self.source_key)
+        value = klass().main(self.source_key, self.target_key, source_key_values, t_key)
         return value
-        
+    
+    def get_priority(self):
+        return self.priority
         
         
 class MergeTranslator(Translator):    
@@ -94,12 +96,15 @@ class MergeTranslator(Translator):
             except:
                 continue
         if any(isinstance(i, list) for i in list_of_values):
+            #TODO: should be more generic: for all possible numbers of merge items, not just 1-3
             if len(list_of_values) == 1:        # case: multiple values with 1 merge items
                 list1 = list_of_values[0]
                 v_merged = list1
             if len(list_of_values) == 2:        # case: multiple values with 2 merge items
                 list1 = list_of_values[0]
                 list2 = list_of_values[1]
+                #TODO: do not skip here values (if clause), other rules might apply for them;
+                #      instead, skip if all target keys of an compound are 'none'
                 v_merged = [m + self.merge_symbol + n for m,n in zip(list1,list2) if m and n != "none"]
             if len(list_of_values) == 3:        # case: multiple values with 3 merge items
                 list1 = list_of_values[0]

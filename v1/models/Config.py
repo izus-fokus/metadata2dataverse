@@ -55,7 +55,7 @@ class Config(object):
         ---------
         translator_yaml : yaml dict
         """
-        translator = TranslatorFactory.create_translator(translator_yaml) 
+        translator = TranslatorFactory.create_translator(translator_yaml)
         source_key = translator.get_source_key()
         target_key = translator.get_target_key()
         target_key = [target_key] if not isinstance(target_key, list) else target_key

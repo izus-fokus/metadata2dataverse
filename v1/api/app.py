@@ -206,31 +206,51 @@ def create_app(test_config=None):
                                         target_key_values[target_key] = [value_new,priority]
                                 else:
                                     target_key_values[target_key] = [value_new,priority]                                    
-        # delete used source_keys                        
+        # delete used source_keys                 
         for key in source_keys_to_delete:
             source_key_values.pop(key, None)        
-        for k,v in source_key_values.items():  
+        for k,v in source_key_values.items():
+            is_list = False
             translator = mapping.get_translator(k)
-            if translator == None:
+            if translator is None:
                 continue
             target_key = translator.target_key
-            priority = translator.get_priority()
-            value = translator.get_value(source_key_values)     
-            if target_key in target_key_values:                
-                if priority > target_key_values[target_key][1]:
-                    target_key_values[target_key] = [value,priority]
+            if isinstance(target_key, list):
+                is_list = True
             else:
-                target_key_values[target_key] = [value,priority] 
-            if k in mapping.addition_translators_dict:
-                translator = mapping.addition_translators_dict.get(k)
-                target_key = translator.target_key 
-                value = translator.get_value()
-                priority = translator.priority 
-                if target_key in target_key_values:                
-                    if priority > target_key_values[target_key][1]:
-                        target_key_values[target_key] = [value,priority]
+                target_key = [target_key]
+            priority = translator.get_priority()
+            for t_key in target_key:
+                if is_list:
+                    value = translator.get_value(source_key_values, t_key=t_key)
                 else:
-                    target_key_values[target_key] = [value,priority] 
+                    value = translator.get_value(source_key_values)
+                if t_key in target_key_values:                
+                    if priority > target_key_values[t_key][1]:
+                        #TODO: if value is list: do not overwrite with 'none', instead use old value
+                        target_key_values[t_key] = [value,priority]
+                else:
+                    target_key_values[t_key] = [value,priority]
+            if k in mapping.addition_translators_dict:
+                is_list = False
+                translator = mapping.addition_translators_dict.get(k)
+                target_key = translator.target_key
+                if isinstance(target_key, list):
+                    is_list = True
+                else:
+                    target_key = [target_key]
+                for t_key in target_key:
+                    if is_list:
+                        value = translator.get_value(source_key_values, t_key=t_key)
+                    else:
+                        value = translator.get_value(source_key_values)
+                    priority = translator.priority 
+                    if t_key in target_key_values:
+                        #TODO: if value is list: do not overwrite with 'none', instead use old value
+                        if priority > target_key_values[t_key][1]:
+                            target_key_values[t_key] = [value,priority]
+                    else:
+                        target_key_values[t_key] = [value,priority] 
         # delete priorities
         for k,v in target_key_values.items():
             target_key_values[k].pop()        
@@ -382,11 +402,11 @@ def create_app(test_config=None):
         parents_dict = {}
         children_dict = {}
         single_fields = []
-        mb_dict = {}        
+        mb_dict = {}
         # fill children_dict with target_key (key) and p_fields (value)
         # fill parents_dict with parent_key (key) and c_fields (value)
         # or fill mb_dict and json_result directly with no-parent-keys
-        for k, v in target_key_values.items():   
+        for k, v in target_key_values.items():
             field = DV_FIELD.get(k)
             if field is None:
                 g.warnings.append("Field {} not in Dataverse-configuration. Check your YAML file.".format(k))
@@ -426,7 +446,8 @@ def create_app(test_config=None):
                     json_result.add_field(p_field)
         # build compound fields        
         for parent, c_field_outer in parents_dict.items():
-            children = DV_CHILDREN.get(parent)    
+            mb_id = DV_FIELD.get(parent).metadata_block
+            children = DV_CHILDREN.get(parent)
             if isinstance(c_field_outer, MultipleCompoundField):            
                 for child in children:                    
                     if child in children_dict:
@@ -436,10 +457,8 @@ def create_app(test_config=None):
                     c_field_inner = CompoundField(parent)                
                     for child in children:                                                
                         if child in children_dict: 
-                            print(child)
                             p_field = children_dict.get(child)[i]                      
-                            if p_field != None and p_field.value != ['none'] and p_field.value != 'none' and p_field.value.strip() != '':
-                                print(p_field.value)                            
+                            if p_field != None and p_field.value != ['none'] and p_field.value != 'none' and p_field.value.strip() != '':                         
                                 c_field_inner.add_value(p_field, child)                               
                             else:
                                 continue
@@ -455,7 +474,7 @@ def create_app(test_config=None):
                             print(p_field.value)      
                             c_field_outer.add_value(p_field, child)
                 json_result.add_field(c_field_outer)     
-                mb_dict[mb_id].add_field(c_field_outer)        
+                mb_dict[mb_id].add_field(c_field_outer)  
         if method == 'update':            
             dataset = Dataset()
             for mb_id, block in mb_dict.items():
@@ -501,7 +520,7 @@ def create_app(test_config=None):
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
 
-        target_key_values = translate_source_keys(source_key_values, mapping)   
+        target_key_values = translate_source_keys(source_key_values, mapping)
 
                 #**************#
         # code for URL checking of Release Notes Field
@@ -520,7 +539,7 @@ def create_app(test_config=None):
         #resp_url = check_value("Geeksoreeks1", "text")     testing text 
     
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 
-        result = build_json(target_key_values, method)  
+        result = build_json(target_key_values, method)
         if method == 'edit':
             response = EditScheme().dump(result)
         elif method == 'update':
