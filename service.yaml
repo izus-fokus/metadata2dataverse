@@ -1,21 +1,21 @@
 openapi: 3.0.2
 info:
-  title: MetadataMapper
+  title: Metadata2Dataverse
   description: Mapping Service generating Dataverse conform JSON-documents from structured metadata files
-  version: '0.4'
+  version: '0.7'
   termsOfService: ''
   contact:
     name: FoKUS Competence Center for Research Data Management
     url: 'https://www.izus.uni-stuttgart.de/fokus/'
     email: fokus@izus.uni-stuttgart.de
-  license: # is there a specific reason for this license?
-    name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-servers:
-  - url: 'https://darus.uni-stuttgart.de/metadataMapper/'
-    description: Production server
-  - url: 'https://demodarus.izus.uni-stuttgart.de/metadataMapper/'
-    description: Staging server
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+#servers: # will not work at the moment
+#  - url: 'https://darus.uni-stuttgart.de/metadataMapper/'
+#    description: Production server
+#  - url: 'https://demodarus.izus.uni-stuttgart.de/metadataMapper/'
+#    description: Staging server
 tags:
   - name: metadata
     description: operations to get Dataverse compatible metadata
