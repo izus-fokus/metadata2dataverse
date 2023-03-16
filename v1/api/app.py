@@ -457,8 +457,8 @@ def create_app(test_config=None):
                     c_field_inner = CompoundField(parent)                
                     for child in children:                                                
                         if child in children_dict: 
-                            p_field = children_dict.get(child)[i]                      
-                            if p_field != None and p_field.value != ['none'] and p_field.value != 'none' and p_field.value.strip() != '':                         
+                            p_field = children_dict.get(child)[i]
+                            if p_field != None and p_field.value != ['none'] and p_field.value != 'none' and p_field.value != [] and p_field.value.strip() != '':                         
                                 c_field_inner.add_value(p_field, child)                               
                             else:
                                 continue
