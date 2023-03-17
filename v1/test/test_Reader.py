@@ -4,8 +4,8 @@ import os
 import yaml
 sys.path.append('..')
 from models.ReaderFactory import ReaderFactory
-from api.resources import read_config
-from api.globals import MAPPINGS
+from api.resources import read_config, read_all_scheme_files
+from api.globals import MAPPINGS,DV_FIELD, DV_CHILDREN, DV_MB 
 from api.app import create_app
 
 
@@ -16,7 +16,11 @@ class TestReader(unittest.TestCase):
         self.app.testing = True
         self.context = self.app.app_context()
         with self.context:
-            self.mapping = read_config(open('./resources/config/harvester.yml'))
+            read_all_scheme_files()
+            mapping_file = open('./resources/config/harvester.yml')
+            
+            self.mapping = read_config(mapping_file)
+            mapping_file.close()
 
     def test_TextReader(self):        
         for subdir, dirs, files in os.walk('./input'):

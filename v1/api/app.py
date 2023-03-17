@@ -471,7 +471,6 @@ def create_app(test_config=None):
                     if child in children_dict:  
                         p_field = children_dict.get(child)
                         if p_field != None and p_field.value != ['none'] and p_field.value != 'none' and p_field.value.strip() != '':
-                            print(p_field.value)      
                             c_field_outer.add_value(p_field, child)
                 json_result.add_field(c_field_outer)     
                 mb_dict[mb_id].add_field(c_field_outer)  
@@ -603,7 +602,6 @@ def create_app(test_config=None):
     def SchemasMappingInfo():
         """ Returns a general overview of existing mappings and formats. """
         list_of_mappings = []
-        print((type(MAPPINGS['engmeta'][0])))
         for m in MAPPINGS:
             for mapping in MAPPINGS[m]:
                 list_of_mappings.append(mapping.dump()) 
