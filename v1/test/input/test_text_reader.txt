@@ -1,0 +1,4 @@
+dates.date: 2019-04-04, , 
+creator.name: Selent, , Schembera
+creator.affiliation: IMS, ,
+subjects.subject.lang: german

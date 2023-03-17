@@ -23,19 +23,17 @@ class TestReader(unittest.TestCase):
             mapping_file.close()
 
     def test_TextReader(self):        
-        for subdir, dirs, files in os.walk('./input'):
-            for file in files:
-                path = os.path.join(subdir, file)
-                test_input = open(path)
-                with self.context:
-                    source_key_value = self.reader.read(
-                        test_input.read().encode(),
-                        self.mapping)
-                test_input.close()
+        path = './input/test_text_reader.txt'
+        test_input = open(path)
+        with self.context:
+            source_key_value = self.reader.read(
+                test_input.read().encode(),
+                self.mapping)
+            test_input.close()
 
-        self.assertEqual(["2019-04-04","",""], source_key_value.get("dates.date"))
-        self.assertEqual(["Selent", "", "Schembera"], source_key_value.get("creator.name"))
-        self.assertEqual(["IMS","",""], source_key_value.get("creator.affiliation"))
+        self.assertEqual(["2019-04-04","none","none"], source_key_value.get("dates.date"))
+        self.assertEqual(["Selent", "none", "Schembera"], source_key_value.get("creator.name"))
+        self.assertEqual(["IMS","none","none"], source_key_value.get("creator.affiliation"))
         self.assertNotEqual(
             ["German", "English"],
             source_key_value.get("subjects.subject.lang"))

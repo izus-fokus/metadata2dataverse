@@ -1,3 +1,7 @@
+import yaml
+import validators #for checking url and email 
+import re #for checking text
+import os
 from flask import Flask, request, abort, jsonify, send_file, g
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS
@@ -6,9 +10,6 @@ from models.Translator import MergeTranslator, AdditionTranslator
 from models.MetadataModel import MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset, DatasetSchema, MetadataBlock, MetadataBlockSchema, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, MultiplePrimitiveField, PrimitiveFieldScheme, CompoundFieldScheme, MultipleCompoundFieldScheme, MultiplePrimitiveFieldScheme
 from builtins import isinstance
 from datetime import datetime
-import yaml
-import validators #for checking url and email 
-import re #for checking text
 
 def create_app(test_config=None):
     # create and configure the app
@@ -40,7 +41,19 @@ def create_app(test_config=None):
     def error_yaml_server(warnings):
         return jsonify(message="Mapping is not correctly configured. Please contact the administrators at fokus@izus.uni-stuttgart.de and transmit the following information: {}.".format(warnings)), 500
             
-        
+
+    def removeConfigFile(scheme, format=None):
+        rootdir = './resources/config'
+        for subdir, dirs, files in os.walk(rootdir):
+            for file in files:
+                path = os.path.join(subdir, file)
+                open_yaml_file = open(path)            
+                config = read_config(open_yaml_file)
+                open_yaml_file.close()
+                if config.scheme == scheme and (format is None or config.format == format):
+                    os.remove(path)
+
+
     def verbosize(response):
         return {'success': True,
                 'warnings': g.warnings,
@@ -545,9 +558,8 @@ def create_app(test_config=None):
             response = DatasetSchema().dump(result)
         elif method == 'create':
             response = CreateDatasetSchema().dump(result) 
-        if len(g.warnings) > 0:
-            if verbose:
-                response = verbosize(response)
+        if verbose:
+            response = verbosize(response)
             return jsonify(response), 202
         else:
             return jsonify(response), 200
@@ -590,9 +602,8 @@ def create_app(test_config=None):
             response = DatasetSchema().dump(result)
         elif method == 'create':
             response = CreateDatasetSchema().dump(result)              
-        if len(g.warnings) > 0:
-            if verbose == True:
-                response = verbosize(response)
+        if verbose == True:
+            response = verbosize(response)
             return jsonify(response), 202
         else:
             return jsonify(response), 200
@@ -628,6 +639,9 @@ def create_app(test_config=None):
             warnings = ' '.join(g.warnings)
             abort(422,warnings)            
         fill_MAPPINGS(config)            
+        if len(g.warnings) > 0:
+            warnings = ' '.join(g.warnings)
+            abort(422,warnings)            
         with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:        
             yaml.dump(yaml.safe_load(new_mapping), f)
         response = {'success': True,
@@ -654,25 +668,27 @@ def create_app(test_config=None):
             mappings = MAPPINGS[scheme]          
         except:
             abort(404, scheme) # no existing mappings for scheme found
-        if format == None:
-            abort(400, scheme) # no format specified            
+
         config = read_config(new_mapping)         
-        if config.format == format and config.scheme == scheme:
-            if len(g.warnings) > 0:
-                warnings = ' '.join(g.warnings)
-                abort(422,warnings) # wrong values in yaml file
-            else:
-                for mapping in mappings:
-                        if mapping.format == format: # success
-                            mappings.remove(mapping)        
-                            MAPPINGS[scheme] = mappings
-                            fill_MAPPINGS(config)
-                            with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:        
-                                yaml.dump(yaml.safe_load(new_mapping), f)
-                            response = {'success': True,
-                                        'updated': scheme}
-                            return jsonify(response), 204
-                        abort(400,scheme) # no mapping with the format found
+        if len(g.warnings) > 0:
+            warnings = ' '.join(g.warnings)
+            abort(422,warnings) # wrong values in yaml file
+
+        if format is None:
+            format = config.format
+        if config.scheme == scheme:
+            for mapping in mappings:
+                if mapping.format == format: # success
+                    mappings.remove(mapping)
+                    MAPPINGS[scheme] = mappings
+                    fill_MAPPINGS(config)
+                    removeConfigFile(scheme, format)
+                    with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:        
+                        yaml.dump(yaml.safe_load(new_mapping), f)
+                    response = {'success': True,
+                                    'updated': scheme}
+                    return jsonify(response), 204
+            abort(400,scheme) # no mapping with the format found
         else:
             abort(400, scheme) # format/scheme in new yaml file does not correspond to the specified scheme/format
         
@@ -695,21 +711,35 @@ def create_app(test_config=None):
             mappings = MAPPINGS[scheme]                 
         except:
             abort(404, scheme)
-        if format == None and len(mappings) == 1:
+
+        if len(mappings) > 1:
+            # there is more than one mapping of the same scheme
+            formats = []
+            for mapping in mappings:
+                formats.append(mapping.format)
+                if format is not None:
+                    if mapping.format == format:
+                        mappings.remove(mapping)    
+                        removeConfigFile(scheme, format)
+            MAPPINGS[scheme] = mappings
+                    
+            if format is None:
+                abort(422, "The scheme '{}' is defined for {} different file formats:{}. Please specify the format to be deleted.".format(scheme, len(mappings), ", ".join(formats)))
+            elif format not in formats:
+                abort(400, "The format {} does not match with the format of scheme {}".format(format, scheme))
+                
+        else:
+            mapping = mappings[0]
+            if format is not None and mapping.format != format:
+                abort(400, "The format {} does not match with the format of scheme {}".format(format, scheme))
             MAPPINGS[scheme] = []
-            response = {'success': True,
-                    'updated': scheme}
-            return jsonify(response), 204
-        for mapping in mappings:
-            if mapping.format == format:
-                mappings.remove(mapping)    
-                os.remove("./resources/config/{}_{}.yml".format(scheme, format))    
-                MAPPINGS[scheme] = mappings
-                response = {'success': True,
-                            'deleted': scheme}        
-                return jsonify(response), 204        
-        abort(400, scheme) 
-        
+            removeConfigFile(scheme)
+
+
+        response = {'success': True,
+                    'deleted': scheme}        
+        return jsonify(response), 204
+
         
     @app.route('/dv-metadata-config', methods=["GET"])
     def getMetadataBlocks():        

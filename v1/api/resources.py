@@ -106,9 +106,9 @@ def fill_MAPPINGS(config):
         # check if mapping-format already exists
         for mapping in MAPPINGS[scheme]:
             if mapping.format == config.format:
-                abort(409, scheme + " with format " + mapping.format)
-                break
-        MAPPINGS[scheme].append(config)
+                g.warnings.append(scheme + " with format " + mapping.format + " already existing")
+            else:
+                MAPPINGS[scheme].append(config)
     else: 
         MAPPINGS[scheme] = [config]    
           

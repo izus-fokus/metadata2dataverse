@@ -14,14 +14,19 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.app = create_app()
         self.app.testing = True
         self.client = self.app.test_client()
-        self.headers = {'X-Dataverse-key': '0f72c986-defc-486b-afe7-d4524d7d3c17'}
+        self.headers = {'X-Dataverse-key': 'bef831ab-2e12-453b-9d2d-1f23e8880d24'}
         
     def test_post_engmeta_data(self):        
         with open(r'./input/EngMeta_example_v0.2.xml', 'rb') as f:
             file_content = f.read()
+        response = self.client.post('/metadata/engmeta?method=edit&verbose=True', data=file_content, headers={'Content-Type':'text/xml'})
+        self.assertEqual(response.status_code, 202)
+        self.assertIn("warnings",response.json)
+
         response = self.client.post('/metadata/engmeta?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
-        self.assertEqual(response.status_code, 202)  
+        self.assertEqual(response.status_code, 200)  
         x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        print(x.json)
         self.assertEqual(x.status_code, 200)
         
         
@@ -72,7 +77,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'datasetContact', 'value': [{'datasetContactName': {'type': 'PrimitiveField', 'typeName': 'datasetContactName', 'value': 'Dorothea Iglezakis'}, 'datasetContactAffiliation':{'type': 'PrimitiveField', 'typeName': 'datasetContactAffiliation', 'value': 'Uni Stuttgart'}}, {'datasetContactName': {'type': 'PrimitiveField', 'typeName': 'datasetContactName', 'value': 'Anett Seeland'}, 'datasetContactAffiliation':{'type': 'PrimitiveField', 'typeName': 'datasetContactAffiliation', 'value': 'IZUS'}}, {'datasetContactName': {'type': 'PrimitiveField', 'typeName': 'datasetContactName', 'value': 'Max Mustermann'}}]}]})
         x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
-        print(x.text)
+        #print(x.text)
         self.assertEqual(x.status_code, 403)
         
         # testen des Configtypes: addition
@@ -148,8 +153,3 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertEqual(response.json['response'], {'fields': [{'type': 'MultipleVocabularyField', 'typeName': 'language', 'value': ['German', 'Danish']}]})
         x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json['response']), headers=self.headers)
         self.assertEqual(x.status_code, 200)
-
-        
-        
-
-    
