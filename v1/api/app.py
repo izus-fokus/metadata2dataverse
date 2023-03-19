@@ -1,5 +1,4 @@
 import yaml
-import re #for checking text
 import os
 from flask import Flask, request, abort, jsonify, send_file, g
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
@@ -128,53 +127,56 @@ def create_app(test_config=None):
                                     target_key_values[target_key] = [value_new,priority]                                    
         # delete used source_keys                 
         for key in source_keys_to_delete:
-            source_key_values.pop(key, None)        
+            source_key_values.pop(key, None) 
         for k,v in source_key_values.items():
             is_list = False
-            translator = mapping.get_translator(k)
-            if translator is None:
+            translators = mapping.get_translator(k)
+            if translators is None:
                 continue
-            target_key = translator.target_key
-            if isinstance(target_key, list):
-                is_list = True
-            else:
-                target_key = [target_key]
-            priority = translator.get_priority()
-            for t_key in target_key:
-                if is_list:
-                    value = translator.get_value(source_key_values, t_key=t_key)
-                else:
-                    value = translator.get_value(source_key_values)
-                if t_key in target_key_values:                
-                    if priority > target_key_values[t_key][1]:
-                        #TODO: if value is list: do not overwrite with 'none', instead use old value
-                        target_key_values[t_key] = [value,priority]
-                else:
-                    target_key_values[t_key] = [value,priority]
-            if k in mapping.addition_translators_dict:
-                is_list = False
-                translator = mapping.addition_translators_dict.get(k)
+            for translator in translators:
                 target_key = translator.target_key
                 if isinstance(target_key, list):
                     is_list = True
                 else:
                     target_key = [target_key]
+                priority = translator.get_priority()
                 for t_key in target_key:
                     if is_list:
                         value = translator.get_value(source_key_values, t_key=t_key)
                     else:
                         value = translator.get_value(source_key_values)
-                    priority = translator.priority 
-                    if t_key in target_key_values:
-                        #TODO: if value is list: do not overwrite with 'none', instead use old value
+                    if t_key in target_key_values:                
                         if priority > target_key_values[t_key][1]:
+                            #TODO: if value is list: do not overwrite with 'none', instead use old value
                             target_key_values[t_key] = [value,priority]
                     else:
-                        target_key_values[t_key] = [value,priority] 
+                        target_key_values[t_key] = [value,priority]
+                    
+#                if k in mapping.addition_translators_dict:
+#                    is_list = False
+#
+#                    translator = mapping.addition_translators_dict.get(k)
+#                    target_key = translator.target_key
+#                    if isinstance(target_key, list):
+#                        is_list = True
+#                    else:
+#                        target_key = [target_key]
+#                    for t_key in target_key:
+#                        if is_list:
+#                            value = translator.get_value(source_key_values, t_key=t_key)
+#                        else:
+#                            value = translator.get_value(source_key_values)
+#                        priority = translator.priority 
+#                        if t_key in target_key_values:
+#                            #TODO: if value is list: do not overwrite with 'none', instead use old value
+#                            if priority > target_key_values[t_key][1]:
+#                                target_key_values[t_key] = [value,priority]
+#                        else:
+#                            target_key_values[t_key] = [value,priority] 
         # delete priorities
         for k,v in target_key_values.items():
             target_key_values[k].pop()
-            target_key_values[k] = v[0]       
+            target_key_values[k] = v[0]
         return target_key_values
     
 
@@ -338,8 +340,7 @@ def create_app(test_config=None):
             multiple = field.multiple
             mb_id = field.metadata_block
             if not field.check_value(v):
-                g.warnings.append("Wrong format of {}, this field should be a {}. {} field removed".format(k, type_class))
-                target_key_values.pop(k)
+                g.warnings.append("Wrong format of {}, this field should be a {}. {} field removed".format(k, field.field_type, k))
                 continue
 
             if mb_id not in mb_dict:
@@ -445,10 +446,8 @@ def create_app(test_config=None):
             abort(415, scheme)        
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
-
         target_key_values = translate_source_keys(source_key_values, mapping)
-
-
+        
         #resp_url = check_value("Geeksoreeks1", "text")     testing text 
     
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN 

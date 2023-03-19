@@ -168,6 +168,7 @@ def read_scheme(data):
                 # check type (primitive, compound, controlled vocabulary)
                 type_class = "primitive"
                 metadata_block = row[index_metadatablock]
+                field_type = row[index_fieldtype]
                 if(row[index_fieldtype] == "none"):
                     type_class = "compound"      
                     DV_CHILDREN[target_key] = []      
@@ -176,7 +177,7 @@ def read_scheme(data):
                 # create parent/children map
                 if parent in DV_CHILDREN:
                     DV_CHILDREN[parent].append(target_key)                
-                field = Field(target_key, multiple, type_class, parent, metadata_block)             
+                field = Field(target_key, multiple, type_class, parent, metadata_block, field_type)             
                 DV_FIELD[target_key] = field                 
             if(start_vocabulary):
                 field = DV_FIELD[row[index_targetkey]]

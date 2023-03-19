@@ -68,10 +68,14 @@ class Config(object):
                 return
 
         for key in source_key:
-            if isinstance(translator, AdditionTranslator):      # special case: addition translators
-                self.addition_translators_dict[key] = translator  
+            if not key in self.translators_dict:
+                self.translators_dict[key] = []
+            #if isinstance(translator, AdditionTranslator):      # special case: addition translators
+            #    self.addition_translators_dict[key] = translator
+            #    print("new addition translator {} -> {}".format(source_key, target_key))
+  
             self.source_keys.append(key)
-            self.translators_dict[key] = translator
+            self.translators_dict[key].append(translator)
                 
         
     def add_rules(self, rule_yaml):

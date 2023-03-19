@@ -336,7 +336,7 @@ mapping:
 - source_key: //system/temporalResolution/unit
   target_key: engMetaTempUnit
 
-# entMetaFlows
+# engMetaFlows
 - source_key: //system/boundaryCondition/flow/component
   target_key: engMetaFlowsComp
 - source_key: //system/boundaryCondition/flow/shape
@@ -345,6 +345,16 @@ mapping:
   target_key: engMetaFlowsSize
 - source_key: //system/boundaryCondition/flow/position
   target_key: engMetaFlowsPosition
+- source_key: [//system/boundaryCondition/flow/shape, //system/boundaryCondition/flow/component]
+  target_key: engMetaBoundCondFlows
+  type: merge
+  join_symbol: " "
+
+- source_key: [//system/boundaryCondition/flow/shape, //system/boundaryCondition/flow/component]
+  target_key: engMetaFlowsName
+  type: merge
+  join_symbol: " "
+
 
 # engMetaBoundCondPar
 - source_key: //system/boundaryCondition/parameter/name
