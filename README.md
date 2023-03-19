@@ -49,9 +49,13 @@ Install dependencies: ```pip install -r requirements.txt```
 For development purposes or for testing run the server (in the folder v1) directly using flask: ```python __init__.py```
 For production a different web server like [gunicorn](https://flask.palletsprojects.com/en/2.0.x/deploying/wsgi-standalone/) should be used.
 
+##### Run tests
+Rename the file ```credentials_default.json``` into ```credentials.json``` and insert base_url, api_key and the DOI of a test dataset. (See the [Dataverse Guides](https://guides.dataverse.org/en/latest/user/account.html#api-token) on how to create an API Token.)
+
 Run tests (in the folder test): ```python -m unittest ```
 
-Build and run as docker container: 
+##### Build and run as a docker container
+
 ```
 docker build -t <image-name> .
 docker run -e HOST_IP='0.0.0.0' -p 5000:5000/tcp <image-name> 

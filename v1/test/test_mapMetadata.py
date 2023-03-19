@@ -14,7 +14,11 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.app = create_app()
         self.app.testing = True
         self.client = self.app.test_client()
-        self.headers = {'X-Dataverse-key': 'bef831ab-2e12-453b-9d2d-1f23e8880d24'}
+        with open("./input/credentials.json","r") as cred_file:
+            credentials = json.load(cred_file)
+            self.headers = {'X-Dataverse-key': credentials["api_key"]}
+            self.dataverse_url = credentials["base_url"]
+            self.dataset = credentials["dataset_id"]
         
     def test_post_engmeta_data(self):        
         with open(r'./input/EngMeta_example_v0.2.xml', 'rb') as f:
@@ -25,7 +29,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
 
         response = self.client.post('/metadata/engmeta?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
         self.assertEqual(response.status_code, 200)  
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         print(x.json)
         self.assertEqual(x.status_code, 200)
         
@@ -38,7 +42,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)  
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'author', 'value': [{'authorName': {'type': 'PrimitiveField', 'typeName': 'authorName', 'value': 'Selent'}}]}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)        
         
         # testen des Configtypes merge: 1. Einfacher Merge mit Symbol ";"
@@ -47,7 +51,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200) 
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'dsDescription', 'value': [{'dsDescriptionValue': {'type': 'PrimitiveField', 'typeName': 'dsDescriptionValue', 'value': 'Abstract; Dies ist die Abstract Description!'}}]}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
         
         # testen des Configtypes merge: 2. dreifacher Merge (engMetaTempPoints)
@@ -57,7 +61,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)    
         self.assertEqual(response.json, {'fields': [{'type': 'CompoundField', 'typeName': 'engMetaTemp', 'value': {'engMetaTempPoints': {'type': 'PrimitiveField', 'typeName': 'engMetaTempPoints', 'value': '1; 2; 3'}}}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 500)
         
         # testen des Configtypes merge: 3. Merge mit mehreren Values (authorName)
@@ -66,7 +70,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)   
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'author', 'value': [{'authorName': {'type': 'PrimitiveField', 'typeName': 'authorName', 'value': 'Anne Kreuter'}}, {'authorName': {'type': 'PrimitiveField', 'typeName': 'authorName', 'value': 'Dorothea Iglezakis'}}]}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
         
         # testen multiplecompoundfields mit Kindern die unterschiedliche Felder besetzen
@@ -76,7 +80,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'datasetContact', 'value': [{'datasetContactName': {'type': 'PrimitiveField', 'typeName': 'datasetContactName', 'value': 'Dorothea Iglezakis'}, 'datasetContactAffiliation':{'type': 'PrimitiveField', 'typeName': 'datasetContactAffiliation', 'value': 'Uni Stuttgart'}}, {'datasetContactName': {'type': 'PrimitiveField', 'typeName': 'datasetContactName', 'value': 'Anett Seeland'}, 'datasetContactAffiliation':{'type': 'PrimitiveField', 'typeName': 'datasetContactAffiliation', 'value': 'IZUS'}}, {'datasetContactName': {'type': 'PrimitiveField', 'typeName': 'datasetContactName', 'value': 'Max Mustermann'}}]}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         #print(x.text)
         self.assertEqual(x.status_code, 403)
         
@@ -86,7 +90,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200) 
         self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021-06-09'}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
         
         # schema existiert nicht
@@ -107,7 +111,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 202) 
         self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test titel'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021-06-09'}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
                 
         # input key has multiple values but is primitive field
@@ -116,7 +120,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 202) 
         self.assertEqual(response.json, {'fields': [{'type': 'PrimitiveField', 'typeName': 'title', 'value': 'Test title 1'},{'type': 'PrimitiveField', 'typeName': 'dateOfDeposit', 'value': '2021-06-09'}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
         
         # rule 1
@@ -126,7 +130,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200) 
         self.assertEqual(response.json, {'fields': [{'type': 'CompoundField', 'typeName': 'series', 'value': {'seriesInformation': {'type': 'PrimitiveField', 'typeName': 'seriesInformation', 'value': 'Hallo geht das hier?'}}}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 500)
         
         # rule 2
@@ -135,7 +139,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200) 
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleCompoundField', 'typeName': 'producer', 'value': [{'producerName': {'type': 'PrimitiveField', 'typeName': 'producerName', 'value': 'Anett Seeland'},'producerAffiliation': {'type': 'PrimitiveField', 'typeName': 'producerAffiliation', 'value': 'Uni Stuttgart'},'producerAbbreviation': {'type': 'PrimitiveField', 'typeName': 'producerAbbreviation', 'value': 'FoKUS'}}]}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
         
         # controlledVocabulary with wrong value
@@ -144,12 +148,12 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 202) 
         self.assertEqual(response.json, {'fields': [{'type': 'MultipleVocabularyField', 'typeName': 'language', 'value': ['German', 'Danish']}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true", data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
         
         response = self.client.post('/metadata/harvester?method=edit&verbose=True', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 202)
         self.assertIn('warnings', response.json)
         self.assertEqual(response.json['response'], {'fields': [{'type': 'MultipleVocabularyField', 'typeName': 'language', 'value': ['German', 'Danish']}]})
-        x = requests.put("https://demodarus.izus.uni-stuttgart.de/api/datasets/:persistentId/editMetadata?persistentId=doi:10.15770/darus-510&replace=true", data=json.dumps(response.json['response']), headers=self.headers)
+        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true", data=json.dumps(response.json['response']), headers=self.headers)
         self.assertEqual(x.status_code, 200)
