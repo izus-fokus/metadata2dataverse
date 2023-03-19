@@ -1,11 +1,12 @@
 import validators #for checking url and email 
+import re
 from datetime import datetime
 from flask import g
 class Field(object):
     ''' object after parsing a tsv file '''
     
     
-    def __init__(self, target_key, multiple, type_class, parent, metadata_block):
+    def __init__(self, target_key, multiple, type_class, parent, metadata_block, field_type):
         ''' Constructor '''
         self.target_key = target_key
         self.controlled_vocabulary = []
@@ -13,6 +14,7 @@ class Field(object):
         self.type_class = type_class
         self.parent = parent
         self.metadata_block = metadata_block
+        self.field_type = field_type
         
         
     def __repr__(self):
@@ -28,31 +30,47 @@ class Field(object):
             values = [values]
         valid = True
         for value in values:
-            if self.type_class == "url":
+            if self.field_type == "url":
                 valid = valid and validators.url(value)
 
-            elif self.type_class == "email":
+            elif self.field_type == "email":
                 valid = valid and validators.email(value)
 
-            elif self.type_class == "date":
-                format_d = "%d-%m-%Y"
+            elif self.field_type == "date":
+                if re.fullmatch("\d{4}-\d{2}-\d{2}", value):
+                    format_d = "%Y-%m-%d"
+                elif re.fullmatch("\d{4}-\d{2}", value):
+                    format_d = "%Y-%m"
+                elif re.fullmatch("\d{4}", value):
+                    format_d = '%Y'
+                else:
+                    valid = False
+                    continue
                 try:
-                    res = bool(datetime.strptime(value, format))
+                    datetime.strptime(value, format_d)
                     valid = valid and True
-                except ValueError:
-                    res=False    
+                except ValueError as e:
                     valid = False
 
-            elif self.type_class == "int":
-                valid = valid and isinstance(value, int)
+            elif self.field_type == "int":
+                try:
+                    int(value)
+                    valid = valid and True
+                except ValueError:
+                    valid = False
+                
 
-            elif self.type_class == "float":
-                valid = valid and isinstance(value, float)
+            elif self.field_type == "float":
+                try:
+                    float(value)
+                    valid = valid and True
+                except ValueError:
+                    valid = False
 
-            elif self.type_class == "none":
+            elif self.field_type == "none":
                 valid = valid and value is None
 
-            elif self.type_class == "text":
+            elif self.field_type == "text":
                 if not isinstance(value, str):
                     valid = False
                 else:

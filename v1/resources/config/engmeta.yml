@@ -49,8 +49,8 @@ mapping:
 - source_key: //description
   target_key: dsDescriptionValue
 
-- source_key: //subjects/subject
-  target_key: subject
+#- source_key: //subjects/subject
+#  target_key: subject
 
 # keywords
 - source_key: //keywords/keyword
@@ -63,8 +63,8 @@ mapping:
 # topicClassification
 #- source_key: //subjects/subject
 #  target_key: topicClassValue
-- source_key: //subjects/subject/subjectScheme
-  target_key: topicClassVocab
+#- source_key: //subjects/subject/subjectScheme
+#  target_key: topicClassVocab
 #- source_key: //subjects/subject/@schemeURI
 #  target_key: topicClassVocabURI
 
@@ -80,8 +80,8 @@ mapping:
 
 # notesText
 
-- source_key: //subjects/subject/lang
-  target_key: language
+#- source_key: //subjects/subject/lang
+#  target_key: language
 
 # producer
 #T: producerName

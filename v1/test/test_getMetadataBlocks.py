@@ -17,6 +17,5 @@ class TestEndpointGetEmpty(unittest.TestCase):
         
     def test_getSchemeMapping(self):
         response = self.client.get('/dv-metadata-config')
-        print(response.json)
         self.assertEqual(response.status_code, 200)
         

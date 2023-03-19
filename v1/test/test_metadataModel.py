@@ -159,7 +159,7 @@ class TestMetadataModel(unittest.TestCase):
         c2_field.add_value(c3_field)
         edit.add_field(c2_field)
         result = EditScheme().dump(edit)
-        print(result)
+        #print(result)
         self.assertEqual(len(result["fields"]), 2)
         for field in result["fields"]:
             self.assertIn('typeName', field)

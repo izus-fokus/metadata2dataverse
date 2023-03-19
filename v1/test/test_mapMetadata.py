@@ -34,13 +34,13 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/engmeta?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
         self.assertEqual(response.status_code, 200)  
         url = "{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset)
-        print(response.json)
+        #print(response.json)
         x = requests.put(
             url,
             data=json.dumps(response.json),
             headers=self.headers)
-        print(x.json())
-        #self.assertEqual(x.status_code, 200)
+        #print(x.json())
+        self.assertEqual(x.status_code, 200)
         
         
         
