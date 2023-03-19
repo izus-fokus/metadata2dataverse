@@ -1,7 +1,6 @@
 import unittest
 import sys
-import os
-import yaml
+import json
 sys.path.append('..')
 from models.ReaderFactory import ReaderFactory
 from api.resources import read_config, read_all_scheme_files
@@ -18,22 +17,21 @@ class TestReader(unittest.TestCase):
         with self.context:
             read_all_scheme_files()
             mapping_file = open('./resources/config/harvester.yml')
-            
             self.mapping = read_config(mapping_file)
             mapping_file.close()
 
     def test_TextReader(self):        
         path = './input/test_text_reader.txt'
-        test_input = open(path)
+        test_input = open(path, encoding="utf-8")
         with self.context:
+            input = test_input.read()
             source_key_value = self.reader.read(
-                test_input.read().encode(),
+                input,
                 self.mapping)
-            test_input.close()
+        test_input.close()
 
         self.assertEqual(["2019-04-04","none","none"], source_key_value.get("dates.date"))
         self.assertEqual(["Selent", "none", "Schembera"], source_key_value.get("creator.name"))
-        self.assertEqual(["IMS","none","none"], source_key_value.get("creator.affiliation"))
-        self.assertNotEqual(
-            ["German", "English"],
-            source_key_value.get("subjects.subject.lang"))
+        self.assertEqual(["Björn", "none", "Björn"], source_key_value.get("creator.givenName"))
+        self.assertEqual(["IAG","none","IMS"], source_key_value.get("creator.affiliation.name"))
+        self.assertNotEqual(["German", "English"], source_key_value.get("subjects.subject.lang"))

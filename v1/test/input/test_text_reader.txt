@@ -1,4 +1,5 @@
 dates.date: 2019-04-04, , 
 creator.name: Selent, , Schembera
-creator.affiliation: IMS, ,
+creator.givenName: Björn, , Björn 
+creator.affiliation.name: IAG, , IMS
 subjects.subject.lang: german

@@ -55,7 +55,6 @@ class TextReader(Reader):
         list_of_source_keys = mapping.get_source_keys()
         source_key_value = {}
         for line in text_data.splitlines():            
-            line = line.decode("utf-8")
             if len(line) > 1:   # ignore empty lines
                 splitted_line = line.split(":")
                 source_key = splitted_line[0]
@@ -108,14 +107,14 @@ class XMLReader(Reader):
         root = ET.fromstring(xml_data)
         source_key_value = {}        
         for source_key in list_of_source_keys:
-            print(source_key)
+            #print(source_key)
             if source_key.count("/") > 2 and source_key.count("@") == 0:        # case nested source_key
                 main_key = source_key.rsplit("/", 1)[0]
             else:
                 main_key = source_key
             try:
                 elements = root.xpath("." + main_key, namespaces=namespaces)   
-                print("elements: ",elements)
+                #print("elements: ",elements)
             except:
                 g.warnings.append(source_key + " not a valid X-Path. Please check your YAML File.")
                 continue            
@@ -143,19 +142,19 @@ class XMLReader(Reader):
                         else:
                             values.append('none')
                         source_key_value[source_key] = values
-                        print(values)
+                        #print(values)
                     else:
                         for i in range(number_of_childs):
                             i += 1
                             value = root.xpath("." + parent + "[" + str(i) + "]" + "/" + child, namespaces=namespaces) 
-                            print("." + parent + "[" + str(i) + "]" + "/" + child)
+                            #print("." + parent + "[" + str(i) + "]" + "/" + child)
                             
                             if len(value) > 0:
                                 values.append(value[0].text)
                             else:
                                 values.append('none')
                             source_key_value[source_key] = values
-                            print(values)
+                            #print(values)
         return source_key_value
 
 
