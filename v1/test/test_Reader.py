@@ -23,12 +23,13 @@ class TestReader(unittest.TestCase):
     def test_TextReader(self):        
         path = './input/test_text_reader.txt'
         test_input = open(path, encoding="utf-8")
+        input = test_input.read()
+        test_input.close()
+
         with self.context:
-            input = test_input.read()
             source_key_value = self.reader.read(
                 input,
                 self.mapping)
-        test_input.close()
 
         self.assertEqual(["2019-04-04","none","none"], source_key_value.get("dates.date"))
         self.assertEqual(["Selent", "none", "Schembera"], source_key_value.get("creator.name"))

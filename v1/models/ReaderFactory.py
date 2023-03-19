@@ -51,10 +51,12 @@ class TextReader(Reader):
         ---------
         source_key_values : dict 
         """
+        if isinstance(text_data, bytes):
+            text_data = text_data.decode()
         # get all source keys of scheme
         list_of_source_keys = mapping.get_source_keys()
         source_key_value = {}
-        for line in text_data.splitlines():            
+        for line in text_data.splitlines():
             if len(line) > 1:   # ignore empty lines
                 splitted_line = line.split(":")
                 source_key = splitted_line[0]
@@ -62,7 +64,7 @@ class TextReader(Reader):
                     g.warnings.append(source_key + " not found in scheme mapping - Check your Yaml Mapping File")
                     continue        
                 values = splitted_line[1]
-                splitted_values = values.split(",")
+                splitted_values = values.split(',')
                 if len(splitted_values) > 1:                            # multiple values
                     source_key_value[source_key] = []
                     for value in splitted_values:

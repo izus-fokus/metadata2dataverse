@@ -1,3 +1,5 @@
+import validators #for checking url and email 
+from datetime import datetime
 from flask import g
 class Field(object):
     ''' object after parsing a tsv file '''
@@ -19,7 +21,46 @@ class Field(object):
         
     def set_controlled_vocabulary(self, controlled_vocabulary):
         self.controlled_vocabulary.append(controlled_vocabulary)
-        
+
+
+    def check_value(self, values):
+        if(not isinstance(values, list)):
+            values = [values]
+        valid = True
+        for value in values:
+            if self.type_class == "url":
+                valid = valid and validators.url(value)
+
+            elif self.type_class == "email":
+                valid = valid and validators.email(value)
+
+            elif self.type_class == "date":
+                format_d = "%d-%m-%Y"
+                try:
+                    res = bool(datetime.strptime(value, format))
+                    valid = valid and True
+                except ValueError:
+                    res=False    
+                    valid = False
+
+            elif self.type_class == "int":
+                valid = valid and isinstance(value, int)
+
+            elif self.type_class == "float":
+                valid = valid and isinstance(value, float)
+
+            elif self.type_class == "none":
+                valid = valid and value is None
+
+            elif self.type_class == "text":
+                if not isinstance(value, str):
+                    valid = False
+                else:
+                    if '\n' in value:
+                        value.replace('\n', ' ')
+                    valid = valid and True
+        return valid        
+    
         
     def check_controlled_vocabulary(self, v):     
         """ Checks value v against controlled_vocabulary list. 

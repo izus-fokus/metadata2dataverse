@@ -21,6 +21,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             self.dataset = credentials["dataset_id"]
         
     def test_post_engmeta_data(self):        
+        print("in test engmeta", self.headers)
         with open(r'./input/EngMeta_example_v0.2.xml', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/engmeta?method=edit&verbose=True', data=file_content, headers={'Content-Type':'text/xml'})
@@ -29,8 +30,13 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
 
         response = self.client.post('/metadata/engmeta?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
         self.assertEqual(response.status_code, 200)  
-        x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
-        print(x.json)
+        url = "{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset)
+        print(url)
+        x = requests.put(
+            url,
+            data=json.dumps(response.json),
+            headers=self.headers)
+        print(x.json())
         self.assertEqual(x.status_code, 200)
         
         
