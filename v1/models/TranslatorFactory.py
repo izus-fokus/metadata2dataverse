@@ -37,7 +37,6 @@ class TranslatorFactory(object):
                 translator = MergeTranslator(source_key, target_key, priority, translator_type, join_symbol)
                 return translator
             if(translator_yaml["type"] == "date"):     # case 5: date translator
-                print("Date translator detected")
                 translator = DateTranslator(source_key, target_key, priority, translator_type)
                 return translator
         else:                                           # case 2: normal translator

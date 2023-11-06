@@ -121,26 +121,90 @@ class MergeTranslator(Translator):
 
 class DateTranslator(Translator):
     def __init__(self, source_key, target_key, priority = 1, translator_type = "date"):
+        """
+        Initialize a DateTranslator instance.
+
+        Parameters
+        ----------
+        source_key : str
+            The source key to extract date values from.
+        target_key : str
+            The target key to store the translated date values.
+        priority : int, optional
+            The priority of the translator (default is 1).
+        translator_type : str, optional
+            The type of translator, which is "date" by default.
+
+        Returns
+        -------
+        None
+        """
         self.source_key = source_key
         self.target_key = target_key
         self.priority = priority
         self.translator_type = translator_type
 
     def __repr__(self):
+        """
+        Return a string representation of the DateTranslator instance.
+
+        Returns
+        -------
+        str
+            A string containing source key, target key, and type information.
+        """
         return ("source key: " + str(self.source_key) + ", target key: " + str(self.target_key) + ", type: date")
 
     def get_translator_type(self):
+        """
+        Get the type of the translator.
+
+        Returns
+        -------
+        str
+            The translator type, which is "date".
+        """
         return self.translator_type
 
     def get_source_key(self):
+        """
+        Get the source key for date extraction.
+
+        Returns
+        -------
+        str
+            The source key.
+        """
         return self.source_key
 
     def get_target_key(self):
+        """
+        Get the target key for storing translated date values.
+
+        Returns
+        -------
+        str
+            The target key.
+        """
         return self.target_key
 
 
 
     def convert_to_desired_format(self,input_time):
+        """
+        Convert the input date/time to the desired format.
+
+        Parameters
+        ----------
+        input_time : str
+            The input date/time to be converted.
+
+        Returns
+        -------
+        str
+            The date in the format "yyyy-mm-dd", "yyyy-mm", or "yyyy" if successful.
+            Returns "Invalid input time format" if parsing fails.
+        """
         try:
             # List of possible input formats to check
             input_formats = ["%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M", "%Y-%m-%d", "%Y-%m", "%Y"]
@@ -173,17 +237,35 @@ class DateTranslator(Translator):
             return str(e)
 
     def get_value(self, source_key_values):
-        print("Date.get_value function called, ", self.source_key)
+        """
+        Get the translated date values for the target key.
+
+        Parameters
+        ----------
+        source_key_values : dict
+            A dictionary containing source key-value pairs.
+
+        Returns
+        -------
+        list
+            A list of translated date values for the target key.
+        """
         list_of_values = source_key_values.get(self.source_key)
         updated_list_of_values=[]
-        print("list_of_values:",list_of_values)
         if len(list_of_values) > 0:
                 for v in list_of_values:
                     value=self.convert_to_desired_format(v)
-                    print("value :",value)
                     updated_list_of_values.append(value)
 
         return updated_list_of_values
 
     def get_priority(self):
+        """
+        Get the priority of the translator.
+
+        Returns
+        -------
+        int
+            The priority value.
+        """
         return self.priority
