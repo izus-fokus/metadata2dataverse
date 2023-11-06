@@ -22,7 +22,7 @@ mapping:
      source_key: m4i:ProcessingStep#obo:RO_0000057
    - target_key: processStepDate
      source_key: m4i:ProcessingStep#schema:startTime
-     type: date
+
 
 
 

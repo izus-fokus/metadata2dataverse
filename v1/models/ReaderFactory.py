@@ -20,6 +20,8 @@ class ReaderFactory(object):
             return XMLReader
         if (content_type == 'application/json'):
             return JSONReader
+        if (content_type == 'application/jsonld'):
+            return JSONLDReader
 
 
 class Reader(metaclass=ABCMeta):
