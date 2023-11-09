@@ -1,0 +1,606 @@
+{
+    "@context": {
+        "@vocab": "http://w3id.org/nfdi4ing/metadata4ing#",
+        "m4i": "http://w3id.org/nfdi4ing/metadata4ing#",
+        "bibo": "http://purl.org/ontology/bibo/",
+        "biro": "http://purl.org/spar/biro/",
+        "dcat": "http://www.w3.org/ns/dcat#",
+        "dcterms": "http://purl.org/dc/terms/",
+        "foaf": "http://xmlns.com/foaf/0.1/",
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "prov": "http://www.w3.org/ns/prov#",
+        "qudt": "http://qudt.org/schema/qudt/",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "schema": "https://schema.org/",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "ssn": "http://www.w3.org/ns/ssn/",
+        "emmo": "http://emmo.info/emmo#",
+        "obo": "http://purl.obolibrary.org/obo/",
+        "pims-ii": "http://www.molmod.info/semantics/pims-ii.ttl#",
+        "si": "https://ptb.de/si/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "preferred label": {
+            "@id": "skos:prefLabel"
+        },
+        "label": {
+            "@id": "rdfs:label"
+        },
+        "description": {
+            "@id": "dcterms:description"
+        },
+        "measurement unit": {
+            "@id": "emmo:EMMO_b081b346_7279_46ef_9a3d_2c088fcd79f4"
+        },
+        "process": {
+            "@id": "obo:BFO_0000015"
+        },
+        "realizable entity": {
+            "@id": "obo:BFO_0000017"
+        },
+        "bibliographic record": {
+            "@id": "biro:BibliographicRecord"
+        },
+        "kind of quantity": {
+            "@id": "m4i:KindOfQuantity"
+        },
+        "method": {
+            "@id": "m4i:Method"
+        },
+        "numerical assignment": {
+            "@id": "m4i:NumericalAssignment"
+        },
+        "processing step": {
+            "@id": "m4i:ProcessingStep"
+        },
+        "tool": {
+            "@id": "m4i:Tool"
+        },
+        "uncertainty declaration": {
+            "@id": "m4i:UncertaintyDeclaration"
+        },
+        "assignment": {
+            "@id": "pims-ii:Assignment"
+        },
+        "property": {
+            "@id": "pims-ii:Property"
+        },
+        "quantity value": {
+            "@id": "pims-ii:QuantityValue"
+        },
+        "value": {
+            "@id": "pims-ii:Value"
+        },
+        "variable": {
+            "@id": "pims-ii:Variable"
+        },
+        "dataset": {
+            "@id": "dcat:Dataset"
+        },
+        "dataset series": {
+            "@id": "dcat:DatasetSeries"
+        },
+        "distribution": {
+            "@id": "dcat:Distribution"
+        },
+        "activity": {
+            "@id": "prov:Activity"
+        },
+        "association": {
+            "@id": "prov:Association"
+        },
+        "role": {
+            "@id": "prov:Role"
+        },
+        "agent": {
+            "@id": "foaf:Agent"
+        },
+        "group": {
+            "@id": "foaf:Group"
+        },
+        "organization": {
+            "@id": "foaf:Organization"
+        },
+        "person": {
+            "@id": "foaf:Person"
+        },
+        "coverage interval": {
+            "@id": "si:CoverageInterval"
+        },
+        "expanded uncertainty": {
+            "@id": "si:ExpandedUnc"
+        },
+        "real": {
+            "@id": "si:Real"
+        },
+        "intangible": {
+            "@id": "schema:Intangible"
+        },
+        "project": {
+            "@id": "schema:Project"
+        },
+        "research project": {
+            "@id": "schema:ResearchProject"
+        },
+        "part of": {
+            "@id": "obo:BFO_0000050"
+        },
+        "has part": {
+            "@id": "obo:BFO_0000051"
+        },
+        "realized in": {
+            "@id": "obo:BFO_0000054"
+        },
+        "realizes": {
+            "@id": "obo:BFO_0000055"
+        },
+        "precedes": {
+            "@id": "obo:BFO_0000063"
+        },
+        "participates in": {
+            "@id": "obo:RO_0000056"
+        },
+        "has participant": {
+            "@id": "obo:RO_0000057"
+        },
+        "immediately precedes": {
+            "@id": "obo:RO_0002090"
+        },
+        "starts with": {
+            "@id": "obo:RO_0002224"
+        },
+        "ends with": {
+            "@id": "obo:RO_0002230"
+        },
+        "has input": {
+            "@id": "obo:RO_0002233"
+        },
+        "has output": {
+            "@id": "obo:RO_0002234"
+        },
+        "input of": {
+            "@id": "obo:RO_0002352"
+        },
+        "output of": {
+            "@id": "obo:RO_0002353"
+        },
+        "has admissible unit": {
+            "@id": "m4i:hasAdmissibleUnit",
+            "@type": "emmo:EMMO_b081b346_7279_46ef_9a3d_2c088fcd79f4"
+        },
+        "has admissible value": {
+            "@id": "m4i:m4i:hasAdmissibleValue",
+            "@type": "pims-ii:Value"
+        },
+        "has coverage interval": {
+            "@id": "m4i:hasCoverageInterval",
+            "@type": "si:CoverageInterval"
+        },
+        "has employed tool": {
+            "@id": "m4i:hasEmployedTool",
+            "@type": "m4i:Tool"
+        },
+        "has expanded unc": {
+            "@id": "m4i:hasExpandedUnc",
+            "@type": "si:ExpandedUnc"
+        },
+        "has kind of quantity": {
+            "@id": "m4i:hasKindOfQuantity",
+            "@type": "m4i:KindOfQuantity"
+        },
+        "has parameter": {
+            "@id": "m4i:hasParameter",
+            "@type": "pims-ii:Variable"
+        },
+        "has runtime assignment": {
+            "@id": "m4i:hasRuntimeAssignment",
+            "@type": "pims-ii:Assignment"
+        },
+        "has uncertainty declaration": {
+            "@id": "m4i:hasUncertaintyDeclaration",
+            "@type": "m4i:UncertaintyDeclaration"
+        },
+        "has unit": {
+            "@id": "m4i:hasUnit",
+            "@type": "emmo:EMMO_b081b346_7279_46ef_9a3d_2c088fcd79f4"
+        },
+        "has assigned value": {
+            "@id": "m4i:hasAssignedValue",
+            "@type": "pims-ii:Value"
+        },
+        "has variable": {
+            "@id": "m4i:hasVariable",
+            "@type": "pims-ii:Variable"
+        },
+        "implemented by": {
+            "@id": "m4i:implementedByTool",
+            "@type": "m4i:Method"
+        },
+        "implements": {
+            "@id": "m4i:implementsMethod",
+            "@type": "m4i:Tool"
+        },
+        "associated to project": {
+            "@id": "m4i:inProject",
+            "@type": "schema:Project"
+        },
+        "investigates": {
+            "@id": "m4i:investigates"
+        },
+        "investigates property": {
+            "@id": "m4i:investigatesProperty",
+            "@type": "pims-ii:Property"
+        },
+        "project participant": {
+            "@id": "m4i:projectParticipant"
+        },
+        "realizes method": {
+            "@id": "m4i:realizesMethod",
+            "@type": "m4i:Method"
+        },
+        "is admissible unit for": {
+            "@id": "pims-ii:isAdmissibleUnitFor",
+            "@type": "pims-ii:Variable"
+        },
+        "is admissible value for": {
+            "@id": "pims-ii:isAdmissibleValueFor",
+            "@type": "pims-ii:Variable"
+        },
+        "is assignment for": {
+            "@id": "pims-ii:isAssignmentFor"
+        },
+        "is value in assignment": {
+            "@id": "pims-ii:isValueInAssignment",
+            "@type": "pims-ii:Assignment"
+        },
+        "is variable in assignment": {
+            "@id": "pims-ii:isVariableInAssignment",
+            "@type": "pims-ii:Assignment"
+        },
+        "compression format": {
+            "@id": "dcat:compressFormat"
+        },
+        "has file distribution": {
+            "@id": "dcat:distribution"
+        },
+        "download URL": {
+            "@id": "dcat:downloadURL"
+        },
+        "in series": {
+            "@id": "dcat:inSeries"
+        },
+        "media type": {
+            "@id": "dcat:mediaType"
+        },
+        "packaging format": {
+            "@id": "dcat:packageFormat"
+        },
+        "agent": {
+            "@id": "prov:agent",
+            "@type": "foaf:Agent"
+        },
+        "had role": {
+            "@id": "prov:hadRole"
+        },
+        "qualified association": {
+            "@id": "prov:qualifiedAssociation",
+            "@type": "prov:Association"
+        },
+        "was role in": {
+            "@id": "prov:wasRoleIn"
+        },
+        "has property": {
+            "@id": "ssn:hasProperty",
+            "@type": "pims-ii:Property"
+        },
+        "implemented by": {
+            "@id": "ssn:implementedBy"
+        },
+        "implements": {
+            "@id": "ssn:implements"
+        },
+        "is property of": {
+            "@id": "ssn:isPropertyOf"
+        },
+        "personal mailbox": {
+            "@id": "foaf:mbox"
+        },
+        "member": {
+            "@id": "foaf:member",
+            "@type": "foaf:Agent"
+        },
+        "uses instrument": {
+            "@id": "schema:instrument"
+        },
+        "usage instruction": {
+            "@id": "m4i:UsageInstruction",
+            "@type": "xsd:string"
+        },
+        "project end date": {
+            "@id": "m4i:endOfProject",
+            "@type": "xsd:date"
+        },
+        "has assignment timestamp": {
+            "@id": "m4i:hasAssignmentTimestamp",
+            "@type": "schema:DateTime"
+        },
+        "created": {
+            "@id": "m4i:hasDateAssignmentTimestamp",
+            "@type": "schema:DateTime"
+        },
+        "deleted": {
+            "@id": "m4i:hasDateAssignmentDeleted",
+            "@type": "schema:DateTime"
+        },
+        "modified": {
+            "@id": "m4i:hasDateAssignmentModified",
+            "@type": "schema:DateTime"
+        },
+        "valid from": {
+            "@id": "m4i:hasDateAssignmentValidFrom",
+            "@type": "schema:DateTime"
+        },
+        "valid until": {
+            "@id": "m4i:hasDateAssignmentValidUntil",
+            "@type": "schema:DateTime"
+        },
+        "has numerical value": {
+            "@id": "m4i:hasNumericalValue"
+        },
+        "has ROR ID": {
+            "@id": "m4i:hasRorId"
+        },
+        "has symbol": {
+            "@id": "m4i:hasSymbol"
+        },
+        "has variable description": {
+            "@id": "m4i:hasVariableDescription"
+        },
+        "has identifier": {
+            "@id": "m4i:identifier"
+        },
+        "ORCID Id": {
+            "@id": "m4i:orcidId"
+        },
+        "has project ID": {
+            "@id": "m4i:projectReferenceID"
+        },
+        "project start date": {
+            "@id": "m4i:startOfProject",
+            "@type": "xsd:date"
+        },
+        "file size": {
+            "@id": "dcat:byteSize",
+            "@type": "xsd:decimal"
+        },
+        "spatial resolution": {
+            "@id": "dcat:spatialResolutionInMeters",
+            "@type": "xsd:decimal"
+        },
+        "temporal resolution": {
+            "@id": "dcat:temporalResolution",
+            "@type": "xsd:duration"
+        },
+        "first name": {
+            "@id": "foaf:firstName"
+        },
+        "last name": {
+            "@id": "foaf:lastName"
+        },
+        "title": {
+            "@id": "foaf:title"
+        },
+        "has coverage factor": {
+            "@id": "si:hasCoverageFactor",
+            "@type": "xsd:decimal"
+        },
+        "has coverage probability": {
+            "@id": "si:hasCoverageProbability"
+        },
+        "has distribution": {
+            "@id": "si:hasDistribution"
+        },
+        "has interval maximum": {
+            "@id": "si:hasIntervalMax",
+            "@type": "xsd:decimal"
+        },
+        "has interval minimum": {
+            "@id": "si:hasIntervalMin",
+            "@type": "xsd:decimal"
+        },
+        "has standard uncertainty": {
+            "@id": "si:hasStandardUnc",
+            "@type": "xsd:decimal"
+        },
+        "end time": {
+            "@id": "schema:endTime",
+            "@type": "schema:DateTime"
+        },
+        "start time": {
+            "@id": "schema:startTime",
+            "@type": "schema:DateTime"
+        },
+        "has timestamp": {
+            "@id": "schema:temporal",
+            "@type": "schema:DateTime"
+        },
+        "contact person": {
+            "@id": "m4i:ContactPerson"
+        },
+        "data collector": {
+            "@id": "m4i:DataCollector"
+        },
+        "data curator": {
+            "@id": "m4i:DataCurator"
+        },
+        "data manager": {
+            "@id": "m4i:DataManager"
+        },
+        "distributor": {
+            "@id": "m4i:Distributor"
+        },
+        "editor": {
+            "@id": "m4i:Editor"
+        },
+        "hosting institution": {
+            "@id": "m4i:HostingInstitution"
+        },
+        "other person": {
+            "@id": "m4i:Other"
+        },
+        "producer": {
+            "@id": "m4i:Producer"
+        },
+        "project leader": {
+            "@id": "m4i:ProjectLeader"
+        },
+        "project manager": {
+            "@id": "m4i:ProjectManager"
+        },
+        "project member": {
+            "@id": "m4i:ProjectMember"
+        },
+        "registration agency": {
+            "@id": "m4i:RegistrationAgency"
+        },
+        "registration authority": {
+            "@id": "m4i:RegistrationAuthority"
+        },
+        "related person": {
+            "@id": "m4i:RelatedPerson"
+        },
+        "research group": {
+            "@id": "m4i:ResearchGroup"
+        },
+        "researcher": {
+            "@id": "m4i:Researcher"
+        },
+        "rights holder": {
+            "@id": "m4i:RightsHolder"
+        },
+        "sponsor": {
+            "@id": "m4i:Sponsor"
+        },
+        "supervisor": {
+            "@id": "m4i:Supervisor"
+        },
+        "work package leader": {
+            "@id": "m4i:WorkPackageLeader"
+        }
+    },
+    "graph": [
+        {
+            "@id": "local:measurement_0001",
+            "@type": "processing step",
+            "has participant": "local:alex",
+            "start time": "2022-03-01T09:03:01",
+            "has employed tool": "local:hardware_assembly",
+            "investigates": {
+                "@id": "local:sample",
+                "@type": "thing"
+            },
+            "precedes": "local_analysis_0001",
+            "has output": "local:raw_data",
+            "has part": [
+                {
+                    "@id": "local:temp_measurement_0001",
+                    "@type": "processing step",
+                    "start time": "2022-03-01T09:03:01",
+                    "has employed tool": "local:temperature_sensor",
+                    "investigates": {
+                        "@id": "local:temperature",
+                        "@type": "variable"
+                    },
+                    "has output": "local:temperature_data"
+                },
+                {
+                    "@id": "local:pressure_measurement_0001",
+                    "@type": "processing step",
+                    "start time": "2022-03-10T13:35:11",
+                    "has employed tool":"local:pressure_sensor",
+                    "investigates": {
+                        "@id": "local:pressure",
+                        "@type": "variable"
+                    },
+                    "has output": "local:pressure_data"
+                }
+            ]
+        },
+        {
+            "@id": "local:analysis_0001",
+            "@type": "processing step",
+            "has participant": "local:doris",
+            "start time": "2022-03-14T09:15:00",
+            "has input": {
+                "@id": "local:raw_data",
+                "@type": "dataset"
+            },
+            "has output": {
+                "@type": "dataset",
+                "@id": "local:analysed_data"
+            }
+        },
+        {
+            "@id": "local:alex",
+            "@type": "person",
+            "ORCID Id": "0000-0000-0123-4567",
+            "first name": "Alexandra",
+            "last name": "Test"
+        },
+        {
+            "@id": "local:doris",
+            "@type": "person",
+            "ORCID Id": "0000-0000-0123-9876",
+            "first name": "Doris",
+            "last name": "Test"
+        },
+        {
+            "@id": "local:hardware_assembly",
+            "@type": "tool",
+            "label": "Hardware Assembly"
+        },
+        {
+            "@id": "local:temperature_sensor",
+            "@type": "tool",
+            "label": "temperature sensor",
+            "part of": "local:hardware_assembly"
+        },
+        {
+            "@id": "local:pressure_sensor",
+            "@type": "tool",
+            "label": "pressure sensor",
+            "part of": "local:hardware_assembly"
+        },
+        {
+            "@id:": "local:raw_data",
+            "@type": "dataset",
+            "distribution": "local:rd_distribution"
+        },
+        {
+            "@id:": "local:temperature_data",
+            "@type": "dataset",
+            "part of": "local:raw_data",
+            "distribution": "local:td_distribution"
+        },
+        {
+            "@id:": "local:pressure_data",
+            "@type": "dataset",
+            "part of": "local:raw_data",
+            "distribution": "local:pd_distribution"
+        },
+        {
+            "@id": "local:rd_distribution",
+            "@type": "distribution"
+        },
+        {
+            "@id": "local:td_distribution",
+            "@type": "distribution",
+            "part of": "local:rd_distribution"
+        },
+        {
+            "@id": "local:pd_distribution",
+            "@type": "distribution",
+            "part of": "local:rd_distribution"
+        }
+    ]
+}

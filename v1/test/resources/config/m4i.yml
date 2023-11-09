@@ -1,0 +1,28 @@
+scheme: m4i
+format: application/jsonld
+description: a minimal metadata schema for m4i
+
+mapping:
+   # map process tsv target keys
+   - target_key: processStep
+     source_key: m4i:ProcessingStep[*]
+   - target_key: processMethodsDescription
+     source_key: m4i:ProcessingStep#obo:RO_0002234
+   - target_key: processInstru
+     source_key: m4i:hasEmployedTool
+   - target_key: processInstruName
+     source_key: m4i:Tool
+   - target_key: processStepType
+     source_key: m4i:ProcessingStep#m4i:Tool#rdfs:label
+   - target_key: processInstruName
+     source_key: m4i:ProcessingStep#m4i:hasEmployedTool
+   - target_key: processStepMethods
+     source_key: m4i:ProcessingStep#m4i:realizesMethod#rdfs:label
+   - target_key: authorName
+     source_key: m4i:ProcessingStep#obo:RO_0000057
+   - target_key: processStepDate
+     source_key: m4i:ProcessingStep#schema:startTime
+     type: date
+
+
+

@@ -353,41 +353,42 @@ def create_app(test_config=None):
                 if isinstance(c_field, MultipleCompoundField):
                     children_dict[k] = []
                     if isinstance(v, list):
-                        for value in v:          
-                            p_field = get_p_field(type_class,k,[value],multiple,field)       
-                            if p_field != None:            
-                                children_dict[k].append(p_field) 
+                        for value in v:
+                            p_field = get_p_field(type_class,k,[value],multiple,field)
+                            if p_field != None:
+                                children_dict[k].append(p_field)
                     else:
-                        p_field = get_p_field(type_class,k,v,multiple,field)                        
-                        if p_field != None:            
-                            children_dict[k].append(p_field)   
+                        p_field = get_p_field(type_class,k,v,multiple,field)
+                        if p_field != None:
+                            children_dict[k].append(p_field)
                 # CompoundField
                 if isinstance(c_field, CompoundField):
-                    # PrimitiveFields                    
+                    # PrimitiveFields
                     children_dict[k] = get_p_field(type_class,k,v,multiple,field)
                 parents_dict[parent] = c_field
-            # has no parent    
+            # has no parent
             if parent == None:
                 p_field = get_p_field(type_class,k,v,multiple,field)
                 if p_field != None and p_field.value != ['none'] and p_field.value != 'none':
-                    mb_dict[mb_id].add_field(p_field) 
+                    mb_dict[mb_id].add_field(p_field)
                     json_result.add_field(p_field)
-        # build compound fields        
+        # build compound fields
         for parent, c_field_outer in parents_dict.items():
             mb_id = DV_FIELD.get(parent).metadata_block
             children = DV_CHILDREN.get(parent)
-            if isinstance(c_field_outer, MultipleCompoundField):            
-                for child in children:                    
+            if isinstance(c_field_outer, MultipleCompoundField):
+                for child in children:
                     if child in children_dict:
                         number_of_values = len(children_dict.get(child))
-                        break                                  
-                for i in range(number_of_values):    
-                    c_field_inner = CompoundField(parent)                
-                    for child in children:                                                
-                        if child in children_dict: 
-                            p_field = children_dict.get(child)[i]
-                            if p_field != None and p_field.value != ['none'] and p_field.value != 'none' and p_field.value != [] and p_field.value.strip() != '':                         
-                                c_field_inner.add_value(p_field, child)                               
+                        break
+                for i in range(number_of_values):
+                    c_field_inner = CompoundField(parent)
+                    for child in children:
+                        if child in children_dict:
+                            if i<len(children_dict[child]):
+                                p_field = children_dict.get(child)[i]
+                            if p_field != None and p_field.value != ['none'] and p_field.value != 'none' and p_field.value != [] and p_field.value.strip() != '':
+                                c_field_inner.add_value(p_field, child)
                             else:
                                 continue
                     if bool(c_field_inner.value):
