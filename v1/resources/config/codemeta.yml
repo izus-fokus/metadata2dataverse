@@ -1,87 +1,77 @@
-scheme: codemeta
+scheme: codemeta20
 format: application/json
 description: a minimal metadata schema for science software and code, version 2.0
 reference: https://codemeta.github.io/
 
 mapping:
    # map codemeta tsv target keys
-   - target_key: codeMetaCodeRepository
-     source_key: codeRepository
-   - target_key: codeMetaSoftwareVersion
+   - target_key: codeRepository
+   - target_key: codeVersion
      source_key: softwareVersion
      priority: 2
-   - target_key: codeMetaSoftwareVersion
+   - target_key: codeVersion
      source_key: version
-   - target_key: codeMetaDevelopmentStatus
-     source_key: developmentStatus
-   - target_key: codeMetaProgrammingLanguage
+   - target_key: developmentStatus
+   - target_key: programmingLanguage
      source_key: programmingLanguage.name
      priority: 2
-   - target_key: codeMetaProgrammingLanguage
+   - target_key: programmingLanguage
      source_key: programmingLanguage[*].name
      priority: 2
-   - target_key: codeMetaProgrammingLanguage
-     source_key: programmingLanguage
-   - target_key: codeMetaOperatingSystem
-     source_key: operatingSystem
-   - target_key: codeMetaApplicationCategory
-     source_key: applicationCategory
-   - target_key: codeMetaApplicationSubCategory
-     source_key: applicationSubCategory
-   - target_key: codeMetaSoftwareHelp
-     source_key: softwareHelp.url
-   - target_key: codeMetaSoftwareHelp
+   - target_key: programmingLanguage
+   - target_key: operatingSystem
+   - target_key: applicationCategory
+   - target_key: applicationSubCategory
+   - target_key: softwareHelp
+   - target_key: softwareHelp
      source_key: softwareHelp[*].url
-   - target_key: codeMetaBuildInstructions
-     source_key: buildInstructions
-   - target_key: codeMetaRuntimePlatform
-     source_key: runtimePlatform
-   - target_key: codeMetaTargetProduct
+   - target_key: buildInstructions
+   - target_key: runtimePlatform
+   - target_key: targetProduct
      source_key: targetProduct.name
-   - target_key: codeMetaTargetProduct
+   - target_key: targetProduct
      source_key: targetProduct[*].name
-   - target_key: codeMetaSoftwareRequirementsTitle
+   - target_key: softwareRequirements
      source_key: softwareRequirements.name
      priority: 2
-   - target_key: codeMetaSoftwareRequirementsTitle
+   - target_key: softwareRequirements
      source_key: softwareRequirements[*].name
      priority: 2
-   - target_key: codeMetaSoftwareRequirementsTitle
-     source_key: softwareRequirements
-   - target_key: codeMetaSoftwareRequirementsUrl
+   - target_key: softwareRequirements
+   - target_key: softwareRequirementsUrl
      source_key: softwareRequirements.url
-   - target_key: codeMetaSoftwareRequirementsUrl
+   - target_key: softwareRequirementsUrl
      source_key: softwareRequirements[*].url
-   - target_key: codeMetaSoftwareSuggestionsTitle   
+   - target_key: softwareSuggestions   
      source_key: softwareSuggestions.name
-   - target_key: codeMetaSoftwareSuggestionsTitle   
+   - target_key: softwareSuggestions   
      source_key: softwareSuggestions[*].name
-   - target_key: codeMetaSoftwareSuggestionsUrl
+   - target_key: softwareSuggestionsUrl
      source_key: [softwareSuggestions.url, softwareSuggestions.codeRepository]
      type: merge
      join_symbol: ", "
      # would benefit from template feature
      # template: "{{ key1 }}{{#key1}}{{#key2}} ({{/key2}}{{/key1}}{{ key2 }}{{#key1}}{{#key2}}){{/key2}}{{/key1}}"
-   - target_key: codeMetaSoftwareSuggestionsUrl
+   - target_key: softwareSuggestionsUrl
      source_key: ["softwareSuggestions[*].url", "softwareSuggestions[*].codeRepository"]
      type: merge
      join_symbol: ", "
      #  template: "{{ key1.url }}{{#key1.url}}{{#key2.codeRepository}} ({{/key2.codeRepository}}{{/key1.codeRepository}}{{ key2.codeRepository }}{{#key1.url}}{{#key2.codeRepository}}){{/key2.codeRepository}}{{/key1.codeRepository}}"
-   - target_key: codeMetaSoftwareSuggestionsUrl
+   - target_key: softwareSuggestionsUrl
      source_key: softwareSuggestions[*].url
-   - target_key: codeMetaPermissions
+   - target_key: permissions
      source_key: permissions
-   - target_key: codeMetaMemoryRequirements
+   - target_key: memoryRequirements
      source_key: memoryRequirements
-   - target_key: codeMetaProcessorRequirements
+   - target_key: processorRequirements
      source_key: processorRequirements
-   - target_key: codeMetaStorageRequirements
+   - target_key: storageRequirements
      source_key: storageRequirements
-   - target_key: codeMetaReleaseNotes
+   - target_key: releaseNotes
      source_key: releaseNotes
-   - target_key: codeMetaContIntegration
+   - target_key: contIntegration
      source_key: contIntegration
-   - target_key: codeMetaIssueTracker
+   - target_key: issueTracker
      source_key: issueTracker
      
    # map other codemeta source keys if possible
