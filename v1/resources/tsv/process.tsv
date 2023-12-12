@@ -41,8 +41,8 @@
 	processStepSoftware	Software	List of software names used in this processing step (detailed information about software should be given under Software).		text	37	; #NAME: #VALUE	TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	processStep	process	
 	processStepHardware	Instruments	List of instrumental hardware used in this processing step (detailed information about instruments should be given under Instruments).		text	38	; #NAME: #VALUE	TRUE	FALSE	FALSE	FALSE	TRUE	FALSE	processStep	process	
 	processStepEnvironment	Environment	Name of the environment used for this processing step (detailed information about the environment should be given under Environments).		text	39	; #NAME: #VALUE	TRUE	FALSE	FALSE	FALSE	FALSE	FALSE	processStep	process	
-	processStepInput	Input	Name of the file or object that was the input of this processing step		text	40	; #NAME: #VALUE	TRUE	FALSE	TRUE	FALSE	FALSE	FALSE	processStep	process	
-	processStepOutput	Output	Name of the file or object that was the output of this processing step		text	41	; #NAME: #VALUE	TRUE	FALSE	TRUE	FALSE	FALSE	FALSE	processStep	process	
+	processStepInput	Input	List of file names or objects that were the input of this processing step		text	40	; #NAME: #VALUE	TRUE	FALSE	TRUE	FALSE	FALSE	FALSE	processStep	process	
+	processStepOutput	Output	List of file names or objects that were the output of this processing step		text	41	; #NAME: #VALUE	TRUE	FALSE	TRUE	FALSE	FALSE	FALSE	processStep	process	
 #controlledVocabulary	DatasetField	Value	identifier	displayOrder												
 	processStepType	Generation	0	0												
 	processStepType	Postprocessing	1	1												
@@ -62,6 +62,7 @@
 	processSoftwareIDType	lsid		11												
 	processSoftwareIDType	pmid		12												
 	processSoftwareIDType	purl		13												
-	processSoftwareIDType	upc		14												
-	processSoftwareIDType	url		15												
-	processSoftwareIDType	urn		16												
+	processSoftwareIDType	swmath		14												
+	processSoftwareIDType	upc		15												
+	processSoftwareIDType	url		16												
+	processSoftwareIDType	urn		17												

@@ -1,0 +1,54 @@
+#metadataBlock	name	dataverseAlias	displayName	blockURI												
+	containermeta		Container Metadata													
+#datasetField	name	title	description	watermark	fieldType	displayOrder	displayFormat	advancedSearchField	allowControlledVocabulary	allowmultiples	facetable	displayoncreate	required	parent	metadatablock_id	termURI
+	containerPlatform	Container run-time platform	The platform in which the container was ran e.g., Docker or Singularity.		text	1		FALSE	FALSE	FALSE			TRUE		containermeta	
+	version	Version	The version of containerization platform.		text	2		FALSE	FALSE	FALSE			TRUE		containermeta	
+	servicesNeedToRun	Services need to run	This indicates the services need to run in case of Docker Compose.		text	3		FALSE	FALSE	TRUE			FALSE		containermeta	
+	portMapping	Port mapping	This indicates the process of associating a port on the host machine with a port on the container.		none	4		FALSE	FALSE	TRUE			FALSE		containermeta	
+	containerPort	Container port	The port on the container that is exposed.		int				FALSE	FALSE			FALSE	portMapping	containermeta	
+	hostPort	Host port	The port on the host that is exposed.		int				FALSE	FALSE			FALSE	portMapping	containermeta	
+	protocol	Port mapping protocol	The network protocol used for the port mapping.		text				TRUE	FALSE			FALSE	portMapping	containermeta	
+	networks	Networks	This indicates the rules for inbound and outbound network traffic of the container.		none	5		FALSE	FALSE	TRUE			FALSE		containermeta	
+	networkMode	Network mode	This indicates how the container communicates with the network,.		text				FALSE	FALSE			FALSE	networks	containermeta	
+	addressIP	IP address	The IP addresses associated with the container.		text				FALSE	FALSE		FALSE	FALSE	networks	containermeta	
+	hostname	Host name	This specifies hostname of the container which is container's id by default.		text				FALSE	FALSE		FALSE	FALSE	networks	containermeta	
+	mounts	Mounts	This indicates any mounting associated with the container.		none			FALSE	FALSE	TRUE			FALSE		containermeta	
+	mountType	Mount Type	This determines how file systems are shared between the host and the container.		text	6			TRUE	FALSE			FALSE	mounts	containermeta	
+	sourcePath	Source	This indicates the path to the file or directory on the host machine.		text				FALSE	FALSE			FALSE	mounts	containermeta	
+	targetPath	Target or Destination	This indicates the path where the file or directory is mounted in the container.		text				FALSE	FALSE			FALSE	mounts	containermeta	
+	user	User	This indicates the user is assigned to this container.		none	7		FALSE	FALSE	FALSE			FALSE		containermeta	
+	userName	Name	Name of the user.		text				FALSE	FALSE			FALSE	user	containermeta	
+	uID	Id	Id of the user.		int				FALSE	FALSE			FALSE	user	containermeta	
+	group	Group	This indicates a group in which a user belongs to.		none	8		FALSE	FALSE	FALSE			FALSE		containermeta	
+	groupName	Name	Name of the group.		text				FALSE	FALSE			FALSE	group	containermeta	
+	gID	Id	Id of the group.		int				FALSE	FALSE			FALSE	group	containermeta	
+	envVar	Environment Variables	This indicates the list of the environment variables used in this container.		none	9		FALSE	FALSE	TRUE			FALSE		containermeta	
+	envName	Name	Name of the environment variable.		text				FALSE	FALSE			FALSE	envVar	containermeta	
+	envValue	Value	Value of the correspondinng environment variable.		text				FALSE	FALSE			FALSE	envVar	containermeta	
+	entrypointOrRunscript	Entrypoint or Runscript	This indicates the entrypoint or runscript intructions to this container.		text	10		FALSE	FALSE	TRUE			FALSE		containermeta	
+	resourceRequirements	Resource Requirements	This denotes the quantity of resources allocated to the container.		none	11		FALSE	FALSE	FALSE			FALSE		containermeta	
+	cpus	No of CPUs	This indicates the minimum required number of CPUs / virtual CPUs / cores.	5 GB	int				FALSE	FALSE			FALSE	resourceRequirements	containermeta	
+	memory	Memory requirements	This indicates memory requirements with a tb, gb, mb, or kb suffix.		text				FALSE	FALSE			FALSE	resourceRequirements	containermeta	
+	imageDetails	Image details	This specifies the details of the image on which the container was built.		none	12		FALSE	FALSE	FALSE			TRUE		containermeta	
+	imagePlatform	Image building Platform	This specifies the platform in which the image was built.		text					FALSE			TRUE	imageDetails	containermeta	
+	imageAvail	Image availability	Is the image available as a tarball or as a image in a image registry?		text			FALSE	TRUE	FALSE			TRUE	imageDetails	containermeta	
+	AltDarus	Image url	Specify a url of the image location.		url			FALSE	FALSE	FALSE			FALSE	imageDetails	containermeta	
+#controlledVocabulary	DatasetField	Value	identifier	displayOrder												
+	protocol	tcp	0	0												
+	protocol	udp	1	1												
+	networkMode	bridge	0	0												
+	networkMode	ptp	1	1												
+	networkMode	ipvlan	2	2												
+	networkMode	macvlan	3	3												
+	networkMode	none	4	4												
+	mountType	volume	0	0												
+	mountType	bind Mount	1	1												
+	mountType	tmpfs mount	2	2												
+	mountType	image mount	3	3												
+	imageAvail	No	0	0												
+	imageAvail	Yes	1	1												
+																
+																
+may be important																
+containerName																
+containerId																
