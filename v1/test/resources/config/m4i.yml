@@ -8,12 +8,20 @@ mapping:
    source_key: obo:BFO_0000015
    priority: 1
  - target_key: processMethods
-   source_key: obo:BFO_0000015
+   source_key: m4i:Method
    priority: 2
  - target_key: processMethodsName
    source_key: obo:BFO_0000015#rdfs:label
+   priority: 1
+ - target_key: processMethodsName
+   source_key: m4i:Method#rdfs:label
+   priority: 2
  - target_key: processMethodsPars
    source_key: obo:BFO_0000015#m4i:hasParameter
+   priority: 1
+ - target_key: processMethodsPars
+   source_key: m4i:Method#m4i:hasParameter
+   priority: 2
  - target_key: processMethodsDescription
    source_key: obo:BFO_0000015#m4i:hasVariableDescription
  - target_key: processMethodsParSymbol
@@ -54,3 +62,7 @@ mapping:
    priority: 1
  - target_key: processStepMethods
    source_key: m4i:ProcessingStep#obo:BFO_0000051
+   priority: 2
+ - target_key: processStepMethods
+   source_key: m4i:ProcessingStep#m4i:method
+   priority: 1
