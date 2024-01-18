@@ -64,7 +64,7 @@ class TestReader(unittest.TestCase):
 
         # Read the JSON-LD data from the test input
         source_key_value=jsonld_reader.read(test_input,self.jsonldmapping)
-        #print(json.dumps(source_key_value, indent=4))
+
 
         #Check each value of the actual and expected dictionaries using assertEqual()
         for key, expected_value in expected_dict.items():

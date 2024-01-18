@@ -113,14 +113,14 @@ class XMLReader(Reader):
         root = ET.fromstring(xml_data)
         source_key_value = {}
         for source_key in list_of_source_keys:
-            #print(source_key)
+
             if source_key.count("/") > 2 and source_key.count("@") == 0:        # case nested source_key
                 main_key = source_key.rsplit("/", 1)[0]
             else:
                 main_key = source_key
             try:
                 elements = root.xpath("." + main_key, namespaces=namespaces)
-                #print("elements: ",elements)
+
             except:
                 g.warnings.append(source_key + " not a valid X-Path. Please check your YAML File.")
                 continue
@@ -160,7 +160,6 @@ class XMLReader(Reader):
                             else:
                                 values.append('none')
                             source_key_value[source_key] = values
-                            #print(values)
         return source_key_value
 
 
@@ -347,9 +346,7 @@ class JSONLDReader(Reader):
                         s = row.subj.toPython()
                         temp[s] = None
                         key_order.append(s)
-                        # if parent=="m4i:Tool":
-                        #     print(row, "\n")
-                    #print("key order: ", key_order)
+
                     # Query and store data for the child element
                     for row in g.query(child_query):
                         o = row.obj.toPython()
@@ -376,6 +373,4 @@ class JSONLDReader(Reader):
 
         # Remove keys with empty values (None, empty strings, empty lists, empty dictionaries)
         key_values = {key: value for key, value in key_values.items() if value}
-        #print("key values:")
-        #print(key_values)
         return key_values

@@ -107,7 +107,6 @@ def create_app(test_config=None):
         target_key_values = {}
         # check if rules can be applied to source_keys
         source_keys_to_delete = []
-        #print("rules dict:", mapping.rules_dict)
         for k,v in source_key_values.items():
             if k in mapping.rules_dict:
                 rule = mapping.rules_dict.get(k)
@@ -115,20 +114,17 @@ def create_app(test_config=None):
                     if value in rule:
                         translators = rule.get(value)
                         for translator in translators:
-                            #print("translator: ",translator)
                             target_key = translator.target_key
                             priority = translator.priority
                             source_keys_to_delete.append(translator.source_key)
                             source_keys_to_delete.append(k)
                             value_new = translator.get_value(source_key_values)
-                            #print("value_new:",value_new)
+
                             if value_new != None:
                                 if target_key in target_key_values:
                                     if priority > target_key_values[target_key][1]:
-                                        #print("target_key_values:",target_key_values)
                                         target_key_values[target_key] = [value_new,priority]
                                 else:
-                                    #print("target_key_values:",target_key_values)
                                     target_key_values[target_key] = [value_new,priority]
         # delete used source_keys
         for key in source_keys_to_delete:
@@ -151,18 +147,14 @@ def create_app(test_config=None):
                     else:
                         value = translator.get_value(source_key_values)
                     if t_key in target_key_values:
-                        print("\n t_key :",t_key, " : ", target_key_values[t_key])
                         existing_value, existing_priority = target_key_values[t_key]
 
                         if priority > existing_priority:
-                            print("Hey")
                             # Check if the existing value is a list
                             if isinstance(existing_value, list) and isinstance(value,list):
                                 # Update only if the new value is not 'none'
                                 for e in range(len(existing_value)):
-                                    #print(v,e)
                                     if e < len(value):
-                                        print("value: ", e, ", ",value)
                                         if value[e]!= 'None':
                                             target_key_values[t_key][0][e] = value[e]
                                             target_key_values[t_key][1] = priority
@@ -195,7 +187,7 @@ def create_app(test_config=None):
 #                                target_key_values[t_key] = [value,priority]
 #                        else:
 #                            target_key_values[t_key] = [value,priority]
-        print("\n target key values:", (json.dumps(target_key_values, indent=4)))
+        #print("\n target key values:", (json.dumps(target_key_values, indent=4)))
         # delete priorities
         for k,v in target_key_values.items():
             target_key_values[k].pop()
@@ -470,14 +462,11 @@ def create_app(test_config=None):
             abort(415, scheme)
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
-        #print("source key values: ", source_key_values)
         target_key_values = translate_source_keys(source_key_values, mapping)
         #resp_url = check_value("Geeksoreeks1", "text")     testing text
 
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN
         result = build_json(target_key_values, method)
-        #if scheme=="harvester" or scheme=="m4i":
-            #print(json.dumps(target_key_values, indent=4))
         if method == 'edit':
             response = EditScheme().dump(result)
         elif method == 'update':
