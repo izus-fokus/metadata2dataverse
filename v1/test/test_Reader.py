@@ -58,13 +58,13 @@ class TestReader(unittest.TestCase):
         # Within the app context, read all schema files and load the mapping file
         with jsonldcontext:
             read_all_scheme_files()
-            mapping_file = open('../resources/config/m4i.yml')
+            mapping_file = open("/Users/vidushi/development/metadata2dataverse/v1/test/resources/config/m4i.yml")
             self.jsonldmapping = read_config(mapping_file)
             mapping_file.close()
 
         # Read the JSON-LD data from the test input
         source_key_value=jsonld_reader.read(test_input,self.jsonldmapping)
-        #print(source_key_value)
+        #print(json.dumps(source_key_value, indent=4))
 
         #Check each value of the actual and expected dictionaries using assertEqual()
         for key, expected_value in expected_dict.items():

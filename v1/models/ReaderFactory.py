@@ -268,9 +268,10 @@ class JSONLDReader(Reader):
         list_of_source_keys = mapping.get_source_keys()
         list_of_source_keys = list(dict.fromkeys(list_of_source_keys))
         for source_key in list_of_source_keys:
-           # print(source_key)
+            #print("source_key: ", source_key)
             elements = []
             main_key = ""
+            main_keys=[]
 
             # Check if the source key contains "#" for nested source keys
             if "#" in source_key:
@@ -284,8 +285,13 @@ class JSONLDReader(Reader):
             else:
                 main_key = source_key
 
+            if main_keys !=[]:
+                for m in main_keys:
+                    main_key=m
+
             # If a main key is present, query the data and store the results
             if main_key != "":
+                #print("main_key: ",main_key, "\n")
                 if main_key not in key_values:
                     key_values[main_key] = []
                     main_query = (
@@ -343,24 +349,26 @@ class JSONLDReader(Reader):
                         key_order.append(s)
                         # if parent=="m4i:Tool":
                         #     print(row, "\n")
-
+                    #print("key order: ", key_order)
                     # Query and store data for the child element
                     for row in g.query(child_query):
                         o = row.obj.toPython()
                         s = row.subj.toPython()
                         p = row.subj.toPython()
+                        #print(child_query)
                         if s in temp:
+                            #print("DEBUG: o: ",s, " temp: ", temp,"\n")
                             if temp[s] == None:
                                 temp[s] = str(o)
                             else:
-                                temp[s].append(str(o))
+                                temp[s]=temp[s]+" , "+str(o)
                     key_values[source_key] = []
 
                     # Populate key values based on the order of keys
                     for key in key_order:
 
                         if temp[key] == None:
-                            key_values[source_key].append('none')
+                            key_values[source_key].append('None')
                         else:
                             key_values[source_key].append(temp[key])
                     parent_temp = temp
@@ -368,5 +376,6 @@ class JSONLDReader(Reader):
 
         # Remove keys with empty values (None, empty strings, empty lists, empty dictionaries)
         key_values = {key: value for key, value in key_values.items() if value}
-        #print(json.dumps(key_values, indent=4))
+        #print("key values:")
+        #print(key_values)
         return key_values
