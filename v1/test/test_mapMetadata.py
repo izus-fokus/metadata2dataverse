@@ -69,9 +69,9 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)    
-        self.assertEqual(response.json, {'fields': [{'typeName': 'engMetaTemp', 'value': {'engMetaTempPoints': {'typeName': 'engMetaTempPoints', 'value': '1; 2; 3'}}}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'engMetaTemp', 'value': [{'engMetaTempPoints': {'typeName': 'engMetaTempPoints', 'value': '1; 2; 3'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
-        self.assertEqual(x.status_code, 400)
+        self.assertEqual(x.status_code, 200)
                 
         # testen des Configtypes merge: 3. Merge mit mehreren Values (authorName)
         with open(r'./input/merge_test3.txt', 'rb') as f:
@@ -140,6 +140,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'typeName': 'series', 'value': {'seriesInformation': {'typeName': 'seriesInformation', 'value': 'Hallo geht das hier?'}}}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
+        print(x.text)
         self.assertEqual(x.status_code, 500)
 
         # rule 2
