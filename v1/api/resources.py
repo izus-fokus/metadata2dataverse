@@ -127,6 +127,7 @@ def read_scheme(data):
     start_vocabulary = False    
     for row in tsv_file:      
         if not all('' == s or s.isspace() for s in row):
+            row = [elem.strip() for elem in row]
             if(row[0] == "#datasetField"):            
                 try:
                     index_targetkey = row.index("name")
@@ -135,8 +136,10 @@ def read_scheme(data):
                     index_fieldtype = row.index("fieldType")
                     index_parent = row.index("parent")
                     index_hascontrolledvoc = row.index("allowControlledVocabulary")
-                except ValueError:
+                except ValueError as e:
+                    print(row)
                     print("Check TSV #datasetField column names. Should contain name, allowmultiples, metadatablock_id, fieldType, parent and allowControlledVocabulary.")
+                    print(e)
                 start_schema = True
                 continue        
             if(row[0] == "#controlledVocabulary"):

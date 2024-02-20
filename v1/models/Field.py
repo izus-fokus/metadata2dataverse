@@ -30,6 +30,9 @@ class Field(object):
             values = [values]
         valid = True
         for value in values:
+            if value == 'none':
+                continue
+            
             if self.field_type == "url":
                 valid = valid and validators.url(value)
 
