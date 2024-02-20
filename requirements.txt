@@ -16,3 +16,4 @@ requests==2.31.0
 #validators==0.20.0
 validators==0.22.0
 chevron==0.14.0
+rdflib==7.0.0
