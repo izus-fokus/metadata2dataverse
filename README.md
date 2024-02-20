@@ -22,13 +22,13 @@ see [OpenAPI documentation for more details](https://izus-fokus.github.io/metada
 
 ###### POST /metadata/<string:scheme>
 Identification of the scheme in which the posted metadata file is stored.
-- Query parameter method: Specifies the output format. 
-  - edit:compatible with the edit metadata endpoint, 
-  - update:compatible with the update metadata endpoint (default), 
-  - create:compatible to create a new record on Dataverse 
+- Query parameter method: Specifies the output format.
+  - edit:compatible with the edit metadata endpoint,
+  - update:compatible with the update metadata endpoint (default),
+  - create:compatible to create a new record on Dataverse
 - Query parameter verbose (boolean, default=False): Specifies whether additional information about the success should be given
-- Body: Metadata file to be converted with Content-Type: text/plain, application/xml or application/json
-- Output: Dataverse-compatible JSON (verbose=false) or 
+- Body: Metadata file to be converted with Content-Type: text/plain, application/xml or application/json or application/jsonld
+- Output: Dataverse-compatible JSON (verbose=false) or
   ```
   {
    'success': <True|False>,

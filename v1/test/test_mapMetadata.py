@@ -23,8 +23,8 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             self.headers = {'X-Dataverse-key': credentials["api_key"]}
             self.dataverse_url = credentials["base_url"]
             self.dataset = credentials["dataset_id"]
-        
-    def test_post_engmeta_data(self):        
+
+    def test_post_engmeta_data(self):
         with open(r'./input/EngMeta_example_v0.2.xml', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/engmeta?method=edit&verbose=True', data=file_content, headers={'Content-Type':'text/xml'})
@@ -32,56 +32,54 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertIn("warnings",response.json)
 
         response = self.client.post('/metadata/engmeta?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
-        self.assertEqual(response.status_code, 200)  
+        self.assertEqual(response.status_code, 200)
         url = "{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset)
-        #print(response.json)
         x = requests.put(
             url,
             data=json.dumps(response.json),
             headers=self.headers)
-        #print(x.json())
         self.assertEqual(x.status_code, 200)
-        
-        
-        
+
+
+
     def test_post_harvester_data(self):
-        # testen der priorities        
+        # testen der priorities
         with open(r'./input/priority_test.txt', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
-        self.assertEqual(response.status_code, 200)  
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'typeName': 'author', 'value': [{'authorName': {'typeName': 'authorName', 'value': 'Selent'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
-        self.assertEqual(x.status_code, 200)        
-        
+        self.assertEqual(x.status_code, 200)
+
         # testen des Configtypes merge: 1. Einfacher Merge mit Symbol ";"
         with open(r'./input/merge_test1.txt', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
-        self.assertEqual(response.status_code, 200) 
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'typeName': 'dsDescription', 'value': [{'dsDescriptionValue': {'typeName': 'dsDescriptionValue', 'value': 'Abstract; Dies ist die Abstract Description!'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
-        
+
         # testen des Configtypes merge: 2. dreifacher Merge (engMetaTempPoints)
         # dataverse bug: compoundfield wirft 500 Fehler
         with open(r'./input/merge_test2.txt', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'typeName': 'engMetaTemp', 'value': {'engMetaTempPoints': {'typeName': 'engMetaTempPoints', 'value': '1; 2; 3'}}}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 400)
-                
+
         # testen des Configtypes merge: 3. Merge mit mehreren Values (authorName)
         with open(r'./input/merge_test3.txt', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
-        self.assertEqual(response.status_code, 200)   
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'typeName': 'author', 'value': [{'authorName': {'typeName': 'authorName', 'value': 'Anne Kreuter'}}, {'authorName': {'typeName': 'authorName', 'value': 'Dorothea Iglezakis'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
-        
+
         # testen multiplecompoundfields mit Kindern die unterschiedliche Felder besetzen
         # dataverse: contact email is required -> sollte auch der metadataMapper wissen?
         with open(r'./input/unterschiedliche_felder.txt', 'rb') as f:
@@ -90,13 +88,13 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'typeName': 'datasetContact', 'value': [{'datasetContactName': {'typeName': 'datasetContactName', 'value': 'Dorothea Iglezakis'}, 'datasetContactAffiliation':{'typeName': 'datasetContactAffiliation', 'value': 'Uni Stuttgart'}}, {'datasetContactName': {'typeName': 'datasetContactName', 'value': 'Anett Seeland'}, 'datasetContactAffiliation':{'typeName': 'datasetContactAffiliation', 'value': 'IZUS'}}, {'datasetContactName': {'typeName': 'datasetContactName', 'value': 'Max Mustermann'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
-        #print(x.text)
         self.assertEqual(x.status_code, 403)
 
         # testen des Configtypes: addition
         with open(r'./input/adder.txt', 'rb') as f:
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'typeName': 'title', 'value': 'Test titel'},{'typeName': 'dateOfDeposit', 'value': self.actual_date}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
@@ -140,7 +138,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'typeName': 'series', 'value': {'seriesInformation': {'typeName': 'seriesInformation', 'value': 'Hallo geht das hier?'}}}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
-        self.assertEqual(x.status_code, 500)
+        self.assertEqual(x.status_code, 400)
 
         # rule 2
         with open(r'./input/rule2.txt', 'rb') as f:
@@ -173,4 +171,15 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         response = self.client.post('/metadata/m4i?method=edit&verbose=True', data=file_content, headers={'Content-Type':'application/jsonld'})
         self.assertEqual(response.status_code, 202)
+        print("JSONLD TESTS DONE")
+        self.assertIn('warnings', response.json)
+
+        with open(r'./input/opendihu_example.jsonld', 'rb') as f:
+            file_content = f.read()
+        response = self.client.post('/metadata/m4i?method=edit', data=file_content, headers={'Content-Type':'application/jsonld'})
+        #print("response:",response)
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post('/metadata/m4i?method=edit&verbose=True', data=file_content, headers={'Content-Type':'application/jsonld'})
+        self.assertEqual(response.status_code, 202)
+        print("JSONLD TESTS DONE")
         self.assertIn('warnings', response.json)

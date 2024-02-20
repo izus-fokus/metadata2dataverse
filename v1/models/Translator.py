@@ -1,6 +1,6 @@
 from abc import abstractstaticmethod, ABCMeta
 from models.AdditionTranslators import *
-from datetime import datetime
+from dateutil import parser
 class Translator(metaclass=ABCMeta):
     """ Factory-Class """
 
@@ -206,35 +206,27 @@ class DateTranslator(Translator):
             Returns "Invalid input time format" if parsing fails.
         """
         try:
-            # List of possible input formats to check
-            input_formats = ["%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M", "%Y-%m-%d", "%Y-%m", "%Y"]
-
-            # Initialize the datetime object to None
-            datetime_obj = None
-
-            # Try to parse the input time with different formats
-            for format in input_formats:
-                try:
-                    datetime_obj = datetime.strptime(input_time, format)
-                    break  # Stop if parsing is successful
-                except ValueError:
-                    pass  # Continue to the next format if parsing fails
-
-            if datetime_obj:
-                if datetime_obj.day:
+            # Try parsing the input time using dateutil.parser
+            parsed_time = parser.parse(input_time)
+            print(" \n Parsed time: ",parsed_time.hour)
+            # Check if the time includes day, month, and year
+            if parsed_time:
+                if parsed_time.day:
                     # Format as yyyy-mm-dd
-                    return datetime_obj.strftime("%Y-%m-%d")
-                elif datetime_obj.month:
+                    return parsed_time.strftime("%Y-%m-%d")
+                elif parsed_time.month:
                     # Format as yyyy-mm
-                    return datetime_obj.strftime("%Y-%m")
+                    return parsed_time.strftime("%Y-%m")
                 else:
                     # Format as yyyy
-                    return datetime_obj.strftime("%Y")
+                    return parsed_time.strftime("%Y")
             else:
                 return "Invalid input time format"
 
-        except Exception as e:
-            return str(e)
+        except ValueError:
+        # If parsing fails, return an error message
+            return "None"
+
 
     def get_value(self, source_key_values):
         """

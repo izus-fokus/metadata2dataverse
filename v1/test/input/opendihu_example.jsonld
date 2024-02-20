@@ -1,0 +1,699 @@
+{
+    "@context":
+    {
+        "@vocab": "http://w3id.org/nfdi4ing/metadata4ing#",
+        "m4i": "http://w3id.org/nfdi4ing/metadata4ing#",
+        "bibo": "http://purl.org/ontology/bibo/",
+        "biro": "http://purl.org/spar/biro/",
+        "dcat": "http://www.w3.org/ns/dcat#",
+        "dcterms": "http://purl.org/dc/terms/",
+        "foaf": "http://xmlns.com/foaf/0.1/",
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "prov": "http://www.w3.org/ns/prov#",
+        "qudt": "http://qudt.org/schema/qudt/",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "schema": "https://schema.org/",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "ssn": "http://www.w3.org/ns/ssn/",
+        "emmo": "http://emmo.info/emmo#",
+        "obo": "http://purl.obolibrary.org/obo/",
+        "pims-ii": "http://www.molmod.info/semantics/pims-ii.ttl#",
+        "si": "https://ptb.de/si/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "preferred label": {
+            "@id": "skos:prefLabel"
+        },
+        "label": {
+            "@id": "rdfs:label"
+        },
+        "description": {
+            "@id": "dcterms:description"
+        },
+        "measurement unit": {
+            "@id": "emmo:EMMO_b081b346_7279_46ef_9a3d_2c088fcd79f4"
+        },
+        "process": {
+            "@id": "obo:BFO_0000015"
+        },
+        "realizable entity": {
+            "@id": "obo:BFO_0000017"
+        },
+        "bibliographic record": {
+            "@id": "biro:BibliographicRecord"
+        },
+        "kind of quantity": {
+            "@id": "m4i:KindOfQuantity"
+        },
+        "method": {
+            "@id": "m4i:Method"
+        },
+        "numerical assignment": {
+            "@id": "m4i:NumericalAssignment"
+        },
+        "processing step": {
+            "@id": "m4i:ProcessingStep"
+        },
+        "tool": {
+            "@id": "m4i:Tool"
+        },
+        "uncertainty declaration": {
+            "@id": "m4i:UncertaintyDeclaration"
+        },
+        "assignment": {
+            "@id": "pims-ii:Assignment"
+        },
+        "property": {
+            "@id": "pims-ii:Property"
+        },
+        "quantity value": {
+            "@id": "pims-ii:QuantityValue"
+        },
+        "value": {
+            "@id": "pims-ii:Value"
+        },
+        "variable": {
+            "@id": "pims-ii:Variable"
+        },
+        "dataset": {
+            "@id": "dcat:Dataset"
+        },
+        "dataset series": {
+            "@id": "dcat:DatasetSeries"
+        },
+        "distribution": {
+            "@id": "dcat:Distribution"
+        },
+        "activity": {
+            "@id": "prov:Activity"
+        },
+        "association": {
+            "@id": "prov:Association"
+        },
+        "role": {
+            "@id": "prov:Role"
+        },
+        "agent": {
+            "@id": "foaf:Agent"
+        },
+        "group": {
+            "@id": "foaf:Group"
+        },
+        "organization": {
+            "@id": "foaf:Organization"
+        },
+        "person": {
+            "@id": "foaf:Person"
+        },
+        "coverage interval": {
+            "@id": "si:CoverageInterval"
+        },
+        "expanded uncertainty": {
+            "@id": "si:ExpandedUnc"
+        },
+        "real": {
+            "@id": "si:Real"
+        },
+        "intangible": {
+            "@id": "schema:Intangible"
+        },
+        "project": {
+            "@id": "schema:Project"
+        },
+        "research project": {
+            "@id": "schema:ResearchProject"
+        },
+        "part of": {
+            "@id": "obo:BFO_0000050"
+        },
+        "has part": {
+            "@id": "obo:BFO_0000051"
+        },
+        "realized in": {
+            "@id": "obo:BFO_0000054"
+        },
+        "realizes": {
+            "@id": "obo:BFO_0000055"
+        },
+        "precedes": {
+            "@id": "obo:BFO_0000063"
+        },
+        "participates in": {
+            "@id": "obo:RO_0000056"
+        },
+        "has participant": {
+            "@id": "obo:RO_0000057"
+        },
+        "immediately precedes": {
+            "@id": "obo:RO_0002090"
+        },
+        "starts with": {
+            "@id": "obo:RO_0002224"
+        },
+        "ends with": {
+            "@id": "obo:RO_0002230"
+        },
+        "has input": {
+            "@id": "obo:RO_0002233"
+        },
+        "has output": {
+            "@id": "obo:RO_0002234"
+        },
+        "input of": {
+            "@id": "obo:RO_0002352"
+        },
+        "output of": {
+            "@id": "obo:RO_0002353"
+        },
+        "has admissible unit": {
+            "@id": "m4i:hasAdmissibleUnit",
+            "@type": "emmo:EMMO_b081b346_7279_46ef_9a3d_2c088fcd79f4"
+        },
+        "has admissible value": {
+            "@id": "m4i:m4i:hasAdmissibleValue",
+            "@type": "pims-ii:Value"
+        },
+        "has coverage interval": {
+            "@id": "m4i:hasCoverageInterval",
+            "@type": "si:CoverageInterval"
+        },
+        "has employed tool": {
+            "@id": "m4i:hasEmployedTool",
+            "@type": "m4i:Tool"
+        },
+        "has expanded unc": {
+            "@id": "m4i:hasExpandedUnc",
+            "@type": "si:ExpandedUnc"
+        },
+        "has kind of quantity": {
+            "@id": "m4i:hasKindOfQuantity",
+            "@type": "m4i:KindOfQuantity"
+        },
+        "has parameter": {
+            "@id": "m4i:hasParameter",
+            "@type": "pims-ii:Variable"
+        },
+        "has runtime assignment": {
+            "@id": "m4i:hasRuntimeAssignment",
+            "@type": "pims-ii:Assignment"
+        },
+        "has uncertainty declaration": {
+            "@id": "m4i:hasUncertaintyDeclaration",
+            "@type": "m4i:UncertaintyDeclaration"
+        },
+        "has unit": {
+            "@id": "m4i:hasUnit",
+            "@type": "emmo:EMMO_b081b346_7279_46ef_9a3d_2c088fcd79f4"
+        },
+        "has assigned value": {
+            "@id": "m4i:hasAssignedValue",
+            "@type": "pims-ii:Value"
+        },
+        "has variable": {
+            "@id": "m4i:hasVariable",
+            "@type": "pims-ii:Variable"
+        },
+        "implemented by": {
+            "@id": "m4i:implementedByTool",
+            "@type": "m4i:Method"
+        },
+        "implements": {
+            "@id": "m4i:implementsMethod",
+            "@type": "m4i:Tool"
+        },
+        "associated to project": {
+            "@id": "m4i:inProject",
+            "@type": "schema:Project"
+        },
+        "investigates": {
+            "@id": "m4i:investigates"
+        },
+        "investigates property": {
+            "@id": "m4i:investigatesProperty",
+            "@type": "pims-ii:Property"
+        },
+        "project participant": {
+            "@id": "m4i:projectParticipant"
+        },
+        "realizes method": {
+            "@id": "m4i:realizesMethod",
+            "@type": "m4i:Method"
+        },
+        "is admissible unit for": {
+            "@id": "pims-ii:isAdmissibleUnitFor",
+            "@type": "pims-ii:Variable"
+        },
+        "is admissible value for": {
+            "@id": "pims-ii:isAdmissibleValueFor",
+            "@type": "pims-ii:Variable"
+        },
+        "is assignment for": {
+            "@id": "pims-ii:isAssignmentFor"
+        },
+        "is value in assignment": {
+            "@id": "pims-ii:isValueInAssignment",
+            "@type": "pims-ii:Assignment"
+        },
+        "is variable in assignment": {
+            "@id": "pims-ii:isVariableInAssignment",
+            "@type": "pims-ii:Assignment"
+        },
+        "compression format": {
+            "@id": "dcat:compressFormat"
+        },
+        "has file distribution": {
+            "@id": "dcat:distribution"
+        },
+        "download URL": {
+            "@id": "dcat:downloadURL"
+        },
+        "in series": {
+            "@id": "dcat:inSeries"
+        },
+        "media type": {
+            "@id": "dcat:mediaType"
+        },
+        "packaging format": {
+            "@id": "dcat:packageFormat"
+        },
+        "agent": {
+            "@id": "prov:agent",
+            "@type": "foaf:Agent"
+        },
+        "had role": {
+            "@id": "prov:hadRole"
+        },
+        "qualified association": {
+            "@id": "prov:qualifiedAssociation",
+            "@type": "prov:Association"
+        },
+        "was role in": {
+            "@id": "prov:wasRoleIn"
+        },
+        "has property": {
+            "@id": "ssn:hasProperty",
+            "@type": "pims-ii:Property"
+        },
+        "implemented by": {
+            "@id": "ssn:implementedBy"
+        },
+        "implements": {
+            "@id": "ssn:implements"
+        },
+        "is property of": {
+            "@id": "ssn:isPropertyOf"
+        },
+        "personal mailbox": {
+            "@id": "foaf:mbox"
+        },
+        "member": {
+            "@id": "foaf:member",
+            "@type": "foaf:Agent"
+        },
+        "uses instrument": {
+            "@id": "schema:instrument"
+        },
+        "usage instruction": {
+            "@id": "m4i:UsageInstruction",
+            "@type": "xsd:string"
+        },
+        "project end date": {
+            "@id": "m4i:endOfProject",
+            "@type": "xsd:date"
+        },
+        "has assignment timestamp": {
+            "@id": "m4i:hasAssignmentTimestamp",
+            "@type": "schema:DateTime"
+        },
+        "created": {
+            "@id": "m4i:hasDateAssignmentTimestamp",
+            "@type": "schema:DateTime"
+        },
+        "deleted": {
+            "@id": "m4i:hasDateAssignmentDeleted",
+            "@type": "schema:DateTime"
+        },
+        "modified": {
+            "@id": "m4i:hasDateAssignmentModified",
+            "@type": "schema:DateTime"
+        },
+        "valid from": {
+            "@id": "m4i:hasDateAssignmentValidFrom",
+            "@type": "schema:DateTime"
+        },
+        "valid until": {
+            "@id": "m4i:hasDateAssignmentValidUntil",
+            "@type": "schema:DateTime"
+        },
+        "has numerical value": {
+            "@id": "m4i:hasNumericalValue"
+        },
+        "has ROR ID": {
+            "@id": "m4i:hasRorId"
+        },
+        "has symbol": {
+            "@id": "m4i:hasSymbol"
+        },
+        "has variable description": {
+            "@id": "m4i:hasVariableDescription"
+        },
+        "has identifier": {
+            "@id": "m4i:identifier"
+        },
+        "ORCID Id": {
+            "@id": "m4i:orcidId"
+        },
+        "has project ID": {
+            "@id": "m4i:projectReferenceID"
+        },
+        "project start date": {
+            "@id": "m4i:startOfProject",
+            "@type": "xsd:date"
+        },
+        "file size": {
+            "@id": "dcat:byteSize",
+            "@type": "xsd:decimal"
+        },
+        "spatial resolution": {
+            "@id": "dcat:spatialResolutionInMeters",
+            "@type": "xsd:decimal"
+        },
+        "temporal resolution": {
+            "@id": "dcat:temporalResolution",
+            "@type": "xsd:duration"
+        },
+        "first name": {
+            "@id": "foaf:firstName"
+        },
+        "last name": {
+            "@id": "foaf:lastName"
+        },
+        "title": {
+            "@id": "foaf:title"
+        },
+        "has coverage factor": {
+            "@id": "si:hasCoverageFactor",
+            "@type": "xsd:decimal"
+        },
+        "has coverage probability": {
+            "@id": "si:hasCoverageProbability"
+        },
+        "has distribution": {
+            "@id": "si:hasDistribution"
+        },
+        "has interval maximum": {
+            "@id": "si:hasIntervalMax",
+            "@type": "xsd:decimal"
+        },
+        "has interval minimum": {
+            "@id": "si:hasIntervalMin",
+            "@type": "xsd:decimal"
+        },
+        "has standard uncertainty": {
+            "@id": "si:hasStandardUnc",
+            "@type": "xsd:decimal"
+        },
+        "end time": {
+            "@id": "schema:endTime",
+            "@type": "schema:DateTime"
+        },
+        "start time": {
+            "@id": "schema:startTime",
+            "@type": "schema:DateTime"
+        },
+        "has timestamp": {
+            "@id": "schema:temporal",
+            "@type": "schema:DateTime"
+        },
+        "contact person": {
+            "@id": "m4i:ContactPerson"
+        },
+        "data collector": {
+            "@id": "m4i:DataCollector"
+        },
+        "data curator": {
+            "@id": "m4i:DataCurator"
+        },
+        "data manager": {
+            "@id": "m4i:DataManager"
+        },
+        "distributor": {
+            "@id": "m4i:Distributor"
+        },
+        "editor": {
+            "@id": "m4i:Editor"
+        },
+        "hosting institution": {
+            "@id": "m4i:HostingInstitution"
+        },
+        "other person": {
+            "@id": "m4i:Other"
+        },
+        "producer": {
+            "@id": "m4i:Producer"
+        },
+        "project leader": {
+            "@id": "m4i:ProjectLeader"
+        },
+        "project manager": {
+            "@id": "m4i:ProjectManager"
+        },
+        "project member": {
+            "@id": "m4i:ProjectMember"
+        },
+        "registration agency": {
+            "@id": "m4i:RegistrationAgency"
+        },
+        "registration authority": {
+            "@id": "m4i:RegistrationAuthority"
+        },
+        "related person": {
+            "@id": "m4i:RelatedPerson"
+        },
+        "research group": {
+            "@id": "m4i:ResearchGroup"
+        },
+        "researcher": {
+            "@id": "m4i:Researcher"
+        },
+        "rights holder": {
+            "@id": "m4i:RightsHolder"
+        },
+        "sponsor": {
+            "@id": "m4i:Sponsor"
+        },
+        "supervisor": {
+            "@id": "m4i:Supervisor"
+        },
+        "work package leader": {
+            "@id": "m4i:WorkPackageLeader"
+        },
+	"local": "https://ians.uni-stuttgart.de/opendihu/"
+    },
+    "@graph": [
+
+	{
+            "@id":"local:20mus",
+            "@type": "processing step",
+            "label": "Szenario_name: 20mus",
+	    "start time": "2021/6/8 17:50:42",
+	    "has input":[
+	    	 "local:file_0001",
+		 "local:file_0002",
+		 "local:file_0003",
+		 "local:file_0004",
+		 "local:file_0005",
+		 "local:file_0006",
+		 "local:file_0007"
+	    ]
+        },
+	{
+            "@id":"local:dt_0D",
+            "@type": "processing step",
+	    "label":"dt_0D",
+	    "part of": "local:20mus",
+	    "precedes": "local:dt_1D"
+        },
+	{
+            "@id":"local:dt_1D",
+            "@type": "processing step",
+	    "label":"dt_0D",
+	    "part of": "local:20mus"
+        },
+	{
+            "@id":"local:dt_splitting",
+            "@type": "processing step",
+	    "label":"dt_0D",
+	    "part of": "local:20mus"
+        },
+	{
+            "@id":"local:dt_3D",
+            "@type": "processing step",
+	    "label":"dt_0D",
+	    "part of": "local:20mus"
+        },
+	{
+            "@id":"local:software_opendihu",
+            "@type": "tool",
+	    "label":"open dihu 1.2"
+        },
+	{
+           "@id":"local:software_openmpi",
+            "@type": "tool",
+	    "label":"Open MPI v3.1.6"
+        },
+	{
+           "@id":"local:parameter_diffusion_solver_type",
+            "@type": "text variable",
+	    "label":"diffusion_solver_type",
+	    "has string value": "cg"
+        },
+	{
+           "@id":"local:potential_flow_solver_type",
+            "@type": "text variable",
+	    "label":"potential_flow_solver_type",
+	    "has string value": "gmres"
+        },
+	{
+           "@id":"local:emg_solver_type",
+            "@type": "text variable",
+	    "label":"emg_solver_type",
+	    "has string value": "cg"
+        },
+	{
+           "@id":"local:emg_initial_guess_nonzero",
+            "@type": "text variable",
+	    "label":"emg_initial_guess_nonzero",
+	    "has string value": "False"
+        },
+	{
+           "@id":"local:paraview_output",
+            "@type": "text variable",
+	    "label":"paraview_output",
+	    "has string value": "True"
+        },
+	{
+           "@id":"local:stimulation_frequency_0001",
+            "@type": "numerical variable",
+	    "label":"stimulation_frequency",
+	    "has numerical value": "0.1",
+	    "has unit" : "qudt:PER-MilliSEC"
+        },
+	{
+           "@id":"local:stimulation_frequency_0002",
+            "@type": "numerical variable",
+	    "label":"stimulation_frequency",
+	    "has numerical value": "100.0",
+	    "has unit" : "qudt:HZ"
+        },
+	{
+           "@id":"local:fast_monodomain_solver_optimizations",
+            "@type": "text variable",
+	    "label":"fast_monodomain_solver_optimizations",
+	    "has string value": "True"
+        },
+	{
+           "@id":"local:use_vc",
+            "@type": "text variable",
+	    "label":"use_vc",
+	    "has string value": "True"
+        },
+	{
+           "@id":"local:fiber_file",
+            "@type": "text variable",
+	    "label":"fiber_file",
+	    "has string value": "../../../input/fibers49x49.bin"
+        },
+	{
+           "@id":"local:fat_mesh_file",
+            "@type": "text variable",
+	    "label":"fat_mesh_file",
+	    "has string value": "../../../input/fibers49x49.bin_fat.bin"
+        },
+	{
+           "@id":"local:cellml_file",
+            "@type": "text variable",
+	    "label":"cellml_file",
+	    "has string value": "../../../input/hodgkin_huxley_1952.c"
+        },
+	{
+           "@id":"local:fiber_distribution_file",
+            "@type": "text variable",
+	    "label":"fiber_distribution_file",
+	    "has string value": "../../../input/MU_fiber_distribution_49x49.filled.txt"
+        },
+	{
+           "@id":"local:firing_times_file",
+            "@type": "text variable",
+	    "label":"firing_times_file",
+	    "has string value": "../../../input/MU_firing_times_real.firstMUs.txt"
+        },
+	{
+           "@id":"local:prefactor",
+            "@type": "text variable",
+	    "label":"prefactor",
+	    "has string value": "sigma_eff/(Am*Cm) = 0.0132 = 3.828 / (500.0*0.58)"
+        },
+	{
+           "@id":"local:n_fibers",
+            "@type": "numerical variable",
+	    "label":"n fibers",
+	    "has numerical value": "2401"
+        },
+	{
+           "@id":"local:n_points_per_fiber",
+            "@type": "numerical variable",
+	    "label":"n points per fiber",
+	    "has numerical value": "1481"
+        },
+	{
+           "@id":"local:cg",
+            "@type": "method",
+	    "label":"cg",
+	    "has parameter": "local:emg_initial_guess_nonzero"
+        },
+	{
+           "@id":"local:gmres",
+            "@type": "method",
+	    "label":"gmres"
+        },
+	{
+           "@id":"local:file_0001",
+            "@type": "pcdm:File",
+	    "label":"../../../settings_fibers_fat_emg.py"
+        },
+	{
+           "@id":"local:file_0002",
+            "@type": "pcdm:File",
+	    "label":"20mus.py"
+        },
+	{
+           "@id":"local:file_0003",
+            "@type": "pcdm:File",
+	    "label":"../../../input/fibers49x49.bin"
+        },
+	{
+           "@id":"local:file_0004",
+            "@type": "pcdm:File",
+	    "label":" ../../../input/fibers49x49.bin_fat.bin"
+        },
+	{
+           "@id":"local:file_0005",
+            "@type": "pcdm:File",
+	    "label":"../../../input/hodgkin_huxley_1952.c"
+        },
+	{
+           "@id":"local:file_0006",
+            "@type": "pcdm:File",
+	    "label":"../../../input/MU_fiber_distribution_49x49.filled.txt"
+        },
+	{
+           "@id":"local:file_0007",
+            "@type": "pcdm:File",
+	    "label":"../../../input/MU_firing_times_real.firstMUs.txt"
+        }
+
+
+    ]
+
+}

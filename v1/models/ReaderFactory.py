@@ -113,14 +113,14 @@ class XMLReader(Reader):
         root = ET.fromstring(xml_data)
         source_key_value = {}
         for source_key in list_of_source_keys:
-            #print(source_key)
+
             if source_key.count("/") > 2 and source_key.count("@") == 0:        # case nested source_key
                 main_key = source_key.rsplit("/", 1)[0]
             else:
                 main_key = source_key
             try:
                 elements = root.xpath("." + main_key, namespaces=namespaces)
-                #print("elements: ",elements)
+
             except:
                 g.warnings.append(source_key + " not a valid X-Path. Please check your YAML File.")
                 continue
@@ -160,7 +160,6 @@ class XMLReader(Reader):
                             else:
                                 values.append('none')
                             source_key_value[source_key] = values
-                            #print(values)
         return source_key_value
 
 
@@ -268,9 +267,10 @@ class JSONLDReader(Reader):
         list_of_source_keys = mapping.get_source_keys()
         list_of_source_keys = list(dict.fromkeys(list_of_source_keys))
         for source_key in list_of_source_keys:
-           # print(source_key)
+            #print("source_key: ", source_key)
             elements = []
             main_key = ""
+            main_keys=[]
 
             # Check if the source key contains "#" for nested source keys
             if "#" in source_key:
@@ -284,8 +284,13 @@ class JSONLDReader(Reader):
             else:
                 main_key = source_key
 
+            if main_keys !=[]:
+                for m in main_keys:
+                    main_key=m
+
             # If a main key is present, query the data and store the results
             if main_key != "":
+                #print("main_key: ",main_key, "\n")
                 if main_key not in key_values:
                     key_values[main_key] = []
                     main_query = (
@@ -341,26 +346,26 @@ class JSONLDReader(Reader):
                         s = row.subj.toPython()
                         temp[s] = None
                         key_order.append(s)
-                        # if parent=="m4i:Tool":
-                        #     print(row, "\n")
 
                     # Query and store data for the child element
                     for row in g.query(child_query):
                         o = row.obj.toPython()
                         s = row.subj.toPython()
                         p = row.subj.toPython()
+                        #print(child_query)
                         if s in temp:
+                            #print("DEBUG: o: ",s, " temp: ", temp,"\n")
                             if temp[s] == None:
                                 temp[s] = str(o)
                             else:
-                                temp[s].append(str(o))
+                                temp[s]=temp[s]+" , "+str(o)
                     key_values[source_key] = []
 
                     # Populate key values based on the order of keys
                     for key in key_order:
 
                         if temp[key] == None:
-                            key_values[source_key].append('none')
+                            key_values[source_key].append('None')
                         else:
                             key_values[source_key].append(temp[key])
                     parent_temp = temp
@@ -368,5 +373,4 @@ class JSONLDReader(Reader):
 
         # Remove keys with empty values (None, empty strings, empty lists, empty dictionaries)
         key_values = {key: value for key, value in key_values.items() if value}
-        #print(json.dumps(key_values, indent=4))
         return key_values
