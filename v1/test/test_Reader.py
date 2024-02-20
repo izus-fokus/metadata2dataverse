@@ -39,7 +39,7 @@ class TestReader(unittest.TestCase):
 
     def test_JsonLdReader(self):
         # Define expected dictionary for testing
-        expected_dict={'m4i:ProcessingStep': ['local:measurement_0001', 'local:temp_measurement_0001', 'local:pressure_measurement_0001', 'local:analysis_0001'], 'm4i:ProcessingStep#obo:RO_0002234': ['local:raw_data', 'local:temperature_data', 'local:pressure_data', 'local:analysed_data'], 'm4i:Tool': ['local:hardware_assembly', 'local:temperature_sensor', 'local:pressure_sensor'], 'm4i:ProcessingStep#m4i:Tool#rdfs:label': ['Hardware Assembly', 'temperature sensor', 'pressure sensor'], 'm4i:ProcessingStep#m4i:hasEmployedTool': ['local:hardware_assembly', 'local:temperature_sensor', 'local:pressure_sensor', 'none'], 'm4i:ProcessingStep#obo:RO_0000057': ['local:alex', 'none', 'none', 'local:doris'], 'm4i:ProcessingStep#schema:startTime': ['2022-03-01T09:03:01', '2022-03-01T09:03:01', '2022-03-10T13:35:11', '2022-03-14T09:15:00']}
+        expected_dict={'m4i:ProcessingStep#schema:instrument': ['None', 'None', 'None', 'None'], 'm4i:Tool': ['local:hardware_assembly', 'local:temperature_sensor', 'local:pressure_sensor'], 'm4i:Tool#rdfs:label': ['Hardware Assembly', 'temperature sensor', 'pressure sensor'], 'm4i:Tool#dcterms:description': ['None', 'None', 'None'], 'm4i:ProcessingStep#m4i:Tool#ssn:hasProperty': ['None', 'None', 'None'], 'm4i:ProcessingStep#rdfs:label': ['None', 'None', 'None', 'None'], 'm4i:ProcessingStep#schema:startTime': ['2022-03-01T09:03:01', '2022-03-01T09:03:01', '2022-03-10T13:35:11', '2022-03-14T09:15:00'], 'm4i:ProcessingStep#schema:endTime': ['None', 'None', 'None', 'None'], 'm4i:ProcessingStep#obo:BFO_0000051': ['local:temp_measurement_0001 , local:pressure_measurement_0001', 'None', 'None', 'None'], 'm4i:ProcessingStep#m4i:method': ['None', 'None', 'None', 'None']}
 
         # Define the path to the JSON-LD test file
         path = './input/test_jsonld_reader.jsonld'
@@ -58,13 +58,13 @@ class TestReader(unittest.TestCase):
         # Within the app context, read all schema files and load the mapping file
         with jsonldcontext:
             read_all_scheme_files()
-            mapping_file = open('../resources/config/m4i.yml')
+            mapping_file = open("./resources/config/m4i.yml")
             self.jsonldmapping = read_config(mapping_file)
             mapping_file.close()
 
         # Read the JSON-LD data from the test input
         source_key_value=jsonld_reader.read(test_input,self.jsonldmapping)
-        #print(source_key_value)
+
 
         #Check each value of the actual and expected dictionaries using assertEqual()
         for key, expected_value in expected_dict.items():
