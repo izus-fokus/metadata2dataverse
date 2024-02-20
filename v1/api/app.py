@@ -12,10 +12,7 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
         
-        
-    # helper functions
-    @app.before_first_request
-    def init_globals():
+    with app.app_context():
         read_all_scheme_files()
         read_all_config_files()
         
