@@ -130,6 +130,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {'fields': [{'typeName': 'title', 'value': 'Test title 1'},{'typeName': 'dateOfDeposit', 'value': self.actual_date}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
+
         self.assertEqual(x.status_code, 200)
 
         # rule 1
@@ -138,10 +139,10 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fields': [{'typeName': 'series', 'value': {'seriesInformation': {'typeName': 'seriesInformation', 'value': 'Hallo geht das hier?'}}}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'series', 'value': [{'seriesInformation': {'typeName': 'seriesInformation', 'value': 'Hallo geht das hier?'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
-        print(x.text)
-        self.assertEqual(x.status_code, 500)
+
+        self.assertEqual(x.status_code, 200)
 
         # rule 2
         with open(r'./input/rule2.txt', 'rb') as f:

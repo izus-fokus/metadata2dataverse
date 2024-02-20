@@ -41,7 +41,7 @@ def read_all_scheme_files():
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
             path = os.path.join(subdir, file)
-            open_tsv_file = open(path, encoding="utf8")            
+            open_tsv_file = open(path, encoding="utf-8")
             read_scheme(open_tsv_file)
             open_tsv_file.close()
 

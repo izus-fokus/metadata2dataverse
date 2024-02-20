@@ -14,7 +14,11 @@ class TestEndpointGetEmpty(unittest.TestCase):
         self.app = create_app()
         self.app.testing = True
         self.client = self.app.test_client()
-        self.headers = {'X-Dataverse-key': '0f72c986-defc-486b-afe7-d4524d7d3c17'}
+        with open("./input/credentials.json","r") as cred_file:
+            credentials = json.load(cred_file)
+            self.headers = {'X-Dataverse-key': credentials["api_key"]}
+            self.dataverse_url = credentials["base_url"]
+            self.dataset = credentials["dataset_id"]
 
     def test_empty_metadata_harvester(self):
         response = self.client.get('/metadata/harvester')
@@ -30,7 +34,7 @@ class TestEndpointGetEmpty(unittest.TestCase):
         self.assertEqual(response.status_code, 202)
 
     def test_empty_metadata_codemeta(self):
-        response = self.client.get('/metadata/codemeta')
+        response = self.client.get('/metadata/codemeta20')
         self.assertEqual(response.status_code, 200)
 
     def test_empty_metadata_datacite(self):
@@ -38,19 +42,19 @@ class TestEndpointGetEmpty(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_empty_metadata_codemeta_edit(self):
-        response = self.client.get('/metadata/codemeta?method=edit')
+        response = self.client.get('/metadata/codemeta20?method=edit')
         self.assertEqual(response.status_code, 200)
         self.assertIn("fields", response.json)
         self.assertIsInstance(response.json["fields"], list)
 
     def test_empty_metadata_codemeta_update(self):
-        response = self.client.get('/metadata/codemeta?method=update')
+        response = self.client.get('/metadata/codemeta20?method=update')
         self.assertEqual(response.status_code, 200)
         self.assertIn("metadataBlocks", response.json)
 
 
     def test_empty_metadata_codemeta_create(self):
-        response = self.client.get('/metadata/codemeta?method=create')
+        response = self.client.get('/metadata/codemeta20?method=create')
         self.assertEqual(response.status_code, 200)
         self.assertIn("datasetVersion", response.json)
 
