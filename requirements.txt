@@ -1,12 +1,18 @@
-Flask==2.2.2
+#Flask==2.2.2
+Flask==3.0.2
 jsonpath-python==1.0.6
-lxml==4.9.2
-marshmallow==3.19.0
+#lxml==4.9.2
+lxml==5.1.0
+#marshmallow==3.19.0
+marshmallow==3.20.2
 marshmallow-oneofschema @ git+https://github.com/doigl/marshmallow-oneofschema.git@type_field_remove#eeg=marshmallow-oneofschema
 #marshmallow-oneofschema==3.0.1
-pyaml==21.10.1
+#pyaml==21.10.1
+pyaml==23.12.0
 python-dotenv
-PyYAML==6.0
-requests==2.28.2
-validators==0.20.0
+PyYAML==6.0.1
+#requests==2.28.2
+requests==2.31.0
+#validators==0.20.0
+validators==0.22.0
 chevron==0.14.0
