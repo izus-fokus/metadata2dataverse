@@ -28,10 +28,11 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout MetadataMapper-Repo, that contains Action
+    - name: Checkout MetadataMapper-https://github.com/izus-fokus/metadata2dataverse/edit/RDF/JSON-LD-Reader/action.ymlRepo, that contains Action
       uses: actions/checkout@v2
       with:
         repository: izus-fokus/metadata2dataverse
+        ref: RDF/JSON-LD-Reader
     - name: Start MetadataMapper
       run: | 
         docker build -t metadatamapper .
