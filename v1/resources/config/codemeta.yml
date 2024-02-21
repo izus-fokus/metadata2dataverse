@@ -203,41 +203,42 @@ mapping:
      source_key: relatedLink
      # to sum all hits mapping to related material, instead of overwriting it
      # todo: priority: "append"     
-   - target_key: datasetContactEmail
-     source_key: maintainer[*].email
-     priority: 3
-   - target_key: datasetContactName
-     source_key: ["maintainer[*].familyName", "maintainer[*].givenName"]
-     type: merge
-     join_symbol: ", "
-     priority: 3
-   - target_key: datasetContactName
-     source_key: maintainer[*].name
-     priority: 3
-   - target_key: datasetContactAffiliation
-     source_key: maintainer[*].affiliation.name
-     priority: 3
-   - target_key: datasetContactEmail
-     source_key: email
-     priority: 2
-   - target_key: datasetContactName
-     source_key: [familyName, givenName]
-     type: merge
-     join_symbol: ", "
-     priority: 2
-   - target_key: datasetContactAffiliation
-     source_key: affiliation.name 
-     priority: 2
-   - target_key: datasetContactEmail
-     source_key: author[0].email
-   - target_key: datasetContactName
-     source_key: ["author[0].familyName", "author[0].givenName"]
-     type: merge
-     join_symbol: ", "
-   - target_key: datasetContactName
-     source_key: author[0].name
-   - target_key: datasetContactAffiliation
-     source_key: author[0].affiliation.name
+     # commented out, because results in error, if an author or contributor or maintainer is available without an email address
+#   - target_key: datasetContactEmail
+#     source_key: maintainer[*].email
+#     priority: 3
+#   - target_key: datasetContactName
+#     source_key: ["maintainer[*].familyName", "maintainer[*].givenName"]
+#     type: merge
+#     join_symbol: ", "
+#     priority: 3
+#   - target_key: datasetContactName
+#     source_key: maintainer[*].name
+#     priority: 3
+#   - target_key: datasetContactAffiliation
+#     source_key: maintainer[*].affiliation.name
+#     priority: 3
+#   - target_key: datasetContactEmail
+#     source_key: email
+#     priority: 2
+#   - target_key: datasetContactName
+#     source_key: [familyName, givenName]
+#     type: merge
+#     join_symbol: ", "
+#     priority: 2
+#   - target_key: datasetContactAffiliation
+#     source_key: affiliation.name 
+#     priority: 2
+#   - target_key: datasetContactEmail
+#     source_key: author[0].email
+#   - target_key: datasetContactName
+#     source_key: ["author[0].familyName", "author[0].givenName"]
+#     type: merge
+#     join_symbol: ", "
+#   - target_key: datasetContactName
+#     source_key: author[0].name
+#   - target_key: datasetContactAffiliation
+#     source_key: author[0].affiliation.name
    - target_key: grantNumberValue
      source_key: funding
    # see examples of https://schema.org/ScholarlyArticle for how to extract good properties; refer also to template feature above (supportingData.url)
