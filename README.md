@@ -101,13 +101,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: MetadataMapper Action Step
-        uses: izus-fokus/metadata2dataverse@v0.7
+        uses: izus-fokus/metadata2dataverse@v0.8
         id: api
         with:
           path: 'codemeta.json'
           dataverse-url: 'https://darus.uni-stuttgart.de'
           doi: '10.18419/darus-2935'
-          api-key: '${{ secrets.DATAVERSE_API_TOKEN }}'
+          api-key: ${{ secrets.DATAVERSE_API_TOKEN }}
       # Use the output from the `MetadataMapper` step
       - name: Get the output
         run: |
