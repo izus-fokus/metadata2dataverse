@@ -1,0 +1,56 @@
+scheme: m4i
+format: application/jsonld
+description: a minimal metadata schema for m4i
+
+mapping:
+
+   - target_key: processMethods
+     source_key: obo:BFO_0000015
+     priority: 1
+   - target_key: processMethods
+     source_key: obo:BFO_0000015
+     priority: 2
+   - target_key: processMethodsName
+     source_key: obo:BFO_0000015#rdfs:label
+   - target_key: processMethodsPars
+     source_key: obo:BFO_0000015#m4i:hasParameter
+   - target_key: processMethodsDescription
+     source_key: obo:BFO_0000015#m4i:hasVariableDescription
+   - target_key: processMethodsParSymbol
+     source_key: obo:BFO_0000015#m4i:hasSymbol
+   - target_key: processMethodsParUnit
+     source_key: obo:BFO_0000015#m4i:hasParameter#m4i:hasUnit#rdfs:label
+   - target_key: processMethodsParValue
+     source_key: obo:BFO_0000015#m4i:hasParameter#pims-ii:Value
+   - target_key: processInstru
+     source_key: m4i:ProcessingStep#schema:instrument
+     priority: 2
+   - target_key: processInstru
+     source_key: m4i:Tool
+     priority: 1
+   - target_key: processInstruName
+     source_key: m4i:hasEmployedTool#rdfs:label
+     priority: 2
+   - target_key: processInstruName
+     source_key: m4i:Tool#rdfs:label
+     priority: 1
+   - target_key: processInstruDescr
+     source_key: m4i:hasEmployedTool#dcterms:description
+     priority: 2
+   - target_key: processInstruDescr
+     source_key: m4i:Tool#dcterms:description
+     priority: 1
+   - target_key: processInstruType
+     source_key: m4i:ProcessingStep#m4i:Tool#ssn:hasProperty
+   - target_key: processStep
+     source_key: m4i:ProcessingStep#rdfs:label
+   - target_key: processStepDate
+     source_key: m4i:ProcessingStep#schema:startTime
+     type: date
+     priority: 2
+   - target_key: processStepDate
+     source_key: m4i:ProcessingStep#schema:endTime
+     type: date
+     priority: 1
+   - target_key: processStepMethods
+     source_key: m4i:ProcessingStep#obo:BFO_0000051

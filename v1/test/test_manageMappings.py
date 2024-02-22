@@ -22,7 +22,7 @@ class TestEndpointGetEmpty(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-        response = self.client.get('/mapping/codemeta')
+        response = self.client.get('/mapping/codemeta20')
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get('/mapping/blubb')
