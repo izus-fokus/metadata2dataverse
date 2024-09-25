@@ -10,6 +10,10 @@ from builtins import isinstance
 from flask import abort, g
 TranslatorFactory = TranslatorFactory()
 from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS      #global variables
+import requests
+import json
+import logging
+logging.basicConfig(level=logging.INFO)
 
 
 def read_all_config_files(): 
@@ -36,14 +40,19 @@ def read_all_config_files():
 # Read schema tsv files (metadatablocks nesting)      
 def read_all_scheme_files():
     """ Opens all schemes from './resources/tsv' and gives them to read_scheme() method. """    
-    rootdir = './resources/tsv'        
+    json_file_path = r'api\credentials.json'
+    with open(json_file_path,"r") as cred_file:
+        credentials = json.load(cred_file)
+        dataverse_url = credentials["base_url"]
+    read_scheme_from_api(dataverse_url + "api/metadatablocks/") 
+    # rootdir = './resources/tsv'      
     # for file in resources/resources
-    for subdir, dirs, files in os.walk(rootdir):
-        for file in files:
-            path = os.path.join(subdir, file)
-            open_tsv_file = open(path, encoding="utf-8")
-            read_scheme(open_tsv_file)
-            open_tsv_file.close()
+    # for subdir, dirs, files in os.walk(rootdir):
+    #     for file in files:
+    #         path = os.path.join(subdir, file)
+    #         open_tsv_file = open(path, encoding="utf-8")
+    #         read_scheme(open_tsv_file)
+    #         open_tsv_file.close()
 
 
 def read_config(data):    
@@ -113,75 +122,149 @@ def fill_MAPPINGS(config):
         MAPPINGS[scheme] = [config]    
           
 
-def read_scheme(data):
-    """ Parses all information from scheme, and saves information to the global dictionaries 
-        DV_FIELD, DV_CHILDREN, and DV_MB.         
+# def read_scheme(data):
+""" This function has been replaced by read_scheme_from_api"""
+#     """ Parses all information from scheme, and saves information to the global dictionaries 
+#         DV_FIELD, DV_CHILDREN, and DV_MB.         
         
+#     Parameters
+#     ---------
+#     data : opened tsv file    
+#     """    
+#     tsv_file = csv.reader(data, delimiter="\t")    
+#     start_metadata_block = False
+#     start_schema = False
+#     start_vocabulary = False    
+#     for row in tsv_file:      
+#         if not all('' == s or s.isspace() for s in row):
+#             row = [elem.strip() for elem in row]
+#             if(row[0] == "#datasetField"):            
+#                 try:
+#                     index_targetkey = row.index("name")
+#                     index_multiple = row.index("allowmultiples")
+#                     index_metadatablock = row.index("metadatablock_id")
+#                     index_fieldtype = row.index("fieldType")
+#                     index_parent = row.index("parent")
+#                     index_hascontrolledvoc = row.index("allowControlledVocabulary")
+#                 except ValueError as e:
+#                     print(row)
+#                     print("Check TSV #datasetField column names. Should contain name, allowmultiples, metadatablock_id, fieldType, parent and allowControlledVocabulary.")
+#                     print(e)
+#                 start_schema = True
+#                 continue        
+#             if(row[0] == "#controlledVocabulary"):
+#                 try:
+#                     index_valuecontrolledvoc = row.index("Value")
+#                 except ValueError:
+#                         print("Check TSV #controlledVocabulary column names. Should contain Value.")
+#                 start_vocabulary = True
+#                 start_schema = False
+#                 continue        
+#             if(row[0] == "#metadataBlock"):
+#                 try:
+#                     index_mbname = row.index("name")
+#                     index_displayname = row.index("displayName")
+#                 except ValueError:
+#                     print("Check TSV #metadataBlock column names. Should contain displayName.")
+#                 start_metadata_block = True  
+#                 continue                                  
+#             if (start_metadata_block):
+#                 DV_MB[row[index_mbname]]=row[index_displayname]
+#                 start_metadata_block = False
+#                 continue                    
+#             if (start_schema):        
+#                 multiple = row[index_multiple]
+#                 parent = row[index_parent]
+#                 target_key = row[index_targetkey]            
+#                 if(parent == ""):
+#                     parent = None            
+#                 # check type (primitive, compound, controlled vocabulary)
+#                 type_class = "primitive"
+#                 metadata_block = row[index_metadatablock]
+#                 field_type = row[index_fieldtype]
+#                 if(row[index_fieldtype] == "none"):
+#                     type_class = "compound"      
+#                     DV_CHILDREN[target_key] = []      
+#                 if(row[index_hascontrolledvoc] == "TRUE"):
+#                     type_class = "controlled_vocabulary"            
+#                 # create parent/children map
+#                 if parent in DV_CHILDREN:
+#                     DV_CHILDREN[parent].append(target_key)                
+#                 field = Field(target_key, multiple, type_class, parent, metadata_block, field_type)             
+#                 DV_FIELD[target_key] = field                 
+#             if(start_vocabulary):
+#                 field = DV_FIELD[row[index_targetkey]]
+#                 field.set_controlled_vocabulary(row[index_valuecontrolledvoc])
+
+def read_scheme_from_api(base_url):
+    """
+    Fetches metadata information from a Dataverse instance and saves information 
+    to the global dictionaries DV_FIELD, DV_CHILDREN, and DV_MB.
+
     Parameters
     ---------
-    data : opened tsv file    
-    """    
-    tsv_file = csv.reader(data, delimiter="\t")    
-    start_metadata_block = False
-    start_schema = False
-    start_vocabulary = False    
-    for row in tsv_file:      
-        if not all('' == s or s.isspace() for s in row):
-            row = [elem.strip() for elem in row]
-            if(row[0] == "#datasetField"):            
-                try:
-                    index_targetkey = row.index("name")
-                    index_multiple = row.index("allowmultiples")
-                    index_metadatablock = row.index("metadatablock_id")
-                    index_fieldtype = row.index("fieldType")
-                    index_parent = row.index("parent")
-                    index_hascontrolledvoc = row.index("allowControlledVocabulary")
-                except ValueError as e:
-                    print(row)
-                    print("Check TSV #datasetField column names. Should contain name, allowmultiples, metadatablock_id, fieldType, parent and allowControlledVocabulary.")
-                    print(e)
-                start_schema = True
-                continue        
-            if(row[0] == "#controlledVocabulary"):
-                try:
-                    index_valuecontrolledvoc = row.index("Value")
-                except ValueError:
-                        print("Check TSV #controlledVocabulary column names. Should contain Value.")
-                start_vocabulary = True
-                start_schema = False
-                continue        
-            if(row[0] == "#metadataBlock"):
-                try:
-                    index_mbname = row.index("name")
-                    index_displayname = row.index("displayName")
-                except ValueError:
-                    print("Check TSV #metadataBlock column names. Should contain displayName.")
-                start_metadata_block = True  
-                continue                                  
-            if (start_metadata_block):
-                DV_MB[row[index_mbname]]=row[index_displayname]
-                start_metadata_block = False
-                continue                    
-            if (start_schema):        
-                multiple = row[index_multiple]
-                parent = row[index_parent]
-                target_key = row[index_targetkey]            
-                if(parent == ""):
-                    parent = None            
-                # check type (primitive, compound, controlled vocabulary)
-                type_class = "primitive"
-                metadata_block = row[index_metadatablock]
-                field_type = row[index_fieldtype]
-                if(row[index_fieldtype] == "none"):
-                    type_class = "compound"      
-                    DV_CHILDREN[target_key] = []      
-                if(row[index_hascontrolledvoc] == "TRUE"):
-                    type_class = "controlled_vocabulary"            
-                # create parent/children map
-                if parent in DV_CHILDREN:
-                    DV_CHILDREN[parent].append(target_key)                
-                field = Field(target_key, multiple, type_class, parent, metadata_block, field_type)             
-                DV_FIELD[target_key] = field                 
-            if(start_vocabulary):
-                field = DV_FIELD[row[index_targetkey]]
-                field.set_controlled_vocabulary(row[index_valuecontrolledvoc])
+    base_url : str
+        The base URL for the Dataverse API (e.g., "https://demo.dataverse.org/api/metadatablocks/")
+    """
+    # Fetch the list of metadata blocks
+    response = requests.get(base_url)
+    response.raise_for_status()
+    metadata_blocks = response.json().get('data', [])
+    for block in metadata_blocks:
+        block_name = block['name']
+        block_display_name = block['displayName']
+        DV_MB[block_name] = block_display_name
+
+        # Fetch metadata block details
+        block_url = f"{base_url}/{block_name}"
+        block_response = requests.get(block_url)
+        block_response.raise_for_status()
+        block_details = block_response.json().get('data', {})
+        # logging.info("DV_MB2: {}".format(DV_MB2))
+
+        fields = block_details.get('fields', {})
+        for field_name, field in fields.items():
+            target_key = field['name']
+            multiple = field.get('multiple')
+            type_class = field.get('typeClass', 'primitive')
+            parent = field.get('parent')
+            metadata_block = block_name
+            field_type = field['type']
+            has_controlled_vocab = field.get('isControlledVocabulary', False)
+
+            # Create the Field object and store it in DV_FIELD
+            field_obj = Field(target_key, multiple, type_class, parent, metadata_block, field_type)
+            DV_FIELD[target_key] = field_obj
+
+            # Handle controlled vocabulary
+            if has_controlled_vocab:
+                vocab_values = field.get('controlledVocabularyValues', [])
+                field_obj.controlled_vocabulary.extend(vocab_values)
+
+            # If the field has a parent, update DV_CHILDREN
+            if parent:
+                if parent not in DV_CHILDREN:
+                    DV_CHILDREN[parent] = []
+                DV_CHILDREN[parent].append(target_key)
+
+            # Handle child fields if the field is of type compound
+            if type_class == "compound":
+                child_fields = field.get('childFields', {})
+                for child_name, child_field in child_fields.items():
+                    child_obj = Field(
+                        target_key=child_field['name'],
+                        multiple=child_field.get('multiple'),
+                        type_class=child_field.get('typeClass', 'primitive'),
+                        parent=target_key,  # Child's parent is the current field
+                        metadata_block=metadata_block,
+                        field_type=child_field['type']
+                    )
+                    # Add child field to the parent field's child_fields
+                    field_obj.child_fields[child_name] = child_obj
+
+                    # Store the child field in DV_FIELD
+                    DV_FIELD[child_name] = child_obj
+                    # Update the parent-child relationship in DV_CHILDREN
+                    if target_key not in DV_CHILDREN:
+                        DV_CHILDREN[target_key] = []
+                    DV_CHILDREN[target_key].append(child_name)

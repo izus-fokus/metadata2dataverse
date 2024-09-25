@@ -49,6 +49,14 @@ Install dependencies: ```pip install -r requirements.txt```
 For development purposes or for testing run the server (in the folder v1) directly using flask: ```python __init__.py```
 For production a different web server like [gunicorn](https://flask.palletsprojects.com/en/2.0.x/deploying/wsgi-standalone/) should be used.
 
+#### Configuring credentials_default.json
+
+| Parameter|Details|
+|-----|--------|
+|base_url | URL of the dataverse instance. For eg: https://darus.uni-stuttgart.de/ |
+
+Rename the file ```credentials_default.json``` into ```credentials.json```
+
 ##### Run tests
 Rename the file ```credentials_default.json``` into ```credentials.json``` and insert base_url, api_key and the DOI of a test dataset. (See the [Dataverse Guides](https://guides.dataverse.org/en/latest/user/account.html#api-token) on how to create an API Token.)
 

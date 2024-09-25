@@ -15,6 +15,7 @@ class Field(object):
         self.parent = parent
         self.metadata_block = metadata_block
         self.field_type = field_type
+        self.child_fields = {}
         
         
     def __repr__(self):
