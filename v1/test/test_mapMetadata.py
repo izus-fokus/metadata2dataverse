@@ -4,7 +4,7 @@ import requests
 import json
 from lxml import etree as ET
 from datetime import date, datetime
-
+from api.globals import CREDENTIALS_PATH
 sys.path.append('..')
 from api.app import create_app
 
@@ -18,7 +18,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         now = date.today()
         self.actual_date = now.strftime("%Y-%m-%d")
 
-        with open("./input/credentials.json","r") as cred_file:
+        with open(CREDENTIALS_PATH,"r") as cred_file:
             credentials = json.load(cred_file)
             self.headers = {'X-Dataverse-key': credentials["api_key"]}
             self.dataverse_url = credentials["base_url"]

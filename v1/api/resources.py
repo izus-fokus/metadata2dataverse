@@ -9,7 +9,7 @@ from models.Translator import Translator
 from builtins import isinstance
 from flask import abort, g
 TranslatorFactory = TranslatorFactory()
-from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS      #global variables
+from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, SOURCE_KEYS, CREDENTIALS_PATH    #global variables
 import requests
 import json
 import logging
@@ -40,8 +40,7 @@ def read_all_config_files():
 # Read schema tsv files (metadatablocks nesting)      
 def read_all_scheme_files():
     """ Opens all schemes from './resources/tsv' and gives them to read_scheme() method. """    
-    json_file_path = r'api\credentials.json'
-    with open(json_file_path,"r") as cred_file:
+    with open(CREDENTIALS_PATH,"r") as cred_file:
         credentials = json.load(cred_file)
         dataverse_url = credentials["base_url"]
     read_scheme_from_api(dataverse_url + "api/metadatablocks/") 

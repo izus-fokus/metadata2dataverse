@@ -4,6 +4,13 @@ global DV_MB
 global DV_CHILDREN
 global SOURCE_KEYS
 
+from pathlib import Path
+
+# Base project directory (adjust based on your structure)
+BASE_DIR = Path(__file__).parent.parent
+
+# Path to credentials.json
+CREDENTIALS_PATH = BASE_DIR / "api/credentials.json"
 # MAPPINGS - key: scheme (str), value: Config obj (list)
 MAPPINGS = {}
 

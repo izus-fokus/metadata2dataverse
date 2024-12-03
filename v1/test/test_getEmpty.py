@@ -4,6 +4,7 @@ sys.path.append('..')
 import requests
 from lxml import etree as ET
 import json
+from api.globals import CREDENTIALS_PATH
 
 from api.app import create_app
 
@@ -14,7 +15,7 @@ class TestEndpointGetEmpty(unittest.TestCase):
         self.app = create_app()
         self.app.testing = True
         self.client = self.app.test_client()
-        with open("./input/credentials.json","r") as cred_file:
+        with open(CREDENTIALS_PATH,"r") as cred_file:
             credentials = json.load(cred_file)
             self.headers = {'X-Dataverse-key': credentials["api_key"]}
             self.dataverse_url = credentials["base_url"]
