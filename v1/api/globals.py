@@ -10,7 +10,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent
 
 # Path to credentials.json
-CREDENTIALS_PATH = BASE_DIR / "api/credentials.json"
+CREDENTIALS_PATH = BASE_DIR / "credentials.json"
 # MAPPINGS - key: scheme (str), value: Config obj (list)
 MAPPINGS = {}
 

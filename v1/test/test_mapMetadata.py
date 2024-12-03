@@ -4,9 +4,9 @@ import requests
 import json
 from lxml import etree as ET
 from datetime import date, datetime
-from api.globals import CREDENTIALS_PATH
 sys.path.append('..')
 from api.app import create_app
+from api.globals import CREDENTIALS_PATH
 
 
 class TestMetadataMapperEndpoints(unittest.TestCase):
@@ -29,15 +29,18 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/engmeta?method=edit&verbose=True', data=file_content, headers={'Content-Type':'text/xml'})
         self.assertEqual(response.status_code, 202)
-        self.assertIn("warnings",response.json)
+        self.assertIn("warnings", response.json)
 
         response = self.client.post('/metadata/engmeta?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
         self.assertEqual(response.status_code, 200)
+        #print(response.json)
         url = "{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset)
         x = requests.put(
             url,
             data=json.dumps(response.json),
             headers=self.headers)
+        if x.status_code != 200:
+            print("error while updating engMeta metadata: " + x.text)
         self.assertEqual(x.status_code, 200)
 
 

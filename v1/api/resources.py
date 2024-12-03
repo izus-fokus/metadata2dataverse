@@ -43,7 +43,10 @@ def read_all_scheme_files():
     with open(CREDENTIALS_PATH,"r") as cred_file:
         credentials = json.load(cred_file)
         dataverse_url = credentials["base_url"]
-    read_scheme_from_api(dataverse_url + "api/metadatablocks/") 
+    try:
+        read_scheme_from_api(dataverse_url + "api/metadatablocks/")
+    except Exception as e:
+        print (f"Error while loading metadata schemata: {e}")
     # rootdir = './resources/tsv'      
     # for file in resources/resources
     # for subdir, dirs, files in os.walk(rootdir):
@@ -195,6 +198,27 @@ def fill_MAPPINGS(config):
 #                 field = DV_FIELD[row[index_targetkey]]
 #                 field.set_controlled_vocabulary(row[index_valuecontrolledvoc])
 
+def get_field_object(field, block_name, parent=None):
+    target_key = field['name']
+    multiple = "TRUE" if field.get('multiple') else "FALSE"
+    type_class = field.get('typeClass', 'primitive')
+    metadata_block = block_name
+    field_type = field['type']
+    has_controlled_vocab = field.get('isControlledVocabulary', False)
+
+    # Create the Field object and store it in DV_FIELD
+    field_obj = Field(target_key, multiple, type_class, parent, metadata_block, field_type)
+
+    # Handle controlled vocabulary
+    if has_controlled_vocab:
+        vocab_values = field.get('controlledVocabularyValues', [])
+        field_obj.set_controlled_vocabulary(vocab_values)
+
+    return field_obj
+
+
+
+
 def read_scheme_from_api(base_url):
     """
     Fetches metadata information from a Dataverse instance and saves information 
@@ -209,6 +233,7 @@ def read_scheme_from_api(base_url):
     response = requests.get(base_url)
     response.raise_for_status()
     metadata_blocks = response.json().get('data', [])
+
     for block in metadata_blocks:
         block_name = block['name']
         block_display_name = block['displayName']
@@ -223,47 +248,24 @@ def read_scheme_from_api(base_url):
 
         fields = block_details.get('fields', {})
         for field_name, field in fields.items():
-            target_key = field['name']
-            multiple = field.get('multiple')
-            type_class = field.get('typeClass', 'primitive')
-            parent = field.get('parent')
-            metadata_block = block_name
-            field_type = field['type']
-            has_controlled_vocab = field.get('isControlledVocabulary', False)
-
-            # Create the Field object and store it in DV_FIELD
-            field_obj = Field(target_key, multiple, type_class, parent, metadata_block, field_type)
-            DV_FIELD[target_key] = field_obj
-
-            # Handle controlled vocabulary
-            if has_controlled_vocab:
-                vocab_values = field.get('controlledVocabularyValues', [])
-                field_obj.controlled_vocabulary.extend(vocab_values)
-
-            # If the field has a parent, update DV_CHILDREN
-            if parent:
-                if parent not in DV_CHILDREN:
-                    DV_CHILDREN[parent] = []
-                DV_CHILDREN[parent].append(target_key)
+            field_obj = get_field_object(field, block_name)
 
             # Handle child fields if the field is of type compound
-            if type_class == "compound":
+            if field_obj.get_type_class() == "compound":
                 child_fields = field.get('childFields', {})
+                parent_name = field_obj.get_name()
                 for child_name, child_field in child_fields.items():
-                    child_obj = Field(
-                        target_key=child_field['name'],
-                        multiple=child_field.get('multiple'),
-                        type_class=child_field.get('typeClass', 'primitive'),
-                        parent=target_key,  # Child's parent is the current field
-                        metadata_block=metadata_block,
-                        field_type=child_field['type']
-                    )
+                    child_obj = get_field_object(child_field, block_name, parent_name)
                     # Add child field to the parent field's child_fields
-                    field_obj.child_fields[child_name] = child_obj
+                    field_obj.add_child(child_name, child_obj)
 
                     # Store the child field in DV_FIELD
                     DV_FIELD[child_name] = child_obj
                     # Update the parent-child relationship in DV_CHILDREN
-                    if target_key not in DV_CHILDREN:
-                        DV_CHILDREN[target_key] = []
-                    DV_CHILDREN[target_key].append(child_name)
+                    if field_obj.get_name() not in DV_CHILDREN:
+                        DV_CHILDREN[parent_name] = []
+                    if child_name not in DV_CHILDREN[parent_name]:
+                        DV_CHILDREN[parent_name].append(child_name)
+            # child fields nicht doppelt
+            if not field_obj.get_name() in DV_FIELD:
+                DV_FIELD[field_obj.get_name()] = field_obj
