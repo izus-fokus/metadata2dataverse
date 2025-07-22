@@ -15,7 +15,6 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -34,6 +33,7 @@ jobs:
         with:
           output: docs
           spec-file: service.yaml
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
           
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
