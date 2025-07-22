@@ -10,7 +10,8 @@ WORKDIR /app
 
 EXPOSE 5000
 
-COPY v1 .
+COPY v1 /app
+COPY cred /app/cred/
 
 ENTRYPOINT [ "python" ]
 CMD [ "__init__.py" ] 
