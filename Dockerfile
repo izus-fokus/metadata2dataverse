@@ -1,6 +1,6 @@
-FROM python:3.9-alpine
+FROM python:3.13.5-alpine3.22
 
-LABEL maintainer="anett.seeland@tik.uni-stuttgart.de"
+LABEL maintainer="florian.fritze@ub.uni-stuttgart.de"
 
 COPY requirements.txt .
 
