@@ -33,6 +33,7 @@ jobs:
         with:
           output: docs
           spec-file: service.yaml
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
           
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
