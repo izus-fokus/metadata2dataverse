@@ -11,19 +11,31 @@ class Field(object):
         self.target_key = target_key
         self.controlled_vocabulary = []
         self.multiple = (multiple == 'TRUE')
-        self.type_class = type_class
+        self.type_class = "controlled_vocabulary" if type_class == "controlledVocabulary" else type_class
         self.parent = parent
         self.metadata_block = metadata_block
-        self.field_type = field_type
+        self.field_type = field_type.lower()
+        self.child_fields = {}
         
         
     def __repr__(self):
         return "{multiple: " + str(self.multiple) + ", type class: " + self.type_class + ", parent: " + str(self.parent) + ", metadata block: " + self.metadata_block + ", controlled Vocabulary: " + str(self.controlled_vocabulary) +"}"
         
-        
-    def set_controlled_vocabulary(self, controlled_vocabulary):
-        self.controlled_vocabulary.append(controlled_vocabulary)
 
+    def set_parent(self, parent):
+        self.parent = parent
+
+    def set_controlled_vocabulary(self, controlled_vocabulary):
+        self.controlled_vocabulary.extend(controlled_vocabulary)
+
+    def get_field_type(self):
+        return self.field_type
+    
+    def get_type_class(self):
+        return self.type_class
+    
+    def get_name(self):
+        return self.target_key
 
     def check_value(self, values):
         if(not isinstance(values, list)):
@@ -40,11 +52,11 @@ class Field(object):
                 valid = valid and validators.email(value)
 
             elif self.field_type == "date":
-                if re.fullmatch("\d{4}-\d{2}-\d{2}", value):
-                    format_d = "%Y-%m-%d"
-                elif re.fullmatch("\d{4}-\d{2}", value):
-                    format_d = "%Y-%m"
-                elif re.fullmatch("\d{4}", value):
+                if re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+                    format_d = '%Y-%m-%d'
+                elif re.fullmatch(r'\d{4}-\d{2}', value):
+                    format_d = '%Y-%m'
+                elif re.fullmatch(r'\d{4}', value):
                     format_d = '%Y'
                 else:
                     valid = False
@@ -116,3 +128,5 @@ class Field(object):
             else:
                 return []
     
+    def add_child(self, name, field_obj):
+        self.child_fields[name] = field_obj
