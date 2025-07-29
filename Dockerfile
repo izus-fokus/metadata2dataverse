@@ -2,16 +2,21 @@ FROM python:3.13.5-alpine3.22
 
 LABEL maintainer="florian.fritze@ub.uni-stuttgart.de"
 
-COPY requirements.txt .
-
-RUN apk add --no-cache --virtual .build-deps git && pip install --no-cache-dir -r requirements.txt && apk del --no-network .build-deps
-
 WORKDIR /app
+COPY . /app
 
-EXPOSE 5000
+RUN python3 -m venv /app/venv
+ENV PATH=/app/venv/bin:$PATH
+RUN source /app/venv/bin/activate
+RUN apk add --no-cache --virtual .build-deps git
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt && apk del --no-network .build-deps
 
-COPY v1 /app
-COPY cred /app/cred/
 
-ENTRYPOINT [ "python" ]
-CMD [ "__init__.py" ] 
+ENV PORT=5000
+
+ENV ADDRESS=127.0.0.1
+
+EXPOSE $PORT
+
+ENTRYPOINT exec gunicorn -b $ADDRESS:$PORT '__init__:app' --chdir v1
