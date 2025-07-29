@@ -13,7 +13,7 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt && apk del --no-network .build-deps
 
 
-ENV PORT=5000
+ENV PORT=5055
 
 ENV ADDRESS=127.0.0.1
 
