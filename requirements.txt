@@ -4,7 +4,7 @@ jsonpath-python==1.0.6
 #lxml==4.9.2
 lxml==6.0.0
 #marshmallow==3.19.0
-marshmallow==4.0.0
+marshmallow==3.26.1
 marshmallow-oneofschema @ git+https://github.com/doigl/marshmallow-oneofschema.git@type_field_remove#eeg=marshmallow-oneofschema
 #marshmallow-oneofschema==3.0.1
 #pyaml==21.10.1
