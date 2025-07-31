@@ -664,4 +664,18 @@ def create_app(test_config=None):
         """
         return jsonify(DV_MB)
 
+    @app.route('/reading-config', methods=["GET"])
+    def readingconfig():
+        try:
+            read_all_scheme_files()
+            read_all_config_files()
+
+            response = {"reading config": "done"}
+            return jsonify(response), 200
+
+        except BaseException as e:
+            response = {"reading config failed": e.__str__()}
+            return jsonify(response), 400
+
+
     return app
