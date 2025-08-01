@@ -216,22 +216,33 @@ class JSONReader(Reader):
                 # field selectors that has already correct num of elements
                 if main_key is None and (isinstance(elements[0], str) or source_key.endswith(")")):
                     values = elements
-                elif main_key is None and isinstance(elements[0], list):  # single (compound) source_key
+                elif main_key is None and isinstance(elements, list):  # single (compound) source_key
                     values = elements[0]
+                elif type(elements[0]) is dict:  # multiple compound source_key
+                    number_of_childs = len(elements)
+                    parent = source_key.split("[*]", 1)[0]
+                    child = source_key.split(".", 1)[1]
+                    values = []  # values of source_key
+                    for i in range(number_of_childs):
+                        value = JSONPath("$.{}[{}].{}".format(parent, i, child)).parse(json_input)
+                        if len(value) > 0:
+                            values.append(value[0])
+                        else:
+                            values.append('none')
+                    if all(['none' == elem for elem in values]):
+                        continue
                 else:
-                    if type(elements[0]) is dict:# multiple compound source_key
-                        number_of_childs = len(elements)
-                        parent = source_key.split("[*]",1)[0]
-                        child = source_key.split(".",1)[1]
-                        values = []     # values of source_key
-                        for i in range(number_of_childs):
-                            value = JSONPath("$.{}[{}].{}".format(parent,i,child)).parse(json_input)
-                            if len(value) > 0:
-                                values.append(value[0])
-                            else:
-                                values.append('none')
-                        if all(['none' == elem for elem in values]):
-                            continue
+                    number_of_childs = len(elements)
+                    parent = source_key.split("[*]", 1)[0]
+                    values = []  # values of source_key
+                    for i in range(number_of_childs):
+                        value = elements[i]
+                        if len(value) > 0:
+                            values.append(value)
+                        else:
+                            values.append('none')
+                    if all(['none' == elem for elem in values]):
+                        continue
                 if d_key:
                     source_key_value["{}#{}".format(d_key, source_key)] = {d_key: values}
                 else:
