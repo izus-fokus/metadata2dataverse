@@ -1,0 +1,29 @@
+scheme: bwsfs2-citation
+format: application/json
+description: a metadata for citation metadata, used in bwSFS-2
+
+mapping:
+   - target_key: title
+   - target_key: authorName
+     source_key: contributors[*].contributorName
+     priority: 2
+   - target_key: authorAffiliation
+     source_key: contributors[*].contributorAffiliation
+   - target_key: datasetContactName
+     source_key: contact[*].contactName
+     priority: 2
+   - target_key: authorIdentifier
+     source_key: contributors[*].contributorId
+   - target_key: datasetContactEmail
+     source_key: contact[*].contactEmail
+   - target_key: keywordValue
+     source_key: keywords[*]
+     priority: 2
+   - target_key: relatedMaterial
+     source_key: ["relatedId[*].relationType", "relatedId[*].id", "relatedId[*].comment"]
+     join_symbol: " "
+     type: merge
+   - target_key: contributorName
+     source_key: contributors[*].contributorName
+   - target_key: contributorType
+     source_key: ccontributors[*].contributorRole
