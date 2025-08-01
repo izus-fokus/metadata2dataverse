@@ -233,7 +233,6 @@ class JSONReader(Reader):
                         continue
                 else:
                     number_of_childs = len(elements)
-                    parent = source_key.split("[*]", 1)[0]
                     values = []  # values of source_key
                     for i in range(number_of_childs):
                         value = elements[i]
