@@ -1,8 +1,8 @@
-global MAPPINGS
-global DV_FIELD 
-global DV_MB 
-global DV_CHILDREN
-global SOURCE_KEYS
+# global MAPPINGS
+# global DV_FIELD
+# global DV_MB
+# global DV_CHILDREN
+# global SOURCE_KEYS
 
 from pathlib import Path
 

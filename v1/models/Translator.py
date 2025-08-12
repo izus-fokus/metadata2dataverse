@@ -1,6 +1,10 @@
-from abc import abstractstaticmethod, ABCMeta
-from models.AdditionTranslators import *
+from abc import ABCMeta
+
 from dateutil import parser
+
+from models.AdditionTranslators import main
+
+
 class Translator(metaclass=ABCMeta):
     """ Factory-Class """
 
@@ -59,7 +63,7 @@ class AdditionTranslator(Translator):
 
     def get_value(self, source_key_values, t_key=None):
         klass = globals()[self.class_name]
-        value = klass().main(self.source_key, self.target_key, source_key_values, t_key)
+        value = main(self.source_key, self.target_key, source_key_values, t_key)
         return value
 
     def get_priority(self):
