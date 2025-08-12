@@ -397,7 +397,7 @@ def create_app():
                 if p_field is not None and p_field.value != ['none'] and p_field.value != 'none':
                     mb_dict[mb_id].add_field(p_field)
                     json_result.add_field(p_field)
-        # build compound fields
+        # build compound fieldsElement
         for parent, c_field_outer in parents_dict.items():
             mb_id = DV_FIELD.get(parent).metadata_block
             children = DV_CHILDREN.get(parent)
@@ -490,7 +490,7 @@ def create_app():
 
     @app.route('/metadata/<string:scheme>')
     def getEmptyDataverseJson(scheme):
-        """ Returns an empty JSON template for Dataverse with all mappable fields of the input metadata scheme.
+        """ Returns an empty JSON template for Dataverse with all mappable fieldsElement of the input metadata scheme.
 
         Requires the mapping for scheme to exist.
 

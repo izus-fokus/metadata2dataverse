@@ -160,8 +160,8 @@ class TestMetadataModel(unittest.TestCase):
         edit.add_field(c2_field)
         result = EditScheme().dump(edit)
         #print(result)
-        self.assertEqual(len(result["fields"]), 2)
-        for field in result["fields"]:
+        self.assertEqual(len(result["fieldsElement"]), 2)
+        for field in result["fieldsElement"]:
             self.assertIn('typeName', field)
             self.assertIn('value', field)
             self.assertNotIn('type', field)
@@ -174,5 +174,5 @@ class TestMetadataModel(unittest.TestCase):
         mb = MetadataBlock(id,displayName)
         result = MetadataBlockSchema().dump(mb)
         self.assertEqual(result['displayName'], displayName)
-        self.assertEqual(result['id'], id)
+        self.assertEqual(result['idElement'], id)
         

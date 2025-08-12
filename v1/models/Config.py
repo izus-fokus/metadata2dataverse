@@ -1,17 +1,17 @@
 from models.TranslatorFactory import TranslatorFactory
-from models.Translator import BaseTranslator, MergeTranslator, AdditionTranslator
+from models.Translator import BaseTranslator
 import pyaml
 from api.globals import DV_FIELD
-from flask import abort, g
+from flask import g
 
 class Config(object):
-    ''' object after parsing a mapping file '''
+    """ object after parsing a mapping file """
 
-    def __init__(self, scheme, description, format, yaml_file):
-        ''' Constructor '''
+    def __init__(self, scheme, description, formatSetting, yaml_file):
+        """ Constructor """
         self.scheme = scheme
         self.description = description
-        self.format = format
+        self.format = formatSetting
         self.translators_dict = {}
         self.rules_dict = {}
         self.target_keys = []
@@ -22,7 +22,7 @@ class Config(object):
 
 
     def __repr__(self):
-        return("scheme: " + self.scheme + ", description: " + self.description + ", format: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict))
+        return "scheme: " + self.scheme + ", description: " + self.description + ", formatSetting: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict)
        
        
     def pretty_yaml(self):
@@ -34,7 +34,7 @@ class Config(object):
 
 
     def dump(self):
-        return {"scheme": self.scheme, "description": self.description, "format": self.format}
+        return {"scheme": self.scheme, "description": self.description, "formatSetting": self.format}
     
     
     def get_source_keys(self):
@@ -72,7 +72,7 @@ class Config(object):
                 self.translators_dict[key] = []
             #if isinstance(translator, AdditionTranslator):      # special case: addition translators
             #    self.addition_translators_dict[key] = translator
-            #    print("new addition translator {} -> {}".format(source_key, target_key))
+            #    print("new addition translator {} -> {}".formatSetting(source_key, target_key))
   
             self.source_keys.append(key)
             self.translators_dict[key].append(translator)

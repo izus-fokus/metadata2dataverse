@@ -78,9 +78,9 @@ mapping:
 # publication
 - source_key: //context/referencePublication/citation
   target_key: publicationCitation
-- source_key: //context/referencePublication/id/type
+- source_key: //context/referencePublication/idElement/type
   target_key: publicationIDType
-- source_key: //context/referencePublication/id
+- source_key: //context/referencePublication/idElement
   target_key: publicationIDNumber
 - source_key: //context/referencePublication/url
   target_key: publicationURL
@@ -163,7 +163,7 @@ mapping:
 - source_key: //provenance/processingStep/tool/softwareVersion
   target_key: softwareVersion
 
-- source_key: [//context/relatedResource/id, //context/relatedResource/link]
+- source_key: [//context/relatedResource/idElement, //context/relatedResource/link]
   target_key: relatedMaterial
   type: merge
   join_symbol: "; "
@@ -173,7 +173,7 @@ mapping:
 - source_key: //context/relatedIdenfier
   target_key: otherReferences
 
-- source_key: [//context/relatedResource/id/type, //context/relatedResource/id]
+- source_key: [//context/relatedResource/idElement/type, //context/relatedResource/idElement]
   target_key: dataSources
   type: merge
   join_symbol: "; "
@@ -456,8 +456,8 @@ rules:
   type: rule
   priority: 1
   trigger_values: [Producer, Distributor]
-  Producer: [{source_key: //contact/name, target_key: producerName}, {source_key: //contact/affiliation/name, target_key: producerAffiliation}, {source_key: //contact/affiliation/id, target_key: producerAbbreviation}]
-  Distributor: [{source_key: //contact/name, target_key: distributorName}, {source_key: //contact/affiliation/name, target_key: distributorAffiliation}, {source_key: //contact/affiliation/id, target_key: distributorAbbreviation}]
+  Producer: [{source_key: //contact/name, target_key: producerName}, {source_key: //contact/affiliation/name, target_key: producerAffiliation}, {source_key: //contact/affiliation/idElement, target_key: producerAbbreviation}]
+  Distributor: [{source_key: //contact/name, target_key: distributorName}, {source_key: //contact/affiliation/name, target_key: distributorAffiliation}, {source_key: //contact/affiliation/idElement, target_key: distributorAbbreviation}]
 
 - trigger: //title/titleType
   type: rule
@@ -471,8 +471,8 @@ rules:
   type: rule
   priority: 1
   trigger_values: [Producer, Distributor]
-  Producer: [{source_key: //contributor/name, target_key: producerName}, {source_key: //contributor/affiliation/name, target_key: producerAffiliation}, {source_key: //contributor/affiliation/id, target_key: producerAbbreviation}]
-  Distributor: [{source_key: //contributor/name, target_key: distributorName}, {source_key: //contributor/affiliation/name, target_key: distributorAffiliation}, {source_key: //contributor/affiliation/id, target_key: distributorAbbreviation}]
+  Producer: [{source_key: //contributor/name, target_key: producerName}, {source_key: //contributor/affiliation/name, target_key: producerAffiliation}, {source_key: //contributor/affiliation/idElement, target_key: producerAbbreviation}]
+  Distributor: [{source_key: //contributor/name, target_key: distributorName}, {source_key: //contributor/affiliation/name, target_key: distributorAffiliation}, {source_key: //contributor/affiliation/idElement, target_key: distributorAbbreviation}]
 
 #- trigger: //description/@descriptionType
 #  type: rule

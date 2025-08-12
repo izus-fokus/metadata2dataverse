@@ -196,7 +196,7 @@ class DateTranslator(Translator):
 
     def convert_to_desired_format(self,input_time):
         """
-        Convert the input date/time to the desired format.
+        Convert the input date/time to the desired formatSetting.
 
         Parameters
         ----------
@@ -206,8 +206,8 @@ class DateTranslator(Translator):
         Returns
         -------
         str
-            The date in the format "yyyy-mm-dd", "yyyy-mm", or "yyyy" if successful.
-            Returns "Invalid input time format" if parsing fails.
+            The date in the formatSetting "yyyy-mm-dd", "yyyy-mm", or "yyyy" if successful.
+            Returns "Invalid input time formatSetting" if parsing fails.
         """
         try:
             # Try parsing the input time using dateutil.parser
@@ -225,7 +225,7 @@ class DateTranslator(Translator):
                     # Format as yyyy
                     return parsed_time.strftime("%Y")
             else:
-                return "Invalid input time format"
+                return "Invalid input time formatSetting"
 
         except ValueError:
         # If parsing fails, return an error message

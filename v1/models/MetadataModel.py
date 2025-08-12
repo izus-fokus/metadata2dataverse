@@ -3,7 +3,7 @@ from marshmallow.validate import Equal
 from marshmallow_oneofschema import OneOfSchema
 
 
-class Field():
+class Field:
     def __init__(self, typeName, value, multiple=False, typeClass='primitive'):
         self.typeName = typeName
         self.value = value
@@ -47,7 +47,7 @@ class CompoundField(Field):
         super().__init__(typeName, value, False, 'compound')
 
     def add_value(self, value, key):
-        # print('add value {} with key {} to CF'.format(value, key))
+        # print('add value {} with key {} to CF'.formatSetting(value, key))
         self.value[key] = value
 
 
@@ -107,13 +107,13 @@ class VocabularyField(Field):
             self.value)
 
 
-class MetadataBlock():
-    def __init__(self, id, name, fields=None):
-        if fields is None:
-            fields = []
-        self.id = id
+class MetadataBlock:
+    def __init__(self, idElement, name, fieldsElement=None):
+        if fieldsElement is None:
+            fieldsElement = []
+        self.id = idElement
         self.displayName = name
-        self.mFields = fields
+        self.mFields = fieldsElement
 
     def add_field(self, field):
         self.mFields.append(field)
@@ -122,11 +122,11 @@ class MetadataBlock():
         return str(self.displayName) + " " + str(self.mFields)
 
 
-class EditFormat():
-    def __init__(self, fields=None):
-        if fields is None:
-            fields = []
-        self.mFields = fields
+class EditFormat:
+    def __init__(self, fieldsElement=None):
+        if fieldsElement is None:
+            fieldsElement = []
+        self.mFields = fieldsElement
 
     def add_field(self, field):
         self.mFields.append(field)
@@ -139,15 +139,15 @@ class EditFormat():
                 field.get_typeClass(),
                 'm' if field.get_multiple() else 'nm',
                 field.get_value())
-        return "fields = [{}]".format(r)
+        return "fieldsElement = [{}]".format(r)
 
 
-class CreateDataset():
+class CreateDataset:
     def __init__(self, datasetVersion):
         self.datasetVersion = datasetVersion
 
 
-class Dataset():
+class Dataset:
     def __init__(self, blocks=None):
         if blocks is None:
             blocks = {}
@@ -271,13 +271,13 @@ class EditScheme(Schema):
         fields.Nested(
             EditFieldSchema()
             ),
-        data_key='fields')
+        data_key='fieldsElement')
 
 
 class MetadataBlockSchema(Schema):
     id = fields.Str()
     displayName = fields.Str()
-    mFields = fields.List(fields.Nested(FieldSchema), data_key='fields')
+    mFields = fields.List(fields.Nested(FieldSchema), data_key='fieldsElement')
 
 
 class DatasetSchema(Schema):

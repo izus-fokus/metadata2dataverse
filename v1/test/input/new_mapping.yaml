@@ -1,5 +1,5 @@
 scheme: engmeta
-description: Mapping of the citation metadata fields to Dataverse citation metadata fields
+description: Mapping of the citation metadata fieldsElement to Dataverse citation metadata fieldsElement
 format: diesdas
 
 rules:

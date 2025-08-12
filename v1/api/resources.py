@@ -66,7 +66,7 @@ def read_config(data):
     g.warnings = []
     yaml_file = yaml.safe_load(data)
     # check for missing content
-    content_list = ["scheme", "description", "format", "mapping"]
+    content_list = ["scheme", "description", "formatSetting", "mapping"]
     for content in content_list:
         if content not in yaml_file:
             g.warnings.append("{} missing in YAML file {}.".format(content, data))
@@ -74,7 +74,7 @@ def read_config(data):
         return None  # Extracting dictionaries out of yaml-file
     scheme = yaml_file["scheme"]
     description = yaml_file["description"]
-    formatSetting = yaml_file["format"]
+    formatSetting = yaml_file["formatSetting"]
     mapping = yaml_file["mapping"]
     config = Config(scheme, description, formatSetting, yaml_file)
     # Create dict of translators out of the mapping    
@@ -97,7 +97,7 @@ def read_config(data):
 def fill_MAPPINGS(config):
     """ Fills global MAPPINGS dictionary with config object.
     
-    Checks format of config file if scheme already exists. If format already exists: Abortion.
+    Checks formatSetting of config file if scheme already exists. If formatSetting already exists: Abortion.
     
     Parameters
     ---------
@@ -107,10 +107,10 @@ def fill_MAPPINGS(config):
     # fill global dictionary of mappings
     scheme = config.scheme
     if scheme in MAPPINGS:
-        # check if mapping-format already exists
+        # check if mapping-formatSetting already exists
         for mapping in MAPPINGS[scheme]:
             if mapping.format == config.format:
-                g.warnings.append(scheme + " with format " + mapping.format + " already existing")
+                g.warnings.append(scheme + " with formatSetting " + mapping.format + " already existing")
             else:
                 MAPPINGS[scheme].append(config)
     else:
@@ -239,13 +239,13 @@ def read_scheme_from_api(base_url):
         block_response = requests.get(block_url)
         block_response.raise_for_status()
         block_details = block_response.json().get('data', {})
-        # logging.info("DV_MB2: {}".format(DV_MB2))
+        # logging.info("DV_MB2: {}".formatSetting(DV_MB2))
 
-        fields = block_details.get('fields', {})
+        fields = block_details.get('fieldsElement', {})
         for field_name, field in fields.items():
             field_obj = get_field_object(field, block_name)
 
-            # Handle child fields if the field is of type compound
+            # Handle child fieldsElement if the field is of type compound
             if field_obj.get_type_class() == "compound":
                 child_fields = field.get('childFields', {})
                 parent_name = field_obj.get_name()
@@ -261,6 +261,6 @@ def read_scheme_from_api(base_url):
                         DV_CHILDREN[parent_name] = []
                     if child_name not in DV_CHILDREN[parent_name]:
                         DV_CHILDREN[parent_name].append(child_name)
-            # child fields nicht doppelt
+            # child fieldsElement nicht doppelt
             if not field_obj.get_name() in DV_FIELD:
                 DV_FIELD[field_obj.get_name()] = field_obj

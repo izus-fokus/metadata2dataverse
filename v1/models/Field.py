@@ -3,11 +3,11 @@ import re
 from datetime import datetime
 from flask import g
 class Field(object):
-    ''' object after parsing a tsv file '''
+    """ object after parsing a tsv file """
     
     
     def __init__(self, target_key, multiple, type_class, parent, metadata_block, field_type):
-        ''' Constructor '''
+        """ Constructor """
         self.target_key = target_key
         self.controlled_vocabulary = []
         self.multiple = (multiple == 'TRUE')
@@ -38,7 +38,7 @@ class Field(object):
         return self.target_key
 
     def check_value(self, values):
-        if(not isinstance(values, list)):
+        if not isinstance(values, list):
             values = [values]
         valid = True
         for value in values:
@@ -64,7 +64,7 @@ class Field(object):
                 try:
                     datetime.strptime(value, format_d)
                     valid = valid and True
-                except ValueError as e:
+                except ValueError:
                     valid = False
 
             elif self.field_type == "int":

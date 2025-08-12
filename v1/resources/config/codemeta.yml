@@ -92,7 +92,7 @@ mapping:
    - target_key: authorAffiliation
      source_key: author[*].affiliation.name
    - target_key: [authorIdentifier, authorIdentifierScheme]
-     source_key: author[*].@id
+     source_key: author[*].@idElement
      type: addition
      class: IdentifierAdder
    # if text

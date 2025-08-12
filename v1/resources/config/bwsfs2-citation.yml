@@ -20,7 +20,7 @@ mapping:
      source_key: keywords[*]
      priority: 2
    - target_key: relatedMaterial
-     source_key: ["relatedId[*].relationType", "relatedId[*].id", "relatedId[*].comment"]
+     source_key: ["relatedId[*].relationType", "relatedId[*].idElement", "relatedId[*].comment"]
      join_symbol: " "
      type: merge
    - target_key: contributorName
