@@ -1,5 +1,5 @@
 scheme: bwsfs2-citation
-format: application/json
+formatSetting: application/json
 description: a metadata for citation metadata, used in bwSFS-2
 
 mapping:

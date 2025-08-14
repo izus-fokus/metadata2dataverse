@@ -1,6 +1,6 @@
 description: parses XML-Files coded in EngMeta up to version 0/2
 
-format: text/xml
+formatSetting: text/xml
 scheme: engmeta
 namespaces: [ex=urn:exptml:schema:draft:0.5, pm=http://www.loc.gov/premis/v3]
 

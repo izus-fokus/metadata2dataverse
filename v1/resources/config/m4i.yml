@@ -1,5 +1,5 @@
 scheme: m4i
-format: application/jsonld
+formatSetting: application/jsonld
 description: a minimal metadata schema for m4i
 
 mapping:
