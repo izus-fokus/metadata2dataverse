@@ -139,7 +139,7 @@ class EditFormat:
                 field.get_typeClass(),
                 'm' if field.get_multiple() else 'nm',
                 field.get_value())
-        return "fieldsElement = [{}]".format(r)
+        return "fields = [{}]".format(r)
 
 
 class CreateDataset:
@@ -271,13 +271,13 @@ class EditScheme(Schema):
         fields.Nested(
             EditFieldSchema()
             ),
-        data_key='fieldsElement')
+        data_key='fields')
 
 
 class MetadataBlockSchema(Schema):
     id = fields.Str()
     displayName = fields.Str()
-    mFields = fields.List(fields.Nested(FieldSchema), data_key='fieldsElement')
+    mFields = fields.List(fields.Nested(FieldSchema), data_key='fields')
 
 
 class DatasetSchema(Schema):
