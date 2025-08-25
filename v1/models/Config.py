@@ -20,6 +20,14 @@ class Config(object):
         self.namespaces = {}
         self.yaml_file = yaml_file
 
+    def get_scheme(self):
+        return self.scheme
+
+    def get_description(self):
+        return self.description
+
+    def get_format(self):
+        return self.format
 
     def __repr__(self):
         return "scheme: " + self.scheme + ", description: " + self.description + ", formatSetting: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict)

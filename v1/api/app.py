@@ -200,6 +200,87 @@ def create_app():
             target_key_values[k] = v[0]
         return target_key_values
 
+    def translate_source_keys_zenodo(source_key_values, mapping):
+        """ Translates Source Keys to Target Keys with corresponding values (values unchanged).
+
+        Rules and priorities from mapping get applied.
+
+        Parameters
+        ---------
+        source_key_values : dict (key: source_key, value: values)
+        mapping : Config obj
+
+        Returns
+        ---------
+        target_key_values : dict (key: target_key, value: values)
+        """
+        target_key_values = {}
+        # check if rules can be applied to source_keys
+        source_keys_to_delete = []
+        for k, v in source_key_values.items():
+            if k in mapping.rules_dict:
+                rule = mapping.rules_dict.get(k)
+                for value in v:
+                    if value in rule:
+                        translators = rule.get(value)
+                        for translator in translators:
+                            target_key = translator.target_key
+                            priority = translator.priority
+                            source_keys_to_delete.append(translator.source_key)
+                            source_keys_to_delete.append(k)
+                            value_new = translator.get_value(source_key_values)
+
+                            if value_new is not None:
+                                if target_key in target_key_values:
+                                    if priority > target_key_values[target_key][1]:
+                                        target_key_values[target_key] = [value_new, priority]
+                                else:
+                                    target_key_values[target_key] = [value_new, priority]
+        # delete used source_keys
+        for key in source_keys_to_delete:
+            source_key_values.pop(key, None)
+        for k, v in source_key_values.items():
+            is_list = False
+            translators = mapping.get_translator(k)
+            if translators is None:
+                continue
+            for translator in translators:
+                target_key = translator.target_key
+                if isinstance(target_key, list):
+                    is_list = True
+                else:
+                    target_key = [target_key]
+                priority = translator.get_priority()
+                for t_key in target_key:
+                    if is_list:
+                        value = translator.get_value(source_key_values, t_key=t_key)
+                    else:
+                        value = translator.get_value(source_key_values)
+                    if t_key in target_key_values:
+                        existing_value, existing_priority = target_key_values[t_key]
+
+                        if priority > existing_priority:
+                            # Check if the existing value is a list
+                            if isinstance(existing_value, list) and isinstance(value, list):
+                                # Update only if the new value is not 'none'
+                                for e in range(len(existing_value)):
+                                    if e < len(value):
+                                        if value[e] != 'None':
+                                            target_key_values[t_key][0][e] = value[e]
+                                            target_key_values[t_key][1] = priority
+
+
+                            else:
+                                target_key_values[t_key] = [value, priority]
+
+                    else:
+                        target_key_values[t_key] = [value, priority]
+
+        for k, v in target_key_values.items():
+            target_key_values[k].pop()
+            target_key_values[k] = v[0]
+        return target_key_values
+
     def get_p_field(type_class, k, v, multiple, field):
         """ Checks type_class of field and triggers get_primitive_field() or get_vocabulary_field() methods.
 
@@ -471,7 +552,10 @@ def create_app():
             abort(415, scheme)
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
-        target_key_values = translate_source_keys(source_key_values, mapping)
+        if mapping.get_scheme() == "zenodo":
+            target_key_values = translate_source_keys_zenodo(source_key_values, mapping)
+        else:
+            target_key_values = translate_source_keys(source_key_values, mapping)
         # resp_url = check_value("Geeksoreeks1", "text")     testing text
 
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN
