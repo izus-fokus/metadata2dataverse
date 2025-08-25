@@ -26,8 +26,6 @@ class ReaderFactory(object):
 class Reader(metaclass=ABCMeta):
     """ Factory-Class """
 
-    def read(self, text_data, mapping):
-        """ Translator Interface """
 
 
 class TextReader(Reader):
@@ -39,8 +37,8 @@ class TextReader(Reader):
     def __repr__(self):
         pass
 
-
-    def read(self, text_data, mapping):
+    @staticmethod
+    def read(text_data, mapping):
         """ Reads input line by line and checks if source_key is in translators_dict of scheme.
 
         Returns source_key_value dictionary with source_key as key and values as value.
@@ -89,8 +87,8 @@ class XMLReader(Reader):
     def __repr__(self):
         pass
 
-
-    def read(self, xml_data, mapping):
+    @staticmethod
+    def read(xml_data, mapping):
         """ Goes through source keys of mapping, and extracts values from xml file.
 
         Returns source_key_value dictionary with source_key as key and values as value.
@@ -105,13 +103,13 @@ class XMLReader(Reader):
         source_key_values : dict
         """
         # get all source keys of scheme
+        values = {}
         list_of_source_keys = mapping.get_source_keys()
         list_of_source_keys = list(dict.fromkeys(list_of_source_keys))  #remove duplicates
         # get namespaces
         namespaces = mapping.namespaces
         root = ET.fromstring(xml_data)
         source_key_value = {}
-        values = []
         for source_key in list_of_source_keys:
 
             if source_key.count("/") > 2 and source_key.count("@") == 0:        # case nested source_key
@@ -121,8 +119,8 @@ class XMLReader(Reader):
             try:
                 elements = root.xpath("." + main_key, namespaces=namespaces)
 
-            except IndexError as e:
-                g.warnings.append(source_key + " not a valid X-Path. Please check your YAML File. Error: " + str(e))
+            except IndexError:
+                g.warnings.append(source_key + " not a valid X-Path. Please check your YAML File.")
                 continue
             if len(elements) > 0:
                 if isinstance(elements[0], str):
@@ -172,8 +170,8 @@ class JSONReader(Reader):
     def __repr__(self):
         pass
 
-
-    def read(self, json_data, mapping):
+    @staticmethod
+    def read(json_data, mapping):
         """ Goes through source keys of mapping, and extracts values from json file.
 
         Returns source_key_value dictionary with source_key as key and values as value.
@@ -199,17 +197,17 @@ class JSONReader(Reader):
             if source_key.endswith(")") or "[*]" not in source_key:
                 try:
                     elements = JSONPath("$.{}".format(source_key)).parse(json_input)
-                except IndexError as e:
+                except ValueError:
                     g.warnings.append(
-                        source_key + " not a valid JSON-Path. Please check your mapping config file. Error: " + str(e))
+                        source_key + " not a valid JSON-Path. Please check your mapping config file.")
                     continue
             #TODO: should also work with ".*" (not only [*])
             else:                     # multiple compound source_key
                 main_key = source_key.split(".",1)[0]
                 try:
                     elements = JSONPath("$.{}".format(main_key)).parse(json_input)
-                except IndexError as e: #TODO: forward concrete jsonpath exeption to the user
-                    g.warnings.append(source_key + " not a valid JSON-Path. Please check your YAML File. Error: " + str(e))
+                except IndexError: #TODO: forward concrete jsonpath exeption to the user
+                    g.warnings.append(source_key + " not a valid JSON-Path. Please check your YAML File.")
                     continue
             if len(elements) > 0: # if we found something
                 # single (compound) source_key or
@@ -247,6 +245,8 @@ class JSONReader(Reader):
                 else:
                     source_key_value[source_key] = values
         return source_key_value
+
+
 class JSONLDReader(Reader):
     """ Reads *.jsonld file, extracts source keys and values, and returns source_key_value dictionary. """
 
@@ -256,7 +256,8 @@ class JSONLDReader(Reader):
     def __repr__(self):
         pass
 
-    def read(self, jsonld_data, mapping):
+    @staticmethod
+    def read(jsonld_data, mapping):
         """ Goes through source keys of mapping, and extracts values from jsonld file.
 
         Returns source_key_value dictionary with source_key as key and values as value.
@@ -271,9 +272,8 @@ class JSONLDReader(Reader):
         source_key_values : dict
         """
 
-        graphElement = Graph()
-        graphElement.parse(jsonld_data, format="json-ld")
-        # v = graphElement.serialize(format="json-ld")
+        myGraph = Graph()
+        myGraph.parse(jsonld_data, format="json-ld")
         key_values = {}
         list_of_source_keys = mapping.get_source_keys()
         list_of_source_keys = list(dict.fromkeys(list_of_source_keys))
@@ -313,17 +313,14 @@ class JSONLDReader(Reader):
                         + """
                               }"""
                     )
-                    for row in graphElement.query(main_query):
+                    for row in myGraph.query(main_query):
                         s = row.subj.toPython()
-                        # o = row.obj.toPython()
                         # print(row)
                         key_values[main_key].append(s)
                     #print("key_values:",key_values)
 
             # If there are nested elements, query and store data for each level
             if len(elements) > 1:
-                # parent_temp = {}
-                # parent_key_order = []
 
                 # Iterate through each level in the elements
                 for i in range(0, len(elements)-1):
@@ -352,17 +349,16 @@ class JSONLDReader(Reader):
                     key_order = []
 
                     # Query and store data for the parent element
-                    for row in graphElement.query(parent_query):
+                    for row in myGraph.query(parent_query):
                         # print("row: ",row)
                         s = row.subj.toPython()
                         temp[s] = None
                         key_order.append(s)
 
                     # Query and store data for the child element
-                    for row in graphElement.query(child_query):
+                    for row in myGraph.query(child_query):
                         o = row.obj.toPython()
                         s = row.subj.toPython()
-                        # p = row.subj.toPython()
                         #print(child_query)
                         if s in temp:
                             #print("DEBUG: o: ",s, " temp: ", temp,"\n")
@@ -379,8 +375,6 @@ class JSONLDReader(Reader):
                             key_values[source_key].append('None')
                         else:
                             key_values[source_key].append(temp[key])
-                    # parent_temp = temp
-                    # parent_key_order = key_order
 
         # Remove keys with empty values (None, empty strings, empty lists, empty dictionaries)
         key_values = {key: value for key, value in key_values.items() if value}
