@@ -51,7 +51,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'author', 'value': [{'authorName': {'typeName': 'authorName', 'value': 'Selent'}}]}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'author', 'value': [{'authorName': {'typeName': 'authorName', 'value': 'Selent'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
 
@@ -60,7 +60,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'dsDescription', 'value': [{'dsDescriptionValue': {'typeName': 'dsDescriptionValue', 'value': 'Abstract; Dies ist die Abstract Description!'}}]}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'dsDescription', 'value': [{'dsDescriptionValue': {'typeName': 'dsDescriptionValue', 'value': 'Abstract; Dies ist die Abstract Description!'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         # print(x.text)
         self.assertEqual(x.status_code, 200)
@@ -71,7 +71,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)    
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'engMetaTemp', 'value': [{'engMetaTempPoints': {'typeName': 'engMetaTempPoints', 'value': '1; 2; 3'}}]}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'engMetaTemp', 'value': [{'engMetaTempPoints': {'typeName': 'engMetaTempPoints', 'value': '1; 2; 3'}}]}]})
         # print(x.text)
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
@@ -81,7 +81,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'author', 'value': [{'authorName': {'typeName': 'authorName', 'value': 'Anne Kreuter'}}, {'authorName': {'typeName': 'authorName', 'value': 'Dorothea Iglezakis'}}]}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'author', 'value': [{'authorName': {'typeName': 'authorName', 'value': 'Anne Kreuter'}}, {'authorName': {'typeName': 'authorName', 'value': 'Dorothea Iglezakis'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         # print(x.text)
         self.assertEqual(x.status_code, 200)
@@ -92,7 +92,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'datasetContact', 'value': [{'datasetContactName': {'typeName': 'datasetContactName', 'value': 'Dorothea Iglezakis'}, 'datasetContactAffiliation':{'typeName': 'datasetContactAffiliation', 'value': 'Uni Stuttgart'}}, {'datasetContactName': {'typeName': 'datasetContactName', 'value': 'Anett Seeland'}, 'datasetContactAffiliation':{'typeName': 'datasetContactAffiliation', 'value': 'IZUS'}}, {'datasetContactName': {'typeName': 'datasetContactName', 'value': 'Max Mustermann'}}]}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'datasetContact', 'value': [{'datasetContactName': {'typeName': 'datasetContactName', 'value': 'Dorothea Iglezakis'}, 'datasetContactAffiliation':{'typeName': 'datasetContactAffiliation', 'value': 'Uni Stuttgart'}}, {'datasetContactName': {'typeName': 'datasetContactName', 'value': 'Anett Seeland'}, 'datasetContactAffiliation':{'typeName': 'datasetContactAffiliation', 'value': 'IZUS'}}, {'datasetContactName': {'typeName': 'datasetContactName', 'value': 'Max Mustermann'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 403)
 
@@ -102,7 +102,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'title', 'value': 'Test titel'},{'typeName': 'dateOfDeposit', 'value': self.actual_date}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'title', 'value': 'Test titel'},{'typeName': 'dateOfDeposit', 'value': self.actual_date}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
 
@@ -123,7 +123,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'title', 'value': 'Test titel'},{'typeName': 'dateOfDeposit', 'value': self.actual_date}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'title', 'value': 'Test titel'},{'typeName': 'dateOfDeposit', 'value': self.actual_date}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
 
@@ -132,7 +132,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'title', 'value': 'Test title 1'},{'typeName': 'dateOfDeposit', 'value': self.actual_date}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'title', 'value': 'Test title 1'},{'typeName': 'dateOfDeposit', 'value': self.actual_date}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
 
         self.assertEqual(x.status_code, 200)
@@ -143,7 +143,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'series', 'value': [{'seriesInformation': {'typeName': 'seriesInformation', 'value': 'Hallo geht das hier?'}}]}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'series', 'value': [{'seriesInformation': {'typeName': 'seriesInformation', 'value': 'Hallo geht das hier?'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
 
         self.assertEqual(x.status_code, 200)
@@ -153,7 +153,7 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'producer', 'value': [{'producerName': {'typeName': 'producerName', 'value': 'Anett Seeland'},'producerAffiliation': {'typeName': 'producerAffiliation', 'value': 'Uni Stuttgart'},'producerAbbreviation': {'typeName': 'producerAbbreviation', 'value': 'FoKUS'}}]}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'producer', 'value': [{'producerName': {'typeName': 'producerName', 'value': 'Anett Seeland'},'producerAffiliation': {'typeName': 'producerAffiliation', 'value': 'Uni Stuttgart'},'producerAbbreviation': {'typeName': 'producerAbbreviation', 'value': 'FoKUS'}}]}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
 
@@ -162,14 +162,14 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             file_content = f.read()
         response = self.client.post('/metadata/harvester?method=edit', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {'fieldsElement': [{'typeName': 'language', 'value': ['German', 'Danish']}]})
+        self.assertEqual(response.json, {'fields': [{'typeName': 'language', 'value': ['German', 'Danish']}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json), headers=self.headers)
         self.assertEqual(x.status_code, 200)
 
         response = self.client.post('/metadata/harvester?method=edit&verbose=True', data=file_content, headers={'Content-Type':'plain/txt'})
         self.assertEqual(response.status_code, 202)
         self.assertIn('warnings', response.json)
-        self.assertEqual(response.json['response'], {'fieldsElement': [{'typeName': 'language', 'value': ['German', 'Danish']}]})
+        self.assertEqual(response.json['response'], {'fields': [{'typeName': 'language', 'value': ['German', 'Danish']}]})
         x = requests.put("{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset), data=json.dumps(response.json['response']), headers=self.headers)
         self.assertEqual(x.status_code, 200)
 

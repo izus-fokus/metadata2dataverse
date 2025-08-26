@@ -45,8 +45,8 @@ class TestEndpointGetEmpty(unittest.TestCase):
     def test_empty_metadata_codemeta_edit(self):
         response = self.client.get('/metadata/codemeta20?method=edit')
         self.assertEqual(response.status_code, 200)
-        self.assertIn("fieldsElement", response.json)
-        self.assertIsInstance(response.json["fieldsElement"], list)
+        self.assertIn("fields", response.json)
+        self.assertIsInstance(response.json["fields"], list)
 
     def test_empty_metadata_codemeta_update(self):
         response = self.client.get('/metadata/codemeta20?method=update')

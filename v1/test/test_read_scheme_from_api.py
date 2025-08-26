@@ -34,7 +34,7 @@ def read_scheme_from_api(base_url):
         block_response = requests.get(block_url)
         block_response.raise_for_status()
         block_details = block_response.json().get('data', {})
-        fields = block_details.get('fieldsElement', {})
+        fields = block_details.get('fields', {})
         
         for field_name, field in fields.items():
             target_key = field['name']
@@ -60,7 +60,7 @@ def read_scheme_from_api(base_url):
                     DV_CHILDREN[parent] = []
                 DV_CHILDREN[parent].append(target_key)
 
-            # Handle child fieldsElement if the field is of type compound
+            # Handle child fields if the field is of type compound
             if type_class == "compound":
                 child_fields = field.get('childFields', {})
                 for child_name, child_field in child_fields.items():
@@ -93,7 +93,7 @@ class TestReadSchemeFromAPI(unittest.TestCase):
         # Mock the detailed block response for block1
         mock_block1_response = {
             'data': {
-                'fieldsElement': {
+                'fields': {
                     'field1': {
                         'name': 'field1',
                         'multiple': True,
@@ -109,7 +109,7 @@ class TestReadSchemeFromAPI(unittest.TestCase):
         # Mock the detailed block response for block2
         mock_block2_response = {
             'data': {
-                'fieldsElement': {
+                'fields': {
                     'field2': {
                         'name': 'field2',
                         'multiple': False,
@@ -160,7 +160,7 @@ class TestReadSchemeFromAPI(unittest.TestCase):
         self.assertEqual(field2_obj.field_type, 'TEXT')
         self.assertEqual(field2_obj.controlled_vocabulary, ['Value1', 'Value2'])
 
-        # Assertions for child fieldsElement
+        # Assertions for child fields
         child_field1_obj = field2_obj.child_fields['childField1']
         self.assertEqual(child_field1_obj.target_key, 'childField1')
         self.assertEqual(child_field1_obj.multiple, False)
