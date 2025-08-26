@@ -17,6 +17,9 @@ MAPPINGS = {}
 # DV_FIELD - key: target key (str), value: Field obj
 DV_FIELD = {}
 
+# DV_FIELD - key: target key (str), value: Field obj
+DV_FIELD_ZENODO = {}
+
 # DV_MB - key: metadatablock name from scheme (str), value: display name from scheme (str)
 DV_MB = {}
 

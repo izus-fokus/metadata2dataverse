@@ -2,7 +2,7 @@ import yaml
 import os
 from flask import Flask, request, abort, jsonify, g
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
-from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS
+from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS, read_zenodo_scheme
 from models.ReaderFactory import ReaderFactory
 from models.MetadataModel import (MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset,
                                   DatasetSchema, \
@@ -17,6 +17,7 @@ def create_app():
     app = Flask(__name__)
 
     with app.app_context():
+        read_zenodo_scheme()
         read_all_scheme_files()
         read_all_config_files()
 

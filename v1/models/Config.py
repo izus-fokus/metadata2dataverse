@@ -1,7 +1,7 @@
 from models.TranslatorFactory import TranslatorFactory
 from models.Translator import BaseTranslator
 import pyaml
-from api.globals import DV_FIELD
+from api.globals import DV_FIELD, DV_FIELD_ZENODO
 from flask import g
 
 class Config(object):
@@ -68,11 +68,17 @@ class Config(object):
         target_key = translator.get_target_key()
         target_key = [target_key] if not isinstance(target_key, list) else target_key
         source_key = [source_key] if not isinstance(source_key, list) else source_key
+        fields = {}
+        if self.get_scheme() == "zenodo":
+            fields = DV_FIELD_ZENODO
+        else:
+            fields = DV_FIELD
         for key in target_key:
-            if key in DV_FIELD:
+            if key in fields:
                 self.target_keys.append(key)
             else:
-                g.warnings.append("Target key " + key + " does not exist. Check dv-metadata-config for existing metadata keys.")
+                g.warnings.append(
+                    "Target key " + key + " does not exist. Check dv-metadata-config for existing metadata keys.")
                 return
 
         for key in source_key:
