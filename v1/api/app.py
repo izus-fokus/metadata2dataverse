@@ -479,7 +479,7 @@ def create_app():
                 if p_field is not None and p_field.value != ['none'] and p_field.value != 'none':
                     mb_dict[mb_id].add_field(p_field)
                     json_result.add_field(p_field)
-        # build compound fieldsElement
+        # build compound fields
         for parent, c_field_outer in parents_dict.items():
             mb_id = DV_FIELD.get(parent).metadata_block
             children = DV_CHILDREN.get(parent)
