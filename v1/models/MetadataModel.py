@@ -183,7 +183,7 @@ class EditFormatZenodo:
                 field.get_typeClass(),
                 'm' if field.get_multiple() else 'nm',
                 field.get_value())
-        return "data = [{}]".format(r)
+        return "data = {}".format(r)
 
 
 class CreateDataset:
@@ -316,14 +316,6 @@ class EditScheme(Schema):
             EditFieldSchema()
             ),
         data_key='fields')
-
-class EditSchemeZenodo(Schema):
-    mFields = fields.List(
-        fields.Nested(
-            EditFieldSchema()
-            ),
-        data_key='data')
-
 
 class MetadataBlockSchema(Schema):
     id = fields.Str()

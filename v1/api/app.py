@@ -1,13 +1,14 @@
 import yaml
 import os
 from flask import Flask, request, abort, jsonify, g
-from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
+from validators import length
+
+from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN, DV_FIELD_ZENODO
 from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS, read_zenodo_scheme
 from models.ReaderFactory import ReaderFactory
 from models.MetadataModel import (MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset,
                                   DatasetSchema, MetadataBlock, Dataset, EditFormat, EditScheme, PrimitiveField,
-                                  CompoundField, MultipleCompoundField, MultiplePrimitiveField, EditFormatZenodo,
-                                  EditSchemeZenodo, MetadataBlockZenodo, CompoundFieldZenodo)
+                                  CompoundField, MultipleCompoundField, MultiplePrimitiveField)
 from builtins import isinstance
 import json
 
@@ -589,7 +590,7 @@ def create_app():
         return None
 
     def build_json_zenodo(target_key_values, method):
-        """ Builds complete and nested json output which is DataVerse compatible.
+        """ Builds complete and nested json output which is Zenodo compatible.
 
         Parameters
         ---------
@@ -608,7 +609,7 @@ def create_app():
         CreateDataset obj (MetadataModel)
         """
         number_of_values = 0
-        json_result = EditFormatZenodo()
+        json_result = {"data": { "attributes" : {} }}
         parents_dict = {}
         children_dict = {}
         mb_dict = {}
@@ -616,81 +617,11 @@ def create_app():
         # fill parents_dict with parent_key (key) and c_fields (value)
         # or fill mb_dict and json_result directly with no-parent-keys
         for k, v in target_key_values.items():
-            field = DV_FIELD.get(k)
+            field = DV_FIELD_ZENODO.get(k)
             if field is None:
-                g.warnings.append("Field {} not in Dataverse-configuration. Check your YAML file.".format(k))
+                g.warnings.append("Field {} not in Zenodo-configuration. Check your YAML file.".format(k))
                 continue
-            parent = field.parent
-            type_class = field.type_class
-            multiple = field.multiple
-            mb_id = field.metadata_block
-            if not field.check_value(v):
-                g.warnings.append(
-                    "Wrong formatSetting of {}, this field should be a {}. {} field removed".format(k, field.field_type, k))
-                continue
-
-            if mb_id not in mb_dict:
-                mb = MetadataBlockZenodo(mb_id, DV_MB[mb_id])
-                mb_dict[mb_id] = mb
-            # has parent
-            if parent is not None:
-                c_field = get_compound_field_zenodo(parent)
-                # MultipleCompoundField
-                if isinstance(c_field, MultipleCompoundField):
-                    children_dict[k] = []
-                    if isinstance(v, list):
-                        for value in v:
-                            p_field = get_p_field_zenodo(type_class, k, [value], multiple, field)
-                            if p_field is not None:
-                                children_dict[k].append(p_field)
-                    else:
-                        p_field = get_p_field_zenodo(type_class, k, v, multiple, field)
-                        if p_field is not None:
-                            children_dict[k].append(p_field)
-                # CompoundField
-                if isinstance(c_field, CompoundField):
-                    # PrimitiveFields
-                    children_dict[k] = get_p_field_zenodo(type_class, k, v, multiple, field)
-                parents_dict[parent] = c_field
-            # has no parent
-            if parent is None:
-                p_field = get_p_field_zenodo(type_class, k, v, multiple, field)
-                if p_field is not None and p_field.value != ['none'] and p_field.value != 'none':
-                    mb_dict[mb_id].add_field(p_field)
-                    json_result.add_field(p_field)
-        # build compound fields
-        for parent, c_field_outer in parents_dict.items():
-            mb_id = DV_FIELD.get(parent).metadata_block
-            children = DV_CHILDREN.get(parent)
-            if isinstance(c_field_outer, MultipleCompoundField):
-                for child in children:
-                    if child in children_dict:
-                        number_of_values = len(children_dict.get(child))
-                        break
-                for i in range(number_of_values):
-                    c_field_inner = CompoundFieldZenodo(parent)
-                    for child in children:
-                        if child in children_dict:
-                            if i < len(children_dict[child]):
-                                p_field = children_dict.get(child)[i]
-                                if p_field is not None and p_field.value != [
-                                    'none'] and p_field.value != 'none' and p_field.value != [] and p_field.value.strip() != '':
-                                    c_field_inner.add_value(p_field, child)
-                                else:
-                                    continue
-                    if bool(c_field_inner.value):
-                        c_field_outer.add_value(c_field_inner)
-                json_result.add_field(c_field_outer)
-                mb_dict[mb_id].add_field(c_field_outer)
-            else:
-                for child in children:
-                    if child in children_dict:
-                        p_field = children_dict.get(child)
-                        if p_field is not None and p_field.value != [
-                            'none'] and p_field.value != 'none' and p_field.value.strip() != '':
-                            c_field_outer.add_value(p_field, child)
-                json_result.add_field(c_field_outer)
-                mb_dict[mb_id].add_field(c_field_outer)
+            json_result["data"]["attributes"].update(contruct_zenodo_element(k,v))
         if method == 'update':
             dataset = Dataset()
             for mb_id, block in mb_dict.items():
@@ -705,6 +636,28 @@ def create_app():
             create_dataset = CreateDataset(dataset)
             return create_dataset
         return None
+
+    def contruct_zenodo_element(k: str, v: str):
+        fieldparts = k[2:].split("/")
+        oldParts = []
+        constructedJSON = {}
+        for part in fieldparts:
+            if part == "0":
+                value = []
+                oldParts.append(value)
+            else:
+                value = part
+                oldParts.append(value)
+        constructedJSON[oldParts[0]] = []
+        for oldPart in range(len(oldParts)):
+            if oldPart < (len(oldParts)):
+                if oldPart == 0 or len(oldParts[oldPart]) == 0:
+                    continue
+                else:
+                    add = {oldParts[oldPart] : {v[0]}}
+                    constructedJSON[oldParts[oldPart-2]].append(add)
+        return constructedJSON
+
 
     @app.route('/metadata/<string:scheme>', methods=["POST"])
     def mapMetadata(scheme):
@@ -739,11 +692,11 @@ def create_app():
         if mapping.get_scheme() == "zenodo":
             result = build_json_zenodo(target_key_values, method)
             if method == 'edit':
-                response = EditSchemeZenodo().dump(result)
+                response = result
             elif method == 'update':
-                response = DatasetSchema().dump(result)
+                response = result
             elif method == 'create':
-                response = CreateDatasetSchema().dump(result)
+                response = result
             if verbose:
                 response = verbosize(response)
                 return jsonify(response), 202
@@ -794,11 +747,11 @@ def create_app():
         if mapping.get_scheme() == "zenodo":
             result = build_json_zenodo(target_key_values, method)
             if method == 'edit':
-                response = EditSchemeZenodo().dump(result)
+                response = result
             elif method == 'update':
-                response = DatasetSchema().dump(result)
+                response = result
             elif method == 'create':
-                response = CreateDatasetSchema().dump(result)
+                response = result
             if verbose:
                 response = verbosize(response)
                 return jsonify(response), 202
