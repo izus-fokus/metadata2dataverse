@@ -5,9 +5,9 @@ from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN
 from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS, read_zenodo_scheme
 from models.ReaderFactory import ReaderFactory
 from models.MetadataModel import (MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset,
-                                  DatasetSchema, \
-    MetadataBlock, Dataset, EditFormat, EditScheme, PrimitiveField, CompoundField, MultipleCompoundField, \
-    MultiplePrimitiveField)
+                                  DatasetSchema, MetadataBlock, Dataset, EditFormat, EditScheme, PrimitiveField,
+                                  CompoundField, MultipleCompoundField, MultiplePrimitiveField, EditFormatZenodo,
+                                  EditSchemeZenodo, MetadataBlockZenodo, CompoundFieldZenodo)
 from builtins import isinstance
 import json
 
@@ -315,6 +315,39 @@ def create_app():
                 return p_field
         return None
 
+    def get_p_field_zenodo(type_class, k, v, multiple, field):
+        """ Checks type_class of field and triggers get_primitive_field() or get_vocabulary_field() methods.
+
+        Parameters
+        ---------
+        type_class : str
+        k : str
+        v : list
+        multiple : Boolean
+        field : Field obj
+
+        Returns
+        ---------
+        p_field : Field obj (from MetadataModel)
+        """
+        # Primitive
+        if type_class == "primitive":
+            p_field = get_primitive_field(k, v, multiple)
+            return p_field
+        # Controlled Vocabulary
+        if type_class == "controlled_vocabulary":
+            if v == "":  # special case for getEmptyDataverseJson
+                p_field = get_vocabulary_field(k, [""], multiple)
+                return p_field
+            v_checked = field.check_controlled_vocabulary(v)
+            if len(v_checked) > 0:  # v did match controlled vocab
+                p_field = get_vocabulary_field(k, v_checked, multiple)
+                return p_field
+            else:  # v did not match controlled vocab
+                p_field = get_vocabulary_field(k, ['none'], multiple)
+                return p_field
+        return None
+
     def get_primitive_field(k, v, multiple):
         """ Method for generating primitive Field obj from MetadataModel class.
 
@@ -382,6 +415,34 @@ def create_app():
         return None
 
     def get_compound_field(parent):
+        """ Method for generating compound Field obj from MetadataModel class.
+
+        If parent is multiple: generates MultipleCompoundFied
+        Else: generates CompoundField
+
+        Parameters
+        ---------
+        parent : str
+        # k : str
+        # v : list
+        # multiple : Boolean
+
+        Return
+        ---------
+        c_field : MultipleCompoundFied obj or CompoundField obj
+        """
+        parent_field = DV_FIELD.get(parent)
+        parent_field_multiple = parent_field.multiple
+        if parent_field_multiple:
+            c_field = MultipleCompoundField(parent)
+            return c_field
+        if not parent_field_multiple:
+            c_field = CompoundField(parent)
+            return c_field
+
+        return None
+
+    def get_compound_field_zenodo(parent):
         """ Method for generating compound Field obj from MetadataModel class.
 
         If parent is multiple: generates MultipleCompoundFied
@@ -527,6 +588,124 @@ def create_app():
             return create_dataset
         return None
 
+    def build_json_zenodo(target_key_values, method):
+        """ Builds complete and nested json output which is DataVerse compatible.
+
+        Parameters
+        ---------
+        target_key_values : dict
+        method : str
+
+        Returns
+        ---------
+        if method = 'update'
+        Dataset obj (MetadataModel)
+
+        if method = 'edit'
+        EditFormat obj (MetadataModel)
+
+        if method = 'create'
+        CreateDataset obj (MetadataModel)
+        """
+        number_of_values = 0
+        json_result = EditFormatZenodo()
+        parents_dict = {}
+        children_dict = {}
+        mb_dict = {}
+        # fill children_dict with target_key (key) and p_fields (value)
+        # fill parents_dict with parent_key (key) and c_fields (value)
+        # or fill mb_dict and json_result directly with no-parent-keys
+        for k, v in target_key_values.items():
+            field = DV_FIELD.get(k)
+            if field is None:
+                g.warnings.append("Field {} not in Dataverse-configuration. Check your YAML file.".format(k))
+                continue
+            parent = field.parent
+            type_class = field.type_class
+            multiple = field.multiple
+            mb_id = field.metadata_block
+            if not field.check_value(v):
+                g.warnings.append(
+                    "Wrong formatSetting of {}, this field should be a {}. {} field removed".format(k, field.field_type, k))
+                continue
+
+            if mb_id not in mb_dict:
+                mb = MetadataBlockZenodo(mb_id, DV_MB[mb_id])
+                mb_dict[mb_id] = mb
+            # has parent
+            if parent is not None:
+                c_field = get_compound_field_zenodo(parent)
+                # MultipleCompoundField
+                if isinstance(c_field, MultipleCompoundField):
+                    children_dict[k] = []
+                    if isinstance(v, list):
+                        for value in v:
+                            p_field = get_p_field_zenodo(type_class, k, [value], multiple, field)
+                            if p_field is not None:
+                                children_dict[k].append(p_field)
+                    else:
+                        p_field = get_p_field_zenodo(type_class, k, v, multiple, field)
+                        if p_field is not None:
+                            children_dict[k].append(p_field)
+                # CompoundField
+                if isinstance(c_field, CompoundField):
+                    # PrimitiveFields
+                    children_dict[k] = get_p_field_zenodo(type_class, k, v, multiple, field)
+                parents_dict[parent] = c_field
+            # has no parent
+            if parent is None:
+                p_field = get_p_field_zenodo(type_class, k, v, multiple, field)
+                if p_field is not None and p_field.value != ['none'] and p_field.value != 'none':
+                    mb_dict[mb_id].add_field(p_field)
+                    json_result.add_field(p_field)
+        # build compound fields
+        for parent, c_field_outer in parents_dict.items():
+            mb_id = DV_FIELD.get(parent).metadata_block
+            children = DV_CHILDREN.get(parent)
+            if isinstance(c_field_outer, MultipleCompoundField):
+                for child in children:
+                    if child in children_dict:
+                        number_of_values = len(children_dict.get(child))
+                        break
+                for i in range(number_of_values):
+                    c_field_inner = CompoundFieldZenodo(parent)
+                    for child in children:
+                        if child in children_dict:
+                            if i < len(children_dict[child]):
+                                p_field = children_dict.get(child)[i]
+                                if p_field is not None and p_field.value != [
+                                    'none'] and p_field.value != 'none' and p_field.value != [] and p_field.value.strip() != '':
+                                    c_field_inner.add_value(p_field, child)
+                                else:
+                                    continue
+                    if bool(c_field_inner.value):
+                        c_field_outer.add_value(c_field_inner)
+                json_result.add_field(c_field_outer)
+                mb_dict[mb_id].add_field(c_field_outer)
+            else:
+                for child in children:
+                    if child in children_dict:
+                        p_field = children_dict.get(child)
+                        if p_field is not None and p_field.value != [
+                            'none'] and p_field.value != 'none' and p_field.value.strip() != '':
+                            c_field_outer.add_value(p_field, child)
+                json_result.add_field(c_field_outer)
+                mb_dict[mb_id].add_field(c_field_outer)
+        if method == 'update':
+            dataset = Dataset()
+            for mb_id, block in mb_dict.items():
+                dataset.add_block(mb_id, block)
+            return dataset
+        if method == 'edit':
+            return json_result
+        if method == 'create':
+            dataset = Dataset()
+            for mb_id, block in mb_dict.items():
+                dataset.add_block(mb_id, block)
+            create_dataset = CreateDataset(dataset)
+            return create_dataset
+        return None
+
     @app.route('/metadata/<string:scheme>', methods=["POST"])
     def mapMetadata(scheme):
         """Fills a Dataverse compatible JSON template with all mappable values from the input metadata.
@@ -553,25 +732,37 @@ def create_app():
             abort(415, scheme)
         # translate key-value-pairs in input to target scheme
         source_key_values = reader.read(request.data, mapping)
-        # if mapping.get_scheme() == "zenodo":
-        #     target_key_values = translate_source_keys_zenodo(source_key_values, mapping)
-        # else:
         target_key_values = translate_source_keys(source_key_values, mapping)
         # resp_url = check_value("Geeksoreeks1", "text")     testing text
 
         # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN
-        result = build_json(target_key_values, method)
-        if method == 'edit':
-            response = EditScheme().dump(result)
-        elif method == 'update':
-            response = DatasetSchema().dump(result)
-        elif method == 'create':
-            response = CreateDatasetSchema().dump(result)
-        if verbose:
-            response = verbosize(response)
-            return jsonify(response), 202
+        if mapping.get_scheme() == "zenodo":
+            result = build_json_zenodo(target_key_values, method)
+            if method == 'edit':
+                response = EditSchemeZenodo().dump(result)
+            elif method == 'update':
+                response = DatasetSchema().dump(result)
+            elif method == 'create':
+                response = CreateDatasetSchema().dump(result)
+            if verbose:
+                response = verbosize(response)
+                return jsonify(response), 202
+            else:
+                return jsonify(response), 200
         else:
-            return jsonify(response), 200
+            result = build_json(target_key_values, method)
+            if method == 'edit':
+                response = EditScheme().dump(result)
+            elif method == 'update':
+                response = DatasetSchema().dump(result)
+            elif method == 'create':
+                response = CreateDatasetSchema().dump(result)
+            if verbose:
+                response = verbosize(response)
+                return jsonify(response), 202
+            else:
+                return jsonify(response), 200
+
 
     @app.route('/metadata/<string:scheme>')
     def getEmptyDataverseJson(scheme):
@@ -600,18 +791,33 @@ def create_app():
         target_keys = mapping.get_target_keys()
         # build empty target key dictionary
         target_key_values = dict.fromkeys(target_keys, "")
-        result = build_json(target_key_values, method)
-        if method == 'edit':
-            response = EditScheme().dump(result)
-        elif method == 'update':
-            response = DatasetSchema().dump(result)
-        elif method == 'create':
-            response = CreateDatasetSchema().dump(result)
-        if verbose:
-            response = verbosize(response)
-            return jsonify(response), 202
+        if mapping.get_scheme() == "zenodo":
+            result = build_json_zenodo(target_key_values, method)
+            if method == 'edit':
+                response = EditSchemeZenodo().dump(result)
+            elif method == 'update':
+                response = DatasetSchema().dump(result)
+            elif method == 'create':
+                response = CreateDatasetSchema().dump(result)
+            if verbose:
+                response = verbosize(response)
+                return jsonify(response), 202
+            else:
+                return jsonify(response), 200
         else:
-            return jsonify(response), 200
+            result = build_json(target_key_values, method)
+            if method == 'edit':
+                response = EditScheme().dump(result)
+            elif method == 'update':
+                response = DatasetSchema().dump(result)
+            elif method == 'create':
+                response = CreateDatasetSchema().dump(result)
+            if verbose:
+                response = verbosize(response)
+                return jsonify(response), 202
+            else:
+                return jsonify(response), 200
+
 
     @app.route('/mapping', methods=["GET"])
     def SchemasMappingInfo():

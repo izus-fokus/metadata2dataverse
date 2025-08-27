@@ -51,6 +51,17 @@ class CompoundField(Field):
         self.value[key] = value
 
 
+class CompoundFieldZenodo(Field):
+    def __init__(self, typeName, value=None):
+        if value is None:
+            value = {}
+        super().__init__(typeName, value, False, 'compound')
+
+    def add_value(self, value, key):
+        # print('add value {} with key {} to CF'.formatSetting(value, key))
+        self.value[key] = value
+
+
 class MultipleCompoundField(Field):
     def __init__(self, typeName, value=None):
         if value is None:
@@ -121,6 +132,19 @@ class MetadataBlock:
     def __repr__(self):
         return str(self.displayName) + " " + str(self.mFields)
 
+class MetadataBlockZenodo:
+    def __init__(self, idElement, name, fieldsElement=None):
+        if fieldsElement is None:
+            fieldsElement = []
+        self.id = idElement
+        self.displayName = name
+        self.mFields = fieldsElement
+
+    def add_field(self, field):
+        self.mFields.append(field)
+
+    def __repr__(self):
+        return str(self.displayName) + " " + str(self.mFields)
 
 class EditFormat:
     def __init__(self, fieldsElement=None):
@@ -140,6 +164,26 @@ class EditFormat:
                 'm' if field.get_multiple() else 'nm',
                 field.get_value())
         return "fields = [{}]".format(r)
+
+
+class EditFormatZenodo:
+    def __init__(self, fieldsElement=None):
+        if fieldsElement is None:
+            fieldsElement = []
+        self.mFields = fieldsElement
+
+    def add_field(self, field):
+        self.mFields.append(field)
+
+    def __repr__(self):
+        r = ''
+        for field in self.mFields:
+            r += '{} ({}, {}): {}'.format(
+                field.get_typeName(),
+                field.get_typeClass(),
+                'm' if field.get_multiple() else 'nm',
+                field.get_value())
+        return "data = [{}]".format(r)
 
 
 class CreateDataset:
@@ -272,6 +316,13 @@ class EditScheme(Schema):
             EditFieldSchema()
             ),
         data_key='fields')
+
+class EditSchemeZenodo(Schema):
+    mFields = fields.List(
+        fields.Nested(
+            EditFieldSchema()
+            ),
+        data_key='data')
 
 
 class MetadataBlockSchema(Schema):
