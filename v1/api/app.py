@@ -3,7 +3,8 @@ import os
 from flask import Flask, request, abort, jsonify, g
 
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN, DV_FIELD_ZENODO
-from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS, read_zenodo_scheme
+from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS, read_zenodo_scheme, \
+    is_json
 from models.ReaderFactory import ReaderFactory
 from models.MetadataModel import (MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset,
                                   DatasetSchema, MetadataBlock, Dataset, EditFormat, EditScheme, PrimitiveField,
@@ -661,38 +662,41 @@ def create_app():
         if reader is None:
             abort(415, scheme)
         # translate key-value-pairs in input to target scheme
-        source_key_values = reader.read(request.data, mapping)
-        target_key_values = translate_source_keys(source_key_values, mapping)
-        # resp_url = check_value("Geeksoreeks1", "text")     testing text
+        inputData = str(request.data).encode('utf-8', 'ignore')
+        if is_json(str(inputData)):
+            source_key_values = reader.read(request.data, mapping)
+            target_key_values = translate_source_keys(source_key_values, mapping)
+            # resp_url = check_value("Geeksoreeks1", "text")     testing text
 
-        # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN
-        if mapping.get_scheme() == "zenodo":
-            result = build_json_zenodo(target_key_values, method)
-            if method == 'edit':
-                response = result
-            elif method == 'update':
-                response = result
-            elif method == 'create':
-                response = result
-            if verbose:
-                response = verbosize(response)
-                return jsonify(response), 202
+            # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN
+            if mapping.get_scheme() == "zenodo":
+                result = build_json_zenodo(target_key_values, method)
+                if method == 'edit':
+                    response = result
+                elif method == 'update':
+                    response = result
+                elif method == 'create':
+                    response = result
+                if verbose:
+                    response = verbosize(response)
+                    return jsonify(response), 202
+                else:
+                    return jsonify(response), 200
             else:
-                return jsonify(response), 200
+                result = build_json(target_key_values, method)
+                if method == 'edit':
+                    response = EditScheme().dump(result)
+                elif method == 'update':
+                    response = DatasetSchema().dump(result)
+                elif method == 'create':
+                    response = CreateDatasetSchema().dump(result)
+                if verbose:
+                    response = verbosize(response)
+                    return jsonify(response), 202
+                else:
+                    return jsonify(response), 200
         else:
-            result = build_json(target_key_values, method)
-            if method == 'edit':
-                response = EditScheme().dump(result)
-            elif method == 'update':
-                response = DatasetSchema().dump(result)
-            elif method == 'create':
-                response = CreateDatasetSchema().dump(result)
-            if verbose:
-                response = verbosize(response)
-                return jsonify(response), 202
-            else:
-                return jsonify(response), 200
-
+            abort(415, scheme)
 
     @app.route('/metadata/<string:scheme>')
     def getEmptyDataverseJson(scheme):
@@ -770,20 +774,23 @@ def create_app():
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():
         """ Adds a new mapping. Aborts if target keys do not exist in DV_FIELDS. """
-        new_mapping = request.data
-        config = read_config(new_mapping)
-        # check if yaml file was correct
-        if len(g.warnings) > 0:
-            warnings = ' '.join(g.warnings)
-            abort(422, warnings)
-        fill_MAPPINGS(config)
-        if len(g.warnings) > 0:
-            warnings = ' '.join(g.warnings)
-            abort(422, warnings)
-        with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:
-            yaml.dump(yaml.safe_load(new_mapping), f)
-        response = {'success': True, 'created': config.scheme, 'location': '/mapping/{}'.format(config.scheme)}
-        return jsonify(response), 201
+        if is_json(str(request.data)):
+            new_mapping = request.data
+            config = read_config(new_mapping)
+            # check if yaml file was correct
+            if len(g.warnings) > 0:
+                warnings = ' '.join(g.warnings)
+                abort(422, warnings)
+            fill_MAPPINGS(config)
+            if len(g.warnings) > 0:
+                warnings = ' '.join(g.warnings)
+                abort(422, warnings)
+            with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:
+                yaml.dump(yaml.safe_load(new_mapping), f)
+            response = {'success': True, 'created': config.scheme, 'location': '/mapping/{}'.format(config.scheme)}
+            return jsonify(response), 201
+        else:
+            return jsonify({'success': False}), 400
 
     @app.route('/mapping/<string:scheme>', methods=["PUT"])
     def editSchemeMapping(scheme):

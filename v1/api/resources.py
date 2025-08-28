@@ -6,7 +6,8 @@ from models.TranslatorFactory import TranslatorFactory
 from builtins import isinstance
 from flask import abort, g
 TranslatorFactory = TranslatorFactory()
-from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, CREDENTIALS_PATH, DV_FIELD_ZENODO  # global variables
+from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, CREDENTIALS_PATH, DV_FIELD_ZENODO, \
+    ZENODO_METADATA_FIELDS_URL  # global variables
 import requests
 import json
 import logging
@@ -47,13 +48,15 @@ def read_all_scheme_files():
 
 def read_zenodo_scheme():
     try:
-        jsonData = requests.get("https://api.test.datacite.org/dois/10.82433/B09Z-4K37?publisher=true&affiliation=true").json()
-        keys = jsonData["data"]["attributes"].keys()
-        for key in keys:
-            if isinstance(jsonData["data"]["attributes"][key], dict):
-                get_dict(jsonData["data"]["attributes"][key], key)
-            if isinstance(jsonData["data"]["attributes"][key], list):
-                get_list(jsonData["data"]["attributes"][key], key)
+        jsonData = requests.get(ZENODO_METADATA_FIELDS_URL).text
+        if is_json(jsonData):
+            jsonData = json.loads(jsonData)
+            keys = jsonData["data"]["attributes"].keys()
+            for key in keys:
+                if isinstance(jsonData["data"]["attributes"][key], dict):
+                    get_dict(jsonData["data"]["attributes"][key], key)
+                if isinstance(jsonData["data"]["attributes"][key], list):
+                    get_list(jsonData["data"]["attributes"][key], key)
     except Exception as e:
         print (f"Error while fetching metadata from Zenodo: {e}")
 
@@ -217,3 +220,11 @@ def read_scheme_from_api(base_url):
             # child fields nicht doppelt
             if not field_obj.get_name() in DV_FIELD:
                 DV_FIELD[field_obj.get_name()] = field_obj
+
+
+def is_json(myjson: str):
+    try:
+        json.loads(myjson)
+    except ValueError as e:
+        return False
+    return True
