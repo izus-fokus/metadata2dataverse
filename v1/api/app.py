@@ -621,7 +621,16 @@ def create_app():
             if field is None:
                 g.warnings.append("Field {} not in Zenodo-configuration. Check your YAML file.".format(k))
                 continue
-            json_result["data"]["attributes"].update(contruct_zenodo_element(k,v))
+            fieldparts = k[2:].split("/")
+            createdJSON = contruct_zenodo_element(k, v)
+            lastIndex = check_JSON_content(json_result["data"]["attributes"], fieldparts, 0)
+            if lastIndex == 0:
+                json_result["data"]["attributes"].update(createdJSON)
+            else:
+                constructedJSON = {fieldparts[len(fieldparts) - 1]: v[0]}
+                addJSON = search_JSON_position_backwards(constructedJSON, fieldparts, lastIndex, len(fieldparts)-2)
+                myList = search_JSON_position_forward(fieldparts, lastIndex)
+                json_result["data"]["attributes"].update(addJSON)
         if method == 'update':
             dataset = Dataset()
             for mb_id, block in mb_dict.items():
@@ -636,6 +645,12 @@ def create_app():
             create_dataset = CreateDataset(dataset)
             return create_dataset
         return None
+
+    def check_JSON_content(jsonObject: dict, fieldparts: list, index: int):
+        if fieldparts[index] in jsonObject:
+            return check_JSON_content(jsonObject[fieldparts[index]] ,fieldparts, index+1)
+        else:
+            return index
 
     def contruct_zenodo_element(k: str, v: str):
         fieldparts = k[2:].split("/")
@@ -660,6 +675,18 @@ def create_app():
             return create_JSON_structure(jsonObject, oldParts, (oldPart-1))
         return jsonObject
 
+    def search_JSON_position_backwards(constructedJSON: dict, fieldparts: list, lastIndex: int, index: int):
+        if lastIndex < index:
+            if fieldparts[index] == "0":
+                constructedJSON = [constructedJSON]
+            else:
+                constructedJSON = {fieldparts[index]: constructedJSON}
+            return search_JSON_position_backwards(constructedJSON, fieldparts, lastIndex, (index-1))
+        return constructedJSON
+
+    def search_JSON_position_forward(fieldparts: list, lastIndex: int):
+        fieldpartsConstruct = fieldparts[:lastIndex]
+        return fieldpartsConstruct
 
     @app.route('/metadata/<string:scheme>', methods=["POST"])
     def mapMetadata(scheme):
