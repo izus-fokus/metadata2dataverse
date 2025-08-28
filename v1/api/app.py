@@ -629,8 +629,8 @@ def create_app():
             else:
                 constructedJSON = {fieldparts[len(fieldparts) - 1]: v[0]}
                 addJSON = search_JSON_position_backwards(constructedJSON, fieldparts, lastIndex, len(fieldparts)-2)
-                myList = search_JSON_position_forward(fieldparts, lastIndex)
-                json_result["data"]["attributes"].update(addJSON)
+                properties = search_JSON_position_forward(fieldparts, lastIndex)
+                move_down(json_result["data"]["attributes"],addJSON, properties, 0)
         if method == 'update':
             dataset = Dataset()
             for mb_id, block in mb_dict.items():
@@ -644,6 +644,13 @@ def create_app():
                 dataset.add_block(mb_id, block)
             create_dataset = CreateDataset(dataset)
             return create_dataset
+        return None
+
+    def move_down(jsonObject: dict, addJSON: dict, properties: list, index: int):
+        if index < len(properties):
+            constructingJSON = jsonObject.get(properties[index])
+            constructingJSON[0].update(addJSON)
+            return move_down(constructingJSON, addJSON, properties, (index+1))
         return None
 
     def check_JSON_content(jsonObject: dict, fieldparts: list, index: int):
