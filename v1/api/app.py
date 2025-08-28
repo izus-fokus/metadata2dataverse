@@ -1,7 +1,6 @@
 import yaml
 import os
 from flask import Flask, request, abort, jsonify, g
-from validators import length
 
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN, DV_FIELD_ZENODO
 from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS, read_zenodo_scheme
@@ -316,39 +315,6 @@ def create_app():
                 return p_field
         return None
 
-    def get_p_field_zenodo(type_class, k, v, multiple, field):
-        """ Checks type_class of field and triggers get_primitive_field() or get_vocabulary_field() methods.
-
-        Parameters
-        ---------
-        type_class : str
-        k : str
-        v : list
-        multiple : Boolean
-        field : Field obj
-
-        Returns
-        ---------
-        p_field : Field obj (from MetadataModel)
-        """
-        # Primitive
-        if type_class == "primitive":
-            p_field = get_primitive_field(k, v, multiple)
-            return p_field
-        # Controlled Vocabulary
-        if type_class == "controlled_vocabulary":
-            if v == "":  # special case for getEmptyDataverseJson
-                p_field = get_vocabulary_field(k, [""], multiple)
-                return p_field
-            v_checked = field.check_controlled_vocabulary(v)
-            if len(v_checked) > 0:  # v did match controlled vocab
-                p_field = get_vocabulary_field(k, v_checked, multiple)
-                return p_field
-            else:  # v did not match controlled vocab
-                p_field = get_vocabulary_field(k, ['none'], multiple)
-                return p_field
-        return None
-
     def get_primitive_field(k, v, multiple):
         """ Method for generating primitive Field obj from MetadataModel class.
 
@@ -416,34 +382,6 @@ def create_app():
         return None
 
     def get_compound_field(parent):
-        """ Method for generating compound Field obj from MetadataModel class.
-
-        If parent is multiple: generates MultipleCompoundFied
-        Else: generates CompoundField
-
-        Parameters
-        ---------
-        parent : str
-        # k : str
-        # v : list
-        # multiple : Boolean
-
-        Return
-        ---------
-        c_field : MultipleCompoundFied obj or CompoundField obj
-        """
-        parent_field = DV_FIELD.get(parent)
-        parent_field_multiple = parent_field.multiple
-        if parent_field_multiple:
-            c_field = MultipleCompoundField(parent)
-            return c_field
-        if not parent_field_multiple:
-            c_field = CompoundField(parent)
-            return c_field
-
-        return None
-
-    def get_compound_field_zenodo(parent):
         """ Method for generating compound Field obj from MetadataModel class.
 
         If parent is multiple: generates MultipleCompoundFied
@@ -608,10 +546,7 @@ def create_app():
         if method = 'create'
         CreateDataset obj (MetadataModel)
         """
-        number_of_values = 0
         json_result = {"data": { "attributes" : {} }}
-        parents_dict = {}
-        children_dict = {}
         mb_dict = {}
         # fill children_dict with target_key (key) and p_fields (value)
         # fill parents_dict with parent_key (key) and c_fields (value)
