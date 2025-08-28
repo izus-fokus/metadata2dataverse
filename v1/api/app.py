@@ -621,16 +621,19 @@ def create_app():
             if field is None:
                 g.warnings.append("Field {} not in Zenodo-configuration. Check your YAML file.".format(k))
                 continue
-            fieldparts = k[2:].split("/")
-            createdJSON = contruct_zenodo_element(k, v)
-            lastIndex = check_JSON_content(json_result["data"]["attributes"], fieldparts, 0)
-            if lastIndex == 0:
-                json_result["data"]["attributes"].update(createdJSON)
-            else:
-                constructedJSON = {fieldparts[len(fieldparts) - 1]: v[0]}
-                addJSON = search_JSON_position_backwards(constructedJSON, fieldparts, lastIndex, len(fieldparts)-2)
-                properties = search_JSON_position_forward(fieldparts, lastIndex)
-                move_down(json_result["data"]["attributes"],addJSON, properties, 0)
+            counter = 0
+            for mvalue in v:
+                fieldparts = k[2:].split("/")
+                createdJSON = contruct_zenodo_element(k, mvalue)
+                lastIndex = check_JSON_content(json_result["data"]["attributes"], fieldparts, 0)
+                if lastIndex == 0:
+                    json_result["data"]["attributes"].update(createdJSON)
+                else:
+                    constructedJSON = {fieldparts[len(fieldparts) - 1]: mvalue}
+                    addJSON = search_JSON_position_backwards(constructedJSON, fieldparts, lastIndex, len(fieldparts)-2)
+                    properties = search_JSON_position_forward(fieldparts, lastIndex)
+                    move_down(json_result["data"]["attributes"],addJSON, properties, 0, counter)
+                counter += 1
         if method == 'update':
             dataset = Dataset()
             for mb_id, block in mb_dict.items():
@@ -646,11 +649,14 @@ def create_app():
             return create_dataset
         return None
 
-    def move_down(jsonObject: dict, addJSON: dict, properties: list, index: int):
+    def move_down(jsonObject: dict, addJSON: dict, properties: list, index: int ,counter: int):
         if index < len(properties):
             constructingJSON = jsonObject.get(properties[index])
-            constructingJSON[0].update(addJSON)
-            return move_down(constructingJSON, addJSON, properties, (index+1))
+            if counter > 0 and len(jsonObject.get(properties[index])) < (counter+1):
+                constructingJSON.append(addJSON)
+            else:
+                constructingJSON[counter].update(addJSON)
+            return move_down(constructingJSON, addJSON, properties, (index+1), counter)
         return None
 
     def check_JSON_content(jsonObject: dict, fieldparts: list, index: int):
@@ -669,7 +675,7 @@ def create_app():
             else:
                 value = part
                 oldParts.append(value)
-        constructedJSON = {oldParts[len(oldParts)-1]: v[0]}
+        constructedJSON = {oldParts[len(oldParts)-1]: v}
         constructedJSON = create_JSON_structure(constructedJSON, oldParts, (len(oldParts)-2))
         return constructedJSON
 
