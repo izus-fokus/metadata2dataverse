@@ -640,7 +640,6 @@ def create_app():
     def contruct_zenodo_element(k: str, v: str):
         fieldparts = k[2:].split("/")
         oldParts = []
-        constructedJSON = {}
         for part in fieldparts:
             if part == "0":
                 value = []
@@ -648,15 +647,18 @@ def create_app():
             else:
                 value = part
                 oldParts.append(value)
-        constructedJSON[oldParts[0]] = []
-        for oldPart in range(len(oldParts)):
-            if oldPart < (len(oldParts)):
-                if oldPart == 0 or len(oldParts[oldPart]) == 0:
-                    continue
-                else:
-                    add = {oldParts[oldPart] : {v[0]}}
-                    constructedJSON[oldParts[oldPart-2]].append(add)
+        constructedJSON = {oldParts[len(oldParts)-1]: v[0]}
+        constructedJSON = create_JSON_structure(constructedJSON, oldParts, (len(oldParts)-2))
         return constructedJSON
+
+    def create_JSON_structure(jsonObject: dict, oldParts: list, oldPart: int):
+        if len(oldParts[oldPart]) != 0:
+            jsonObject = {oldParts[oldPart]: jsonObject}
+        if len(oldParts[oldPart]) == 0:
+            jsonObject = [jsonObject]
+        if oldPart > 0:
+            return create_JSON_structure(jsonObject, oldParts, (oldPart-1))
+        return jsonObject
 
 
     @app.route('/metadata/<string:scheme>', methods=["POST"])
