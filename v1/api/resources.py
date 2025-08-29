@@ -227,6 +227,6 @@ def read_scheme_from_api(base_url):
 def is_json(myjson: str):
     try:
         json.loads(myjson)
-    except ValueError as e:
+    except ValueError:
         return False
     return True
