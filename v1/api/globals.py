@@ -29,4 +29,4 @@ DV_CHILDREN = {}
 # SOURCE_KEY - 
 SOURCE_KEYS = {}
 
-ZENODO_METADATA_FIELDS_URL = "https://api.test.datacite.org/dois/10.82433/B09Z-4K37?publisher=true&affiliation=true"
+ZENODO_METADATA_FIELDS_URL = "https://zenodo.org/api/records/16991078?prettyprint=1"

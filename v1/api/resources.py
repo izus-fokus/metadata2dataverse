@@ -51,12 +51,14 @@ def read_zenodo_scheme():
         jsonData = requests.get(ZENODO_METADATA_FIELDS_URL).text
         if is_json(jsonData):
             jsonData = json.loads(jsonData)
-            keys = jsonData["data"]["attributes"].keys()
+            keys = jsonData["metadata"].keys()
             for key in keys:
-                if isinstance(jsonData["data"]["attributes"][key], dict):
-                    get_dict(jsonData["data"]["attributes"][key], key)
-                if isinstance(jsonData["data"]["attributes"][key], list):
-                    get_list(jsonData["data"]["attributes"][key], key)
+                if isinstance(jsonData["metadata"][key], dict):
+                    get_dict(jsonData["metadata"][key], key)
+                if isinstance(jsonData["metadata"][key], list):
+                    get_list(jsonData["metadata"][key], key)
+                else:
+                    DV_FIELD_ZENODO[("//" + key)] = ("/" + key)
     except Exception as e:
         print (f"Error while fetching metadata from Zenodo: {e}")
 

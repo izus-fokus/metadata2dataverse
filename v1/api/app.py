@@ -549,7 +549,7 @@ def create_app():
         if method = 'create'
         CreateDataset obj (MetadataModel)
         """
-        json_result = {"data": { "attributes" : {} }}
+        json_result = {"metadata": {} }
         mb_dict = {}
         # fill children_dict with target_key (key) and p_fields (value)
         # fill parents_dict with parent_key (key) and c_fields (value)
@@ -560,18 +560,22 @@ def create_app():
                 g.warnings.append("Field {} not in Zenodo-configuration. Check your YAML file.".format(k))
                 continue
             counter = 0
-            for mvalue in v:
-                fieldparts = k[2:].split("/")
-                createdJSON = contruct_zenodo_element(k, mvalue)
-                lastIndex = check_JSON_content(json_result["data"]["attributes"], fieldparts, 0)
-                if lastIndex == 0:
-                    json_result["data"]["attributes"].update(createdJSON)
-                else:
-                    constructedJSON = {fieldparts[len(fieldparts) - 1]: mvalue}
-                    addJSON = search_JSON_position_backwards(constructedJSON, fieldparts, lastIndex, len(fieldparts)-2)
-                    properties = search_JSON_position_forward(fieldparts, lastIndex)
-                    move_down(json_result["data"]["attributes"],addJSON, properties, 0, counter)
-                counter += 1
+            fieldparts = k[2:].split("/")
+            if len(fieldparts) == 1 and isinstance(v, list) and len(v) > 1:
+                constructedJSON = contruct_zenodo_array_element(fieldparts[0], v)
+                json_result["metadata"].update(constructedJSON)
+            else:
+                for mvalue in v:
+                    createdJSON = contruct_zenodo_element(k, mvalue)
+                    lastIndex = check_JSON_content(json_result["metadata"], fieldparts, 0)
+                    if lastIndex == 0:
+                        json_result["metadata"].update(createdJSON)
+                    else:
+                        constructedJSON = {fieldparts[len(fieldparts) - 1]: mvalue}
+                        addJSON = search_JSON_position_backwards(constructedJSON, fieldparts, lastIndex, len(fieldparts)-2)
+                        properties = search_JSON_position_forward(fieldparts, lastIndex)
+                        move_down(json_result["metadata"],addJSON, properties, 0, counter)
+                    counter += 1
         if method == 'update':
             dataset = Dataset()
             for mb_id, block in mb_dict.items():
@@ -617,13 +621,18 @@ def create_app():
         constructedJSON = create_JSON_structure(constructedJSON, oldParts, (len(oldParts)-2))
         return constructedJSON
 
+    def contruct_zenodo_array_element(k: str, v: list):
+        constructedJSON = { k : v }
+        return constructedJSON
+
     def create_JSON_structure(jsonObject: dict, oldParts: list, oldPart: int):
-        if len(oldParts[oldPart]) != 0:
-            jsonObject = {oldParts[oldPart]: jsonObject}
-        if len(oldParts[oldPart]) == 0:
-            jsonObject = [jsonObject]
-        if oldPart > 0:
-            return create_JSON_structure(jsonObject, oldParts, (oldPart-1))
+        if oldPart >= 0:
+            if len(oldParts[oldPart]) != 0:
+                jsonObject = {oldParts[oldPart]: jsonObject}
+            if len(oldParts[oldPart]) == 0:
+                jsonObject = [jsonObject]
+            if oldPart > 0:
+                return create_JSON_structure(jsonObject, oldParts, (oldPart-1))
         return jsonObject
 
     def search_JSON_position_backwards(constructedJSON: dict, fieldparts: list, lastIndex: int, index: int):
@@ -665,7 +674,7 @@ def create_app():
             abort(415, scheme)
         # translate key-value-pairs in input to target scheme
         inputData = str(request.data).replace("b'{","'{")
-        replacedData = re.sub('\s{3,}', '', inputData)
+        replacedData = re.sub('\\s{3,}', '', inputData)
         replacedData = replacedData.replace("'{", "{")
         replacedData = replacedData.replace("}'", "}")
         if is_json(replacedData):
@@ -780,7 +789,7 @@ def create_app():
     def createSchemaMapping():
         """ Adds a new mapping. Aborts if target keys do not exist in DV_FIELDS. """
         inputData = str(request.data).replace("b'{", "'{")
-        replacedData = re.sub('\s{3,}', '', inputData)
+        replacedData = re.sub('\\s{3,}', '', inputData)
         replacedData = replacedData.replace("'{", "{")
         replacedData = replacedData.replace("}'", "}")
         if is_json(replacedData):
@@ -815,7 +824,7 @@ def create_app():
         """
         formatSetting = request.args.get('formatSetting', default=None)
         inputData = str(request.data).replace("b'{", "'{")
-        replacedData = re.sub('\s{3,}', '', inputData)
+        replacedData = re.sub('\\s{3,}', '', inputData)
         replacedData = replacedData.replace("'{", "{")
         replacedData = replacedData.replace("}'", "}")
         if is_json(replacedData):
