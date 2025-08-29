@@ -1,3 +1,5 @@
+import re
+
 import yaml
 import os
 from flask import Flask, request, abort, jsonify, g
@@ -662,9 +664,12 @@ def create_app():
         if reader is None:
             abort(415, scheme)
         # translate key-value-pairs in input to target scheme
-        inputData = str(request.data).encode('utf-8', 'ignore')
-        if is_json(str(inputData)):
-            source_key_values = reader.read(request.data, mapping)
+        inputData = str(request.data).replace("b'{","'{")
+        replacedData = re.sub('\s{3,}', '', inputData)
+        replacedData = replacedData.replace("'{", "{")
+        replacedData = replacedData.replace("}'", "}")
+        if is_json(replacedData):
+            source_key_values = reader.read(replacedData, mapping)
             target_key_values = translate_source_keys(source_key_values, mapping)
             # resp_url = check_value("Geeksoreeks1", "text")     testing text
 
@@ -774,8 +779,12 @@ def create_app():
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():
         """ Adds a new mapping. Aborts if target keys do not exist in DV_FIELDS. """
-        if is_json(str(request.data)):
-            new_mapping = request.data
+        inputData = str(request.data).replace("b'{", "'{")
+        replacedData = re.sub('\s{3,}', '', inputData)
+        replacedData = replacedData.replace("'{", "{")
+        replacedData = replacedData.replace("}'", "}")
+        if is_json(replacedData):
+            new_mapping = replacedData
             config = read_config(new_mapping)
             # check if yaml file was correct
             if len(g.warnings) > 0:
@@ -805,33 +814,40 @@ def create_app():
         response : json
         """
         formatSetting = request.args.get('formatSetting', default=None)
-        new_mapping = request.data
-        try:
-            mappings = MAPPINGS[scheme]
-        except IndexError as e:
-            abort(404, scheme, e.__str__())  # no existing mappings for scheme found
+        inputData = str(request.data).replace("b'{", "'{")
+        replacedData = re.sub('\s{3,}', '', inputData)
+        replacedData = replacedData.replace("'{", "{")
+        replacedData = replacedData.replace("}'", "}")
+        if is_json(replacedData):
+            new_mapping = replacedData
+            try:
+                mappings = MAPPINGS[scheme]
+            except IndexError as e:
+                abort(404, scheme, e.__str__())  # no existing mappings for scheme found
 
-        config = read_config(new_mapping)
-        if len(g.warnings) > 0:
-            warnings = ' '.join(g.warnings)
-            abort(422, warnings)  # wrong values in yaml file
+            config = read_config(new_mapping)
+            if len(g.warnings) > 0:
+                warnings = ' '.join(g.warnings)
+                abort(422, warnings)  # wrong values in yaml file
 
-        if formatSetting is None:
-            formatSetting = config.format
-        if config.scheme == scheme:
-            for mapping in mappings:
-                if mapping.format == formatSetting:  # success
-                    mappings.remove(mapping)
-                    MAPPINGS[scheme] = mappings
-                    fill_MAPPINGS(config)
-                    removeConfigFile(scheme, formatSetting)
-                    with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:
-                        yaml.dump(yaml.safe_load(new_mapping), f)
-                    response = {'success': True, 'updated': scheme}
-                    return jsonify(response), 204
-            abort(400, scheme)  # no mapping with the formatSetting found
+            if formatSetting is None:
+                formatSetting = config.format
+            if config.scheme == scheme:
+                for mapping in mappings:
+                    if mapping.format == formatSetting:  # success
+                        mappings.remove(mapping)
+                        MAPPINGS[scheme] = mappings
+                        fill_MAPPINGS(config)
+                        removeConfigFile(scheme, formatSetting)
+                        with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:
+                            yaml.dump(yaml.safe_load(new_mapping), f)
+                        response = {'success': True, 'updated': scheme}
+                        return jsonify(response), 204
+                abort(400, scheme)  # no mapping with the formatSetting found
+            else:
+                abort(400, scheme)  # formatSetting/scheme in new yaml file does not correspond to the specified scheme/formatSetting
         else:
-            abort(400, scheme)  # formatSetting/scheme in new yaml file does not correspond to the specified scheme/formatSetting
+            abort(400, scheme)
 
     @app.route('/mapping/<string:scheme>', methods=["DELETE"])
     def deleteSchemeMapping(scheme):
