@@ -110,7 +110,12 @@ def read_config(data):
     description = yaml_file["description"]
     formatSetting = yaml_file["formatSetting"]
     mapping = yaml_file["mapping"]
-    config = Config(scheme, description, formatSetting, yaml_file)
+    try:
+        targetSystem = yaml_file["targetSystem"]
+        config = Config(scheme, description, formatSetting, yaml_file, targetSystem)
+    except KeyError:
+        targetSystem = None
+        config = Config(scheme, description, formatSetting, yaml_file, targetSystem)
     # Create dict of translators out of the mapping    
     for translator_yaml in mapping:
         config.add_translator(translator_yaml)  

@@ -7,11 +7,12 @@ from flask import g
 class Config(object):
     """ object after parsing a mapping file """
 
-    def __init__(self, scheme, description, formatSetting, yaml_file):
+    def __init__(self, scheme, description, formatSetting, yaml_file, targetSystem):
         """ Constructor """
         self.scheme = scheme
         self.description = description
         self.format = formatSetting
+        self.targetSystem = targetSystem
         self.translators_dict = {}
         self.rules_dict = {}
         self.target_keys = []
@@ -28,6 +29,9 @@ class Config(object):
 
     def get_format(self):
         return self.format
+
+    def get_targetSystem(self):
+        return self.targetSystem
 
     def __repr__(self):
         return "scheme: " + self.scheme + ", description: " + self.description + ", formatSetting: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict)
@@ -69,7 +73,7 @@ class Config(object):
         target_key = [target_key] if not isinstance(target_key, list) else target_key
         source_key = [source_key] if not isinstance(source_key, list) else source_key
         fields = {}
-        if self.get_scheme() == "zenodo":
+        if self.get_targetSystem() == "zenodo":
             fields = DV_FIELD_ZENODO
         else:
             fields = DV_FIELD

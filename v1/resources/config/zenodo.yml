@@ -1,4 +1,5 @@
 scheme: zenodo
+targetSystem: zenodo
 formatSetting: application/json
 description: a metadata for citation metadata, used in zenodo
 
