@@ -711,7 +711,7 @@ def create_app():
                 else:
                     return jsonify(response), 200
         else:
-            abort(415, scheme)
+            abort(415, "Unsupported Content-Type")
 
     @app.route('/metadata/<string:scheme>')
     def getEmptyDataverseJson(scheme):
@@ -809,7 +809,7 @@ def create_app():
             response = {'success': True, 'created': config.scheme, 'location': '/mapping/{}'.format(config.scheme)}
             return jsonify(response), 201
         else:
-            return jsonify({'success': False}), 400
+            abort(415, "Unsupported Content-Type")
 
     @app.route('/mapping/<string:scheme>', methods=["PUT"])
     def editSchemeMapping(scheme):
@@ -857,7 +857,7 @@ def create_app():
             else:
                 abort(400, scheme)  # formatSetting/scheme in new yaml file does not correspond to the specified scheme/formatSetting
         else:
-            abort(400, scheme)
+            abort(415, "Unsupported Content-Type")
 
     @app.route('/mapping/<string:scheme>', methods=["DELETE"])
     def deleteSchemeMapping(scheme):
