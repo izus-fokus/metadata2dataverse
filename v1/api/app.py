@@ -576,6 +576,7 @@ def create_app():
                         properties = search_JSON_position_forward(fieldparts, lastIndex)
                         move_down(json_result["metadata"],addJSON, properties, 0, counter)
                     counter += 1
+        json_result["metadata"].update({"upload_type": "dataset"})
         if method == 'update':
             dataset = Dataset()
             for mb_id, block in mb_dict.items():

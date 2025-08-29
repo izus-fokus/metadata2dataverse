@@ -5,6 +5,8 @@ description: a metadata for citation metadata, used in zenodo
 mapping:
    - target_key: //title
      source_key: title
+   - target_key: //description
+     source_key: description
    - target_key: //contributors/0/name
      source_key: contributors[*].contributorName
      priority: 2
