@@ -3,7 +3,7 @@
 # global DV_MB
 # global DV_CHILDREN
 # global SOURCE_KEYS
-
+import json
 from pathlib import Path
 
 # Base project directory (adjust based on your structure)
@@ -29,4 +29,6 @@ DV_CHILDREN = {}
 # SOURCE_KEY - 
 SOURCE_KEYS = {}
 
-ZENODO_METADATA_FIELDS_URL = "https://zenodo.org/api/records/16991078?prettyprint=1"
+with open(CREDENTIALS_PATH,"r") as cred_file:
+    credentials = json.load(cred_file)
+    ZENODO_METADATA_FIELDS_URL = credentials["zenodo_url"]
