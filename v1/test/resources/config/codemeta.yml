@@ -1,5 +1,5 @@
 scheme: codemeta20
-format: application/json
+formatSetting: application/json
 description: a minimal metadata schema for science software and code, version 2.0
 reference: https://codemeta.github.io/
 

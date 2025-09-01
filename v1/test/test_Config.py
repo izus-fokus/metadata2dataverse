@@ -14,7 +14,9 @@ class TestConfig(unittest.TestCase):
         with self.context:
             read_all_scheme_files()
         self.client = self.app.test_client()
-        self.config = Config('Harvester', 'menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstützt)', 'text/plain', 'resources/config/harvester.yml')
+        self.config = Config('Harvester', 'menschenlesbare Beschreibung der Konfiguration/des Mappings (welches '
+                                          'Metadatenformat wird in welcher Version unterstützt)', 'text/plain',
+                             'resources/config/harvester.yml', targetSystem=None)
     
     def test_add_translator(self):        
         # test copy translator

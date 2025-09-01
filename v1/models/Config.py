@@ -11,7 +11,7 @@ class Config(object):
         """ Constructor """
         self.scheme = scheme
         self.description = description
-        self.format = formatSetting
+        self.formatSetting = formatSetting
         self.targetSystem = targetSystem
         self.translators_dict = {}
         self.rules_dict = {}
@@ -28,7 +28,7 @@ class Config(object):
         return self.description
 
     def get_format(self):
-        return self.format
+        return self.formatSetting
 
     def get_targetSystem(self):
         return self.targetSystem

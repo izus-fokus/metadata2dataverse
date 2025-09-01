@@ -95,7 +95,7 @@ def create_app():
         if formatSetting is None and len(mappings) == 1:
             return mappings[0]
         for mapping in mappings:
-            if mapping.format == formatSetting:
+            if mapping.formatSetting == formatSetting:
                 return mapping
         # formatSetting does not exist
         abort(400, scheme)
@@ -735,7 +735,7 @@ def create_app():
         # get all target keys from scheme
         try:
             mapping = MAPPINGS.get(scheme)[0]
-        except IndexError as e:
+        except IndexError or TypeError as e:
             abort(404, scheme, e.__str__())
         target_keys = mapping.get_target_keys()
         # build empty target key dictionary
@@ -844,7 +844,7 @@ def create_app():
                 formatSetting = config.format
             if config.scheme == scheme:
                 for mapping in mappings:
-                    if mapping.format == formatSetting:  # success
+                    if mapping.formatSetting == formatSetting:  # success
                         mappings.remove(mapping)
                         MAPPINGS[scheme] = mappings
                         fill_MAPPINGS(config)
@@ -881,9 +881,9 @@ def create_app():
             # there is more than one mapping of the same scheme
             formats = []
             for mapping in mappings:
-                formats.append(mapping.format)
+                formats.append(mapping.formatSetting)
                 if formatSetting is not None:
-                    if mapping.format == formatSetting:
+                    if mapping.formatSetting == formatSetting:
                         mappings.remove(mapping)
                         removeConfigFile(scheme, formatSetting)
             MAPPINGS[scheme] = mappings
@@ -898,7 +898,7 @@ def create_app():
 
         else:
             mapping = mappings[0]
-            if formatSetting is not None and mapping.format != formatSetting:
+            if formatSetting is not None and mapping.formatSetting != formatSetting:
                 abort(400, "The formatSetting {} does not match with the formatSetting of scheme {}".format(formatSetting, scheme))
             MAPPINGS[scheme] = []
             removeConfigFile(scheme)

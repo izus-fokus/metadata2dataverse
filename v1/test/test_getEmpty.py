@@ -55,8 +55,8 @@ class TestEndpointGetEmpty(unittest.TestCase):
     def test_empty_metadata_zenodo_edit(self):
         response = self.client.get('/metadata/zenodo?method=edit')
         self.assertEqual(response.status_code, 200)
-        self.assertIn("fields", response.json)
-        self.assertIsInstance(response.json["fields"], list)
+        self.assertIn("metadata", response.json)
+        self.assertIsInstance(response.json["metadata"], dict)
 
     def test_empty_metadata_codemeta_update(self):
         response = self.client.get('/metadata/codemeta20?method=update')
