@@ -38,7 +38,7 @@ class TestEndpointGetEmpty(unittest.TestCase):
             file_content = f.read()
             response = self.client.put('/mapping/engpeta', data=file_content, headers={'Content-Type':'application/yaml'})
             self.assertEqual(response.status_code, 404)
-            response = self.client.put('/mapping/engmeta2?formatSetting=somethingelse', data=file_content,
+            response = self.client.put('/mapping/engmeta?formatSetting=somethingelse', data=file_content,
                                        headers={'Content-Type':'application/yaml'})
             self.assertEqual(response.status_code, 400)
             response = self.client.put('/mapping/engmeta2?formatSetting=diesdas', data=file_content,
@@ -50,7 +50,7 @@ class TestEndpointGetEmpty(unittest.TestCase):
         
                                    
     def test_deleteSchemeMapping(self):
-        response = self.client.delete('/mapping/engmeta?formatSetting=diesdas')
+        response = self.client.delete('/mapping/engmeta2?formatSetting=diesdas')
         self.assertEqual(response.status_code, 204)
         
         response = self.client.delete('/mapping/blubb')

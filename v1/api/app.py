@@ -66,7 +66,7 @@ def create_app():
                 open_yaml_file = open(path)
                 config = read_config(open_yaml_file)
                 open_yaml_file.close()
-                if config.scheme == scheme and (formatSetting is None or config.format == formatSetting):
+                if config.scheme == scheme and (formatSetting is None or config.formatSetting == formatSetting):
                     os.remove(path)
 
     def verbosize(response):
@@ -792,7 +792,7 @@ def create_app():
         inputData = str(request.data)
         replacedData = re.sub('b', '', inputData)
         if is_yaml(replacedData):
-            new_mapping = inputData
+            new_mapping = request.data
             config = read_config(request.data)
             # check if yaml file was correct
             if len(g.warnings) > 0:
@@ -802,7 +802,7 @@ def create_app():
             if len(g.warnings) > 0:
                 warnings = ' '.join(g.warnings)
                 abort(422, warnings)
-            with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:
+            with open("./resources/config/{}_{}.yml".format(config.scheme, config.formatSetting), "w") as f:
                 yaml.dump(yaml.safe_load(new_mapping), f)
             response = {'success': True, 'created': config.scheme, 'location': '/mapping/{}'.format(config.scheme)}
             return jsonify(response), 201
@@ -822,15 +822,13 @@ def create_app():
         response : json
         """
         formatSetting = request.args.get('formatSetting', default=None)
-        inputData = str(request.data).replace("b'{", "'{")
-        replacedData = re.sub('\\s{3,}', '', inputData)
-        replacedData = replacedData.replace("'{", "{")
-        replacedData = replacedData.replace("}'", "}")
+        inputData = str(request.data)
+        replacedData = re.sub('b', '', inputData)
         if is_json(replacedData):
-            new_mapping = replacedData
+            new_mapping = request.data
             try:
                 mappings = MAPPINGS[scheme]
-            except IndexError as e:
+            except KeyError as e:
                 abort(404, scheme, e.__str__())  # no existing mappings for scheme found
 
             config = read_config(new_mapping)
@@ -839,7 +837,7 @@ def create_app():
                 abort(422, warnings)  # wrong values in yaml file
 
             if formatSetting is None:
-                formatSetting = config.format
+                formatSetting = config.formatSetting
             if config.scheme == scheme:
                 for mapping in mappings:
                     if mapping.formatSetting == formatSetting:  # success
@@ -847,7 +845,7 @@ def create_app():
                         MAPPINGS[scheme] = mappings
                         fill_MAPPINGS(config)
                         removeConfigFile(scheme, formatSetting)
-                        with open("./resources/config/{}_{}.yml".format(config.scheme, config.format), "w") as f:
+                        with open("./resources/config/{}_{}.yml".format(config.scheme, config.formatSetting), "w") as f:
                             yaml.dump(yaml.safe_load(new_mapping), f)
                         response = {'success': True, 'updated': scheme}
                         return jsonify(response), 204
@@ -872,7 +870,7 @@ def create_app():
         formatSetting = request.args.get('formatSetting', default=None)
         try:
             mappings = MAPPINGS[scheme]
-        except IndexError as e:
+        except KeyError as e:
             abort(404, scheme, e.__str__())
 
         if len(mappings) > 1:
