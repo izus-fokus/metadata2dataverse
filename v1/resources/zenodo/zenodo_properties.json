@@ -1,0 +1,171 @@
+{
+  "conceptdoi": "10.5281/zenodo.5519056",
+  "conceptrecid": "5519056",
+  "created": "2025-08-29T05:15:25.510795+00:00",
+  "doi": "10.5281/zenodo.16991078",
+  "doi_url": "https://doi.org/10.5281/zenodo.16991078",
+  "id": 16991078,
+  "metadata": {
+    "access_right": "open",
+    "communities": [
+      {
+        "identifier": "robertkochinstitut"
+      }
+    ],
+    "contributors": [
+      {
+        "affiliation": "Robert Koch Institute",
+        "name": "Diercke, Michaela",
+        "orcid": "0000-0002-4678-1813",
+        "type": "ProjectManager",
+        "gnd": "Hello"
+      }
+    ],
+    "creators": [
+      {
+        "affiliation": "Germanisches Nationalmuseum",
+        "name": "Nasarek, Robert",
+        "orcid": "0000-0003-1163-8504",
+        "gnd": "112"
+      }
+    ],
+    "dates": [
+      {
+        "start": "2018-03-21",
+        "end": "2018-03-25",
+        "type": "Collected",
+        "description": "Specimen A5 collection period."
+      }
+    ],
+    "references": [
+      "Hello",
+      "Hello2"
+    ],
+    "grants": [
+      {
+      "id":"283595"
+      }
+    ],
+    "method": "Hello",
+    "journal_title": "Hello",
+    "journal_volume": "Hello",
+    "journal_issue": "Hello",
+    "journal_pages": "Hello",
+    "conference_title": "Hello",
+    "conference_acronym": "Hello",
+    "conference_dates": "Hello",
+    "conference_place": "Hello",
+    "conference_url": "Hello",
+    "conference_session": "Hello",
+    "conference_session_part": "Hello",
+    "imprint_publisher": "Hello",
+    "imprint_isbn": "Hello",
+    "imprint_place": "Hello",
+    "partof_title": "Hello",
+    "partof_pages": "Hello",
+    "thesis_supervisors": [
+      {
+        "affiliation": "Germanisches Nationalmuseum",
+        "name": "Nasarek, Robert",
+        "orcid": "0000-0003-1163-8504",
+        "gnd": "112"
+      }
+    ],
+    "locations": [
+      {
+        "lat": 34.02577,
+        "lon": -118.7804,
+        "place": "Los Angeles"
+      },
+      {
+        "place": "Mt.Fuji, Japan",
+        "description": "Sample found 100ft from the foot of the mountain."
+      }
+    ],
+    "thesis_university": "Hello",
+    "description": "<p>Im Datensatz 'COVID-19-Hospitalisierungen' werden die aktuellen Zahlen der nach den Vorgaben des Infektionsschutzgesetzes - IfSG - erfassten hospitalisierten COVID-19-F\u00e4lle bereitgestellt.<br>\nUm den Trend der Anzahl von Hospitalisierungen und der 7-Tage-Hospitalisierungsinzidenz besser bewerten zu k\u00f6nnen, wird die berichtete Hospitalisierungsinzidenz um eine Sch\u00e4tzung der zu erwartenden Anzahl an verz\u00f6gert berichteten Hospitalisierungen erg\u00e4nzt. Neben den Daten der gemeldeten COVID-19-Hospitalisierungen auf Bundes- und L\u00e4nderebene wird daher ein Nowcasting der Anzahl hospitalisierter F\u00e4lle und der 7-Tage-Hospitalisierungsinzidenz auf Bundesebene durchgef\u00fchrt. Ziel ist die Sch\u00e4tzung der Anzahl von hospitalisierten COVID-19-F\u00e4llen mit Meldedatum innerhalb der sieben vorhergehenden Tage - inklusive der noch nicht an das RKI berichteten Hospitalisierungen. Aufbauend auf dem Nowcasting wird eine Sch\u00e4tzung der adjustierten 7-Tage-Hospitalisierungsinzidenz durchgef\u00fchrt.</p>",
+    "doi": "10.5281/zenodo.16991078",
+    "keywords": [
+      "Hospitalization",
+      "Krankenhauseinweisung",
+      "Vorhersage",
+      "Forecasting",
+      "COVID-19",
+      "SARS-CoV-2",
+      "Infektion",
+      "Deutschland",
+      "Infections",
+      "Germany",
+      "Open Data",
+      "RKI"
+    ],
+    "notes": "Hello",
+    "language": "deu",
+    "license": {
+      "id": "cc-by-4.0"
+    },
+    "embargo_date": "2025",
+    "publication_date": "2025-08-29",
+    "access_conditions": "Hello",
+    "image_type": "Hello",
+    "publication_type": "Hello",
+    "upload_type": "Hello",
+    "related_identifiers": [
+      {
+        "identifier": "https://github.com/robert-koch-institut/COVID-19-Hospitalisierungen_in_Deutschland",
+        "relation": "isSupplementTo",
+        "resource_type": "dataset",
+        "scheme": "url"
+      }
+    ],
+    "relations": {
+      "version": [
+        {
+          "index": 1316,
+          "is_last": false,
+          "parent": {
+            "pid_type": "recid",
+            "pid_value": "5519056"
+          }
+        }
+      ]
+    },
+    "resource_type": {
+      "title": "Dataset",
+      "type": "dataset"
+    },
+    "subjects": [
+      {
+        "identifier": "info:ddc/22/de//614.42",
+        "term": "Gesundheitsberichterstattung",
+        "scheme": "Hello"
+      }
+    ],
+    "title": "COVID-19-Hospitalisierungen in Deutschland",
+    "version": "2025-08-29"
+  },
+  "modified": "2025-08-29T05:15:25.919409+00:00",
+  "owners": [
+    {
+      "id": "188146"
+    }
+  ],
+  "recid": "16991078",
+  "revision": 4,
+  "state": "done",
+  "stats": {
+    "downloads": 64759,
+    "unique_downloads": 61204,
+    "unique_views": 111430,
+    "version_downloads": 319,
+    "version_unique_downloads": 309,
+    "version_unique_views": 403,
+    "version_views": 407,
+    "views": 114636
+  },
+  "status": "published",
+  "submitted": true,
+  "swh": {},
+  "title": "COVID-19-Hospitalisierungen in Deutschland",
+  "updated": "2025-08-29T05:15:25.919409+00:00"
+}

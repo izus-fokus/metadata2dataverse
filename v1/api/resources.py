@@ -7,7 +7,7 @@ from builtins import isinstance
 from flask import abort, g
 TranslatorFactory = TranslatorFactory()
 from api.globals import MAPPINGS, DV_FIELD, DV_CHILDREN, DV_MB, CREDENTIALS_PATH, DV_FIELD_ZENODO, \
-    ZENODO_METADATA_FIELDS_URL  # global variables
+    ZENODO_METADATA_PROPERTIES  # global variables
 import requests
 import json
 import logging
@@ -48,7 +48,7 @@ def read_all_scheme_files():
 
 def read_zenodo_scheme():
     try:
-        jsonData = requests.get(ZENODO_METADATA_FIELDS_URL).text
+        jsonData = ZENODO_METADATA_PROPERTIES
         if is_json(jsonData):
             jsonData = json.loads(jsonData)
             keys = jsonData["metadata"].keys()

@@ -29,6 +29,5 @@ DV_CHILDREN = {}
 # SOURCE_KEY - 
 SOURCE_KEYS = {}
 
-with open(CREDENTIALS_PATH,"r") as cred_file:
-    credentials = json.load(cred_file)
-    ZENODO_METADATA_FIELDS_URL = credentials["zenodo_url"]
+with open("resources/zenodo/zenodo_properties.json","r") as properties_file:
+    ZENODO_METADATA_PROPERTIES = properties_file.read().replace('\n', '')
