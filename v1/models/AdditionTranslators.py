@@ -3,13 +3,18 @@ import chevron
 
 from api.globals import DV_FIELD
 
+
+def main():
+    today = date.today()
+    date_formatted = today.strftime("%Y-%m-%d")
+    return [date_formatted]
+
+
 class DateAdder(object):
-    ''' returns Date of service '''
-    def main(self, *args, **kwargs):
-        today = date.today()
-        date_formatted = today.strftime("%Y-%m-%d")
-        return [date_formatted]
-    
+    """ returns Date of service """
+    main()
+
+
 class RoleNameAdder(object):
     """ Map a target field based on a controlley vocab field 
     
@@ -19,13 +24,13 @@ class RoleNameAdder(object):
     
     Examples: Contributor - Role & Name
     """
+
     def __init__(self):
         self.values = {}
         #TODO: shoud be moved to config file
         self.template = """{{familyName}}{{#givenName}}, {{givenName}}{{/givenName}}
                            {{^familyName}}{{name}}{{/familyName}}"""
-    
-    
+
     def main(self, source_key, target_key, source_key_values, t_key):
         """ Return the value of *t_key* 
         
@@ -50,16 +55,17 @@ class RoleNameAdder(object):
                     else:
                         self.values[target_key[-1]].extend([role for _ in values])
             return self.values[t_key]
-        
+
+
 class IdentifierAdder(object):
-    """ Splits a source field based on an dv identifier scheme field
+    """ Splits a source field based on dv identifier scheme field
     
     Works for authorIdentifierScheme, but can be extended.
     """
+
     def __init__(self):
         self.values = {}
-    
-    
+
     def main(self, source_key, target_key, source_key_values, t_key):
         if t_key in self.values:
             return self.values[t_key]
@@ -81,7 +87,7 @@ class IdentifierAdder(object):
                             self.values[target_key[-1]].append('none')
                             self.values[target_key[0]].append('none')
                             continue
-                        self.values[target_key[-1]].append(voc)
+                        self.values[target_key[-1]].append(scheme)
                         # this needs to be more sophisticated to match further cases
                         self.values[target_key[0]].append(s_key_value.split("/")[-1])
             return self.values[t_key]

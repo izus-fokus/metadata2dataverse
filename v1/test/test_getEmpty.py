@@ -1,8 +1,6 @@
 import unittest
 import sys
 sys.path.append('..')
-import requests
-from lxml import etree as ET
 import json
 from api.globals import CREDENTIALS_PATH
 

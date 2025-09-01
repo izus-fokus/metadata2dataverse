@@ -1,5 +1,5 @@
 scheme: bwsfs2-citation
-format: application/json
+formatSetting: application/json
 description: a metadata for citation metadata, used in bwSFS-2
 
 mapping:
@@ -20,7 +20,7 @@ mapping:
      source_key: keywords[*]
      priority: 2
    - target_key: relatedMaterial
-     source_key: ["relatedId[*].relationType", "relatedId[*].id", "relatedId[*].comment"]
+     source_key: ["relatedId[*].relationType", "relatedId[*].idElement", "relatedId[*].comment"]
      join_symbol: " "
      type: merge
    - target_key: contributorName

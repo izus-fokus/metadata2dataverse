@@ -1,10 +1,8 @@
 import unittest
 import sys
-import json
 sys.path.append('..')
 from models.ReaderFactory import ReaderFactory
 from api.resources import read_config, read_all_scheme_files
-from api.globals import MAPPINGS,DV_FIELD, DV_CHILDREN, DV_MB
 from api.app import create_app
 
 
@@ -23,7 +21,7 @@ class TestReader(unittest.TestCase):
     def test_TextReader(self):
         path = './input/test_text_reader.txt'
         test_input = open(path, encoding="utf-8")
-        input = test_input.read()
+        # input = test_input.read()
         test_input.close()
 
         with self.context:

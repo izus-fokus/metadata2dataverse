@@ -1,5 +1,5 @@
 scheme: codemeta20
-format: application/json
+formatSetting: application/json
 description: a minimal metadata schema for science software and code, version 2.0
 reference: https://codemeta.github.io/
 
@@ -92,7 +92,7 @@ mapping:
    - target_key: authorAffiliation
      source_key: author[*].affiliation.name
    - target_key: [authorIdentifier, authorIdentifierScheme]
-     source_key: author[*].@id
+     source_key: author[*].@idElement
      type: addition
      class: IdentifierAdder
    # if text

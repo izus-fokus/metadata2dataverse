@@ -3,7 +3,7 @@ from marshmallow.validate import Equal
 from marshmallow_oneofschema import OneOfSchema
 
 
-class Field():
+class Field:
     def __init__(self, typeName, value, multiple=False, typeClass='primitive'):
         self.typeName = typeName
         self.value = value
@@ -47,7 +47,18 @@ class CompoundField(Field):
         super().__init__(typeName, value, False, 'compound')
 
     def add_value(self, value, key):
-        # print('add value {} with key {} to CF'.format(value, key))
+        # print('add value {} with key {} to CF'.formatSetting(value, key))
+        self.value[key] = value
+
+
+class CompoundFieldZenodo(Field):
+    def __init__(self, typeName, value=None):
+        if value is None:
+            value = {}
+        super().__init__(typeName, value, False, 'compound')
+
+    def add_value(self, value, key):
+        # print('add value {} with key {} to CF'.formatSetting(value, key))
         self.value[key] = value
 
 
@@ -107,13 +118,13 @@ class VocabularyField(Field):
             self.value)
 
 
-class MetadataBlock():
-    def __init__(self, id, name, fields=None):
-        if fields is None:
-            fields = []
-        self.id = id
+class MetadataBlock:
+    def __init__(self, idElement, name, fieldsElement=None):
+        if fieldsElement is None:
+            fieldsElement = []
+        self.id = idElement
         self.displayName = name
-        self.mFields = fields
+        self.mFields = fieldsElement
 
     def add_field(self, field):
         self.mFields.append(field)
@@ -121,12 +132,25 @@ class MetadataBlock():
     def __repr__(self):
         return str(self.displayName) + " " + str(self.mFields)
 
+class MetadataBlockZenodo:
+    def __init__(self, idElement, name, fieldsElement=None):
+        if fieldsElement is None:
+            fieldsElement = []
+        self.id = idElement
+        self.displayName = name
+        self.mFields = fieldsElement
 
-class EditFormat():
-    def __init__(self, fields=None):
-        if fields is None:
-            fields = []
-        self.mFields = fields
+    def add_field(self, field):
+        self.mFields.append(field)
+
+    def __repr__(self):
+        return str(self.displayName) + " " + str(self.mFields)
+
+class EditFormat:
+    def __init__(self, fieldsElement=None):
+        if fieldsElement is None:
+            fieldsElement = []
+        self.mFields = fieldsElement
 
     def add_field(self, field):
         self.mFields.append(field)
@@ -142,12 +166,32 @@ class EditFormat():
         return "fields = [{}]".format(r)
 
 
-class CreateDataset():
+class EditFormatZenodo:
+    def __init__(self, fieldsElement=None):
+        if fieldsElement is None:
+            fieldsElement = []
+        self.mFields = fieldsElement
+
+    def add_field(self, field):
+        self.mFields.append(field)
+
+    def __repr__(self):
+        r = ''
+        for field in self.mFields:
+            r += '{} ({}, {}): {}'.format(
+                field.get_typeName(),
+                field.get_typeClass(),
+                'm' if field.get_multiple() else 'nm',
+                field.get_value())
+        return "data = {}".format(r)
+
+
+class CreateDataset:
     def __init__(self, datasetVersion):
         self.datasetVersion = datasetVersion
 
 
-class Dataset():
+class Dataset:
     def __init__(self, blocks=None):
         if blocks is None:
             blocks = {}
@@ -272,7 +316,6 @@ class EditScheme(Schema):
             EditFieldSchema()
             ),
         data_key='fields')
-
 
 class MetadataBlockSchema(Schema):
     id = fields.Str()

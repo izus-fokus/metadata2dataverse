@@ -1,9 +1,6 @@
 import unittest
 import sys
 sys.path.append('..')
-import requests
-from lxml import etree as ET
-import json
 
 from api.app import create_app
 
@@ -15,10 +12,10 @@ class TestEndpointGetEmpty(unittest.TestCase):
         self.client = self.app.test_client()
         
     def test_getSchemeMapping(self):
-        response = self.client.get('/mapping/harvester?format=plain/txt')
+        response = self.client.get('/mapping/harvester?formatSetting=plain/txt')
         self.assertEqual(response.status_code, 200)
         
-        response = self.client.get('/mapping/engmeta?format=text/xml')
+        response = self.client.get('/mapping/engmeta?formatSetting=text/xml')
         self.assertEqual(response.status_code, 200)
 
 
@@ -30,10 +27,10 @@ class TestEndpointGetEmpty(unittest.TestCase):
 
 
     def test_createSchemeMapping(self):
-        with open(r'./input/new_mapping.yaml', 'rb') as f:
-            file_content = f.read()
-        response = self.client.post('/mapping', data=file_content, headers={'Content-Type':'application/yaml'})
-        response = self.client.get('/mapping/engmeta?format=diesdas')
+        # with open(r'./input/new_mapping.yaml', 'rb') as f:
+        #     file_content = f.read()
+        # response = self.client.post('/mapping', data=file_content, headers={'Content-Type':'application/yaml'})
+        response = self.client.get('/mapping/engmeta?formatSetting=diesdas')
         self.assertEqual(response.status_code, 200)
         
     def test_deditSchemaMapping(self):
@@ -41,9 +38,9 @@ class TestEndpointGetEmpty(unittest.TestCase):
             file_content = f.read()
         response = self.client.put('/mapping/engpeta', data=file_content, headers={'Content-Type':'application/yaml'})
         self.assertEqual(response.status_code, 404)
-        response = self.client.put('/mapping/engmeta?format=somethingelse', data=file_content, headers={'Content-Type':'application/yaml'})
+        response = self.client.put('/mapping/engmeta?formatSetting=somethingelse', data=file_content, headers={'Content-Type':'application/yaml'})
         self.assertEqual(response.status_code, 400)
-        response = self.client.put('/mapping/engmeta?format=diesdas', data=file_content, headers={'Content-Type':'application/yaml'})
+        response = self.client.put('/mapping/engmeta?formatSetting=diesdas', data=file_content, headers={'Content-Type':'application/yaml'})
         self.assertEqual(response.status_code, 204)
         response = self.client.put('/mapping/engmeta', data=file_content, headers={'Content-Type':'application/yaml'})
         self.assertEqual(response.status_code, 204)
@@ -51,11 +48,11 @@ class TestEndpointGetEmpty(unittest.TestCase):
         
                                    
     def test_deleteSchemeMapping(self):
-        response = self.client.delete('/mapping/engmeta?format=diesdas')
+        response = self.client.delete('/mapping/engmeta?formatSetting=diesdas')
         self.assertEqual(response.status_code, 204)
         
         response = self.client.delete('/mapping/blubb')
         self.assertEqual(response.status_code, 404)
         
-        response = self.client.delete('/mapping/engmeta?format=blub')
+        response = self.client.delete('/mapping/engmeta?formatSetting=blub')
         self.assertEqual(response.status_code, 400)

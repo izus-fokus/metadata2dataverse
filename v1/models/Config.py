@@ -1,17 +1,18 @@
 from models.TranslatorFactory import TranslatorFactory
-from models.Translator import BaseTranslator, MergeTranslator, AdditionTranslator
+from models.Translator import BaseTranslator
 import pyaml
-from api.globals import DV_FIELD
-from flask import abort, g
+from api.globals import DV_FIELD, DV_FIELD_ZENODO
+from flask import g
 
 class Config(object):
-    ''' object after parsing a mapping file '''
+    """ object after parsing a mapping file """
 
-    def __init__(self, scheme, description, format, yaml_file):
-        ''' Constructor '''
+    def __init__(self, scheme, description, formatSetting, yaml_file, targetSystem):
+        """ Constructor """
         self.scheme = scheme
         self.description = description
-        self.format = format
+        self.format = formatSetting
+        self.targetSystem = targetSystem
         self.translators_dict = {}
         self.rules_dict = {}
         self.target_keys = []
@@ -20,9 +21,20 @@ class Config(object):
         self.namespaces = {}
         self.yaml_file = yaml_file
 
+    def get_scheme(self):
+        return self.scheme
+
+    def get_description(self):
+        return self.description
+
+    def get_format(self):
+        return self.format
+
+    def get_targetSystem(self):
+        return self.targetSystem
 
     def __repr__(self):
-        return("scheme: " + self.scheme + ", description: " + self.description + ", format: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict))
+        return "scheme: " + self.scheme + ", description: " + self.description + ", formatSetting: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict)
        
        
     def pretty_yaml(self):
@@ -34,7 +46,7 @@ class Config(object):
 
 
     def dump(self):
-        return {"scheme": self.scheme, "description": self.description, "format": self.format}
+        return {"scheme": self.scheme, "description": self.description, "formatSetting": self.format}
     
     
     def get_source_keys(self):
@@ -60,11 +72,17 @@ class Config(object):
         target_key = translator.get_target_key()
         target_key = [target_key] if not isinstance(target_key, list) else target_key
         source_key = [source_key] if not isinstance(source_key, list) else source_key
+        fields = {}
+        if self.get_targetSystem() == "zenodo":
+            fields = DV_FIELD_ZENODO
+        else:
+            fields = DV_FIELD
         for key in target_key:
-            if key in DV_FIELD:
+            if key in fields:
                 self.target_keys.append(key)
             else:
-                g.warnings.append("Target key " + key + " does not exist. Check dv-metadata-config for existing metadata keys.")
+                g.warnings.append(
+                    "Target key " + key + " does not exist. Check dv-metadata-config for existing metadata keys.")
                 return
 
         for key in source_key:
@@ -72,7 +90,7 @@ class Config(object):
                 self.translators_dict[key] = []
             #if isinstance(translator, AdditionTranslator):      # special case: addition translators
             #    self.addition_translators_dict[key] = translator
-            #    print("new addition translator {} -> {}".format(source_key, target_key))
+            #    print("new addition translator {} -> {}".formatSetting(source_key, target_key))
   
             self.source_keys.append(key)
             self.translators_dict[key].append(translator)

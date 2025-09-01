@@ -1,18 +1,12 @@
-from abc import abstractstaticmethod, ABCMeta
-from models.AdditionTranslators import *
+from abc import ABCMeta
+
 from dateutil import parser
+
+from models.AdditionTranslators import main
+
+
 class Translator(metaclass=ABCMeta):
     """ Factory-Class """
-
-    def get_source_key():
-        """ Translator Interface """
-    def get_target_key():
-        """ Translator Interface """
-    def get_value():
-        """ Translator Interface """
-    def get_priority():
-        """ Translator Interface """
-
 
 class BaseTranslator(Translator):
     def __init__(self, source_key, target_key, priority = 1):
@@ -21,7 +15,7 @@ class BaseTranslator(Translator):
         self.priority = priority
 
     def __repr__(self):
-        return ("source key: " + str(self.source_key) + ", target key: " + str(self.target_key))
+        return "source key: " + str(self.source_key) + ", target key: " + str(self.target_key)
 
     def get_source_key(self):
         return self.source_key
@@ -46,7 +40,7 @@ class AdditionTranslator(Translator):
         self.translator_type = translator_type
 
     def __repr__(self):
-        return ("source key: " + str(self.source_key) + ", target key: " + str(self.target_key))
+        return "source key: " + str(self.source_key) + ", target key: " + str(self.target_key)
 
     def get_translator_type(self):
         return self.translator_type
@@ -57,9 +51,12 @@ class AdditionTranslator(Translator):
     def get_target_key(self):
         return self.target_key
 
-    def get_value(self, source_key_values, t_key=None):
-        klass = globals()[self.class_name]
-        value = klass().main(self.source_key, self.target_key, source_key_values, t_key)
+    # def get_value(self, source_key_values, t_key=None):
+    @staticmethod
+    def get_value():
+        # klass = globals()[self.class_name]
+        # value = main(self.source_key, self.target_key, source_key_values, t_key)
+        value = main()
         return value
 
     def get_priority(self):
@@ -75,7 +72,7 @@ class MergeTranslator(Translator):
         self.merge_symbol = merge_symbol
 
     def __repr__(self):
-        return ("source keys: " + str(self.source_keys) + ", target key: " + str(self.target_key) + ", type: merge")
+        return "source keys: " + str(self.source_keys) + ", target key: " + str(self.target_key) + ", type: merge"
 
     def get_translator_type(self):
         return self.translator_type
@@ -88,12 +85,13 @@ class MergeTranslator(Translator):
 
     def get_value(self, source_key_values):
         list_of_values = []
+        v_merged = {}
         for i in range(len(self.source_keys)):
             try:
                 v = source_key_values.get(self.source_keys[i])
                 if len(v) > 0:
                     list_of_values.append(v)
-            except:
+            except TypeError:
                 continue
         if any(isinstance(i, list) for i in list_of_values):
             #TODO: should be more generic: for all possible numbers of merge items, not just 1-3
@@ -153,7 +151,7 @@ class DateTranslator(Translator):
         str
             A string containing source key, target key, and type information.
         """
-        return ("source key: " + str(self.source_key) + ", target key: " + str(self.target_key) + ", type: date")
+        return "source key: " + str(self.source_key) + ", target key: " + str(self.target_key) + ", type: date"
 
     def get_translator_type(self):
         """
@@ -189,10 +187,10 @@ class DateTranslator(Translator):
         return self.target_key
 
 
-
-    def convert_to_desired_format(self,input_time):
+    @staticmethod
+    def convert_to_desired_format(input_time):
         """
-        Convert the input date/time to the desired format.
+        Convert the input date/time to the desired formatSetting.
 
         Parameters
         ----------
@@ -202,8 +200,8 @@ class DateTranslator(Translator):
         Returns
         -------
         str
-            The date in the format "yyyy-mm-dd", "yyyy-mm", or "yyyy" if successful.
-            Returns "Invalid input time format" if parsing fails.
+            The date in the formatSetting "yyyy-mm-dd", "yyyy-mm", or "yyyy" if successful.
+            Returns "Invalid input time formatSetting" if parsing fails.
         """
         try:
             # Try parsing the input time using dateutil.parser
@@ -221,7 +219,7 @@ class DateTranslator(Translator):
                     # Format as yyyy
                     return parsed_time.strftime("%Y")
             else:
-                return "Invalid input time format"
+                return "Invalid input time formatSetting"
 
         except ValueError:
         # If parsing fails, return an error message
