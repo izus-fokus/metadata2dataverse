@@ -6,7 +6,7 @@ from flask import Flask, request, abort, jsonify, g
 
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN, DV_FIELD_ZENODO
 from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS, read_zenodo_scheme, \
-    is_json
+    is_json, is_yaml
 from models.ReaderFactory import ReaderFactory
 from models.MetadataModel import (MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset,
                                   DatasetSchema, MetadataBlock, Dataset, EditFormat, EditScheme, PrimitiveField,
@@ -789,13 +789,11 @@ def create_app():
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():
         """ Adds a new mapping. Aborts if target keys do not exist in DV_FIELDS. """
-        inputData = str(request.data).replace("b'{", "'{")
-        replacedData = re.sub('\\s{3,}', '', inputData)
-        replacedData = replacedData.replace("'{", "{")
-        replacedData = replacedData.replace("}'", "}")
-        if is_json(replacedData):
-            new_mapping = replacedData
-            config = read_config(new_mapping)
+        inputData = str(request.data)
+        replacedData = re.sub('b', '', inputData)
+        if is_yaml(replacedData):
+            new_mapping = inputData
+            config = read_config(request.data)
             # check if yaml file was correct
             if len(g.warnings) > 0:
                 warnings = ' '.join(g.warnings)

@@ -235,3 +235,10 @@ def is_json(myjson: str):
     except ValueError:
         return False
     return True
+
+def is_yaml(myyaml: str):
+    try:
+        yaml.safe_load(myyaml)
+    except ValueError:
+        return False
+    return True
