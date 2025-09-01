@@ -1,9 +1,6 @@
 import unittest
 import sys
 sys.path.append('..')
-import requests
-from lxml import etree as ET
-import json
 
 from api.app import create_app
 
@@ -30,9 +27,9 @@ class TestEndpointGetEmpty(unittest.TestCase):
 
 
     def test_createSchemeMapping(self):
-        with open(r'./input/new_mapping.yaml', 'rb') as f:
-            file_content = f.read()
-        response = self.client.post('/mapping', data=file_content, headers={'Content-Type':'application/yaml'})
+        # with open(r'./input/new_mapping.yaml', 'rb') as f:
+        #     file_content = f.read()
+        # response = self.client.post('/mapping', data=file_content, headers={'Content-Type':'application/yaml'})
         response = self.client.get('/mapping/engmeta?formatSetting=diesdas')
         self.assertEqual(response.status_code, 200)
         

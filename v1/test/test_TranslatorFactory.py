@@ -1,10 +1,7 @@
 import unittest
-import json
 import sys
-import os
 sys.path.append('..')
 from models.TranslatorFactory import TranslatorFactory
-from models.Translator import BaseTranslator, MergeTranslator, AdditionTranslator
 
 class TestTranslatorFactory(unittest.TestCase):
     def setUp(self):

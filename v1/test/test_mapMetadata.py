@@ -2,8 +2,7 @@ import unittest
 import sys
 import requests
 import json
-from lxml import etree as ET
-from datetime import date, datetime
+from datetime import date
 sys.path.append('..')
 from api.app import create_app
 from api.globals import CREDENTIALS_PATH

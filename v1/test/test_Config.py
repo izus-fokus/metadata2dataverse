@@ -1,12 +1,10 @@
 import unittest
-import json
 import sys
 sys.path.append('..')
 from models.Config import Config
 
 from api.app import create_app
 from api.resources import read_all_scheme_files
-from api.globals import DV_FIELD
 
 class TestConfig(unittest.TestCase):
     def setUp(self):
@@ -16,7 +14,7 @@ class TestConfig(unittest.TestCase):
         with self.context:
             read_all_scheme_files()
         self.client = self.app.test_client()
-        self.config = Config('Harvester', 'menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstützt)', 'text/plain', 'resources/config/harvester.yml') 
+        self.config = Config('Harvester', 'menschenlesbare Beschreibung der Konfiguration/des Mappings (welches Metadatenformat wird in welcher Version unterstützt)', 'text/plain', 'resources/config/harvester.yml')
     
     def test_add_translator(self):        
         # test copy translator
