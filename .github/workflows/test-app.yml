@@ -21,7 +21,7 @@ jobs:
         run: docker build . --file Dockerfile --tag metadata2dataverse:dev
       - name: Pytest in container
         run: |
-         docker run -d --network=host docker.io/library/metadata2dataverse:dev --name=metadata2dataverse
+         docker run --network=host docker.io/library/metadata2dataverse:dev --name=metadata2dataverse
          docker exec -i metadata2dataverse /bin/bash -c "cd v1 && pytest tests/*"
       - name: Stop and remove container
         if: always()
