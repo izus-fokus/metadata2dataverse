@@ -1,5 +1,8 @@
+from xml.dom.minidom import parseString
+
 import yaml
 import os
+
 from models.Config import Config
 from models.Field import Field
 from models.TranslatorFactory import TranslatorFactory
@@ -239,6 +242,13 @@ def is_json(myjson: str):
 def is_yaml(myyaml: str):
     try:
         yaml.safe_load(myyaml)
+    except ValueError:
+        return False
+    return True
+
+def is_xml(myxml: str):
+    try:
+        parseString(myxml)
     except ValueError:
         return False
     return True

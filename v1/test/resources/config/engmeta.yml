@@ -127,11 +127,6 @@ mapping:
 
 # depositor
 
-- source_key: //title
-  target_key: dateOfDeposit
-  type: addition
-  class: DateAdder
-
 # timePeriodCovered
 #T: timePeriodCoveredStart
 #T: timePeriodCoveredEnd

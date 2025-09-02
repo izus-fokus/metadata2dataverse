@@ -6,7 +6,7 @@ from flask import Flask, request, abort, jsonify, g
 
 from api.globals import MAPPINGS, DV_FIELD, DV_MB, DV_CHILDREN, DV_FIELD_ZENODO
 from api.resources import read_all_config_files, read_all_scheme_files, read_config, fill_MAPPINGS, read_zenodo_scheme, \
-    is_json, is_yaml
+    is_json, is_yaml, is_xml
 from models.ReaderFactory import ReaderFactory
 from models.MetadataModel import (MultipleVocabularyField, VocabularyField, CreateDatasetSchema, CreateDataset,
                                   DatasetSchema, MetadataBlock, Dataset, EditFormat, EditScheme, PrimitiveField,
@@ -674,11 +674,20 @@ def create_app():
         if reader is None:
             abort(415, scheme)
         # translate key-value-pairs in input to target scheme
-        inputData = str(request.data).replace("b'{","'{")
-        replacedData = re.sub('\\s{3,}', '', inputData)
-        replacedData = replacedData.replace("'{", "{")
-        replacedData = replacedData.replace("}'", "}")
-        if is_json(replacedData):
+        replacedData = None
+        isValid = False
+        if request.content_type == 'application/json':
+            inputData = str(request.data).replace("b'{","'{")
+            replacedData = re.sub('\\s{3,}', '', inputData)
+            replacedData = replacedData.replace("'{", "{")
+            replacedData = replacedData.replace("}'", "}")
+            isValid = is_json(replacedData)
+        elif request.content_type == 'text/xml':
+            inputData = str(request.data).replace("b'", "")
+            replacedData = inputData.replace("'", "")
+            replacedData = re.sub('\\\\n', '', replacedData)
+            isValid = is_xml(replacedData)
+        if isValid:
             source_key_values = reader.read(replacedData, mapping)
             target_key_values = translate_source_keys(source_key_values, mapping)
             # resp_url = check_value("Geeksoreeks1", "text")     testing text
