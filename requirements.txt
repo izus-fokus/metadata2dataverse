@@ -19,3 +19,4 @@ chevron==0.14.0
 rdflib==7.1.4
 python-dateutil==2.9.0.post0
 gunicorn
+pytest
