@@ -17,6 +17,6 @@ def pytest_addoption(parser):
 def credentials():
     with open("cred/credentials.json", "r") as cred_file:
         credentials = json.load(cred_file)
-        credentials["darus"]["apiKey"] = sys.argv[1][len("--apikey="):]
-        credentials["darus"]["apiBaseUrl"] = sys.argv[2][len("--apiurl="):]
+        credentials["api_key"] = sys.argv[1][len("--apikey="):]
+        credentials["base_url"] = sys.argv[2][len("--apiurl="):]
         return credentials
