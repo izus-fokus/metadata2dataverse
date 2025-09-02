@@ -7,7 +7,7 @@ from api.app import create_app
 
 
 class TestEndpointGetEmpty(unittest.TestCase):
-    def setUp(self):
+    def setUp(self, *credentials):
         self.app = create_app()
         self.app.testing = True
         self.client = self.app.test_client()
