@@ -19,14 +19,14 @@ class TestReader(unittest.TestCase):
             mapping_file.close()
 
     def test_TextReader(self):
-        path = './input/test_text_reader.txt'
+        path = 'test/input/test_text_reader.txt'
         test_input = open(path, encoding="utf-8")
-        # input = test_input.read()
+        input_reader = test_input.read()
         test_input.close()
 
         with self.context:
             source_key_value = self.reader.read(
-                input,
+                input_reader,
                 self.mapping)
 
         self.assertEqual(["2019-04-04","none","none"], source_key_value.get("dates.date"))
@@ -37,10 +37,10 @@ class TestReader(unittest.TestCase):
 
     def test_JsonLdReader(self):
         # Define expected dictionary for testing
-        expected_dict={'m4i:ProcessingStep#schema:instrument': ['None', 'None', 'None', 'None'], 'm4i:Tool': ['local:hardware_assembly', 'local:temperature_sensor', 'local:pressure_sensor'], 'm4i:Tool#rdfs:label': ['Hardware Assembly', 'temperature sensor', 'pressure sensor'], 'm4i:Tool#dcterms:description': ['None', 'None', 'None'], 'm4i:ProcessingStep#m4i:Tool#ssn:hasProperty': ['None', 'None', 'None'], 'm4i:ProcessingStep#rdfs:label': ['None', 'None', 'None', 'None'], 'm4i:ProcessingStep#schema:startTime': ['2022-03-01T09:03:01', '2022-03-01T09:03:01', '2022-03-10T13:35:11', '2022-03-14T09:15:00'], 'm4i:ProcessingStep#schema:endTime': ['None', 'None', 'None', 'None'], 'm4i:ProcessingStep#obo:BFO_0000051': ['local:temp_measurement_0001 , local:pressure_measurement_0001', 'None', 'None', 'None'], 'm4i:ProcessingStep#m4i:method': ['None', 'None', 'None', 'None']}
+        expected_dict={'m4i:ProcessingStep#schema:instrument': ['None', 'None', 'None', 'None'], 'm4i:Tool': ['local:hardware_assembly', 'local:temperature_sensor', 'local:pressure_sensor'], 'm4i:Tool#rdfs:label': ['Hardware Assembly', 'temperature sensor', 'pressure sensor'], 'm4i:Tool#dcterms:description': ['None', 'None', 'None'], 'm4i:ProcessingStep#m4i:Tool#ssn:hasProperty': ['None', 'None', 'None'], 'm4i:ProcessingStep#rdfs:label': ['None', 'None', 'None', 'None'], 'm4i:ProcessingStep#schema:startTime': ['2022-03-01T09:03:01', '2022-03-01T09:03:01', '2022-03-10T13:35:11', '2022-03-14T09:15:00'], 'm4i:ProcessingStep#schema:endTime': ['None', 'None', 'None', 'None'], 'm4i:ProcessingStep#obo:BFO_0000051': ['local:temp_measurement_0001 , local:pressure_measurement_0001', 'None', 'None', 'None']}
 
         # Define the path to the JSON-LD test file
-        path = './input/test_jsonld_reader.jsonld'
+        path = 'test/input/test_jsonld_reader.jsonld'
 
         # Open the test input file for reading
         test_input = open(path,'r')

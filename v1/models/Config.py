@@ -46,7 +46,7 @@ class Config(object):
 
 
     def dump(self):
-        return {"scheme": self.scheme, "description": self.description, "formatSetting": self.format}
+        return {"scheme": self.scheme, "description": self.description, "formatSetting": self.formatSetting}
     
     
     def get_source_keys(self):
