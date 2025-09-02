@@ -1,6 +1,7 @@
-scheme: engmeta2
+scheme: engmeta
 formatSetting: diesdas
 description: Mapping of the citation metadata fields to Dataverse citation metadata fields
+
 
 rules:
   - trigger: title.titleType

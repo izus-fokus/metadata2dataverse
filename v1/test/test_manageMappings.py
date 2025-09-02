@@ -30,7 +30,7 @@ class TestEndpointGetEmpty(unittest.TestCase):
         with open(r'test/input/new_mapping.yaml', 'rb') as f:
             file_content = f.read()
             response = self.client.post('/mapping', data=file_content, headers={'Content-Type':'application/yaml'})
-            response = self.client.get('/mapping/engmeta2?formatSetting=diesdas')
+            response = self.client.get('/mapping/engmeta?formatSetting=diesdas')
             self.assertEqual(response.status_code, 200)
         
     def test_deditSchemaMapping(self):
@@ -38,19 +38,17 @@ class TestEndpointGetEmpty(unittest.TestCase):
             file_content = f.read()
             response = self.client.put('/mapping/engpeta', data=file_content, headers={'Content-Type':'application/yaml'})
             self.assertEqual(response.status_code, 404)
-            response = self.client.put('/mapping/engmeta?formatSetting=somethingelse', data=file_content,
-                                       headers={'Content-Type':'application/yaml'})
+            response = self.client.put('/mapping/engmeta?formatSetting=somethingelse', data=file_content, headers={'Content-Type':'application/yaml'})
             self.assertEqual(response.status_code, 400)
-            response = self.client.put('/mapping/engmeta2?formatSetting=diesdas', data=file_content,
-                                       headers={'Content-Type':'application/yaml'})
+            response = self.client.put('/mapping/engmeta?formatSetting=diesdas', data=file_content, headers={'Content-Type':'application/yaml'})
             self.assertEqual(response.status_code, 204)
-            response = self.client.put('/mapping/engmeta2', data=file_content, headers={'Content-Type':'application/yaml'})
+            response = self.client.put('/mapping/engmeta', data=file_content, headers={'Content-Type':'application/yaml'})
             self.assertEqual(response.status_code, 204)
 
         
                                    
     def test_deleteSchemeMapping(self):
-        response = self.client.delete('/mapping/engmeta2?formatSetting=diesdas')
+        response = self.client.delete('/mapping/engmeta?formatSetting=diesdas')
         self.assertEqual(response.status_code, 204)
         
         response = self.client.delete('/mapping/blubb')
