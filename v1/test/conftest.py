@@ -15,7 +15,7 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope='session')
 def credentials():
-    with open("cred/credentials.json", "r") as cred_file:
+    with open("../cred/credentials.json", "r") as cred_file:
         credentials = json.load(cred_file)
         credentials["api_key"] = sys.argv[1][len("--apikey="):]
         credentials["base_url"] = sys.argv[2][len("--apiurl="):]
