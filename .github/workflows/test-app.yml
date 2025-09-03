@@ -23,7 +23,7 @@ jobs:
         run: |
          docker run -d --network=host --name=metadata2dataverse docker.io/library/metadata2dataverse:dev
          docker ps
-         docker exec -i metadata2dataverse /bin/bash -c "cd v1 && pytest --apikey=${{ secrets.DATAVERSE_API_TOKEN }} --apiurl=https://darus.uni-stuttgart.de/ --disable-warnings tests/test*"
+         docker exec -i metadata2dataverse /bin/bash -c "cd v1 && pytest --apikey=${{ secrets.DATAVERSE_API_TOKEN }} --apiurl=https://darus.uni-stuttgart.de/ --disable-warnings test/test*"
       - name: Stop and remove container
         if: always()
         run: docker stop metadata2dataverse && docker rm metadata2dataverse
