@@ -17,7 +17,7 @@ class TestEndpointGetEmpty(unittest.TestCase):
             credentials = json.load(cred_file)
             self.headers = {'X-Dataverse-key': credentials["api_key"]}
             self.dataverse_url = credentials["base_url"]
-            self.dataset = credentials["dataset_id"]
+            # self.dataset = credentials["dataset_id"]
 
     def test_empty_metadata_harvester(self):
         response = self.client.get('/metadata/harvester')

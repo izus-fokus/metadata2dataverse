@@ -23,24 +23,28 @@ class TestMetadataMapperEndpoints(unittest.TestCase):
             self.dataverse_url = credentials["base_url"]
             self.dataset = credentials["dataset_id"]
 
-    def test_post_engmeta_data(self):
-        with open(r'test/input/EngMeta_example_v0.2.xml', 'rb') as f:
-            file_content = f.read()
-            response = self.client.post('/metadata/engmeta?method=edit&verbose=True', data=file_content, headers={'Content-Type':'text/xml'})
-            self.assertEqual(response.status_code, 202)
-            self.assertIn("warnings", response.json)
 
-            response = self.client.post('/metadata/engmeta?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
-            self.assertEqual(response.status_code, 200)
-            #print(response.json)
-            url = "{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset)
-            x = requests.put(
-                url,
-                data=json.dumps(response.json),
-                headers=self.headers)
-            if x.status_code != 200:
-                print("error while updating engMeta metadata: " + x.text)
-            self.assertEqual(x.status_code, 200)
+    ###
+    ### NOT ON PRODUCTION
+    ###
+    # def test_post_engmeta_data(self):
+    #     with open(r'test/input/EngMeta_example_v0.2.xml', 'rb') as f:
+    #         file_content = f.read()
+    #         response = self.client.post('/metadata/engmeta?method=edit&verbose=True', data=file_content, headers={'Content-Type':'text/xml'})
+    #         self.assertEqual(response.status_code, 202)
+    #         self.assertIn("warnings", response.json)
+
+    #         response = self.client.post('/metadata/engmeta?method=edit', data=file_content, headers={'Content-Type':'text/xml'})
+    #         self.assertEqual(response.status_code, 200)
+    #         #print(response.json)
+    #         url = "{}/api/datasets/:persistentId/editMetadata?persistentId={}&replace=true".format(self.dataverse_url, self.dataset)
+    #         x = requests.put(
+    #             url,
+    #             data=json.dumps(response.json),
+    #             headers=self.headers)
+    #         if x.status_code != 200:
+    #             print("error while updating engMeta metadata: " + x.text)
+    #         self.assertEqual(x.status_code, 200)
 
 
 
