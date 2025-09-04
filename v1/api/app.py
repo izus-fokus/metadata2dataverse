@@ -693,7 +693,7 @@ def create_app():
             # resp_url = check_value("Geeksoreeks1", "text")     testing text
 
             # build json out of target_key_values and DV_FIELDS, DV_MB, DV_CHILDREN
-            if mapping.get_scheme() == "zenodo":
+            if mapping.get_targetSystem() == "zenodo":
                 result = build_json_zenodo(target_key_values, method)
                 if method == 'edit':
                     response = result
@@ -749,7 +749,7 @@ def create_app():
         target_keys = mapping.get_target_keys()
         # build empty target key dictionary
         target_key_values = dict.fromkeys(target_keys, "")
-        if mapping.get_scheme() == "zenodo":
+        if mapping.get_targetSystem() == "zenodo":
             result = build_json_zenodo(target_key_values, method)
             if method == 'edit':
                 response = result
