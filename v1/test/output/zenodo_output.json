@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "contributors": [
+      {
+        "affiliation": "University of Stuttgart",
+        "name": "Nice, Person1",
+        "orcid": "0000-0002-8524-0569",
+        "type": "contactPerson"
+      },
+      {
+        "affiliation": "University of Birmingham",
+        "name": "Nice, Person2",
+        "orcid": "11111-0002-8524-0569"
+      }
+    ],
+    "creators": [
+      {
+        "affiliation": "University of Stuttgart",
+        "name": "Nice, Person1",
+        "orcid": "0000-0002-8524-0569"
+      },
+      {
+        "affiliation": "University of Birmingham",
+        "name": "Nice, Person2",
+        "orcid": "11111-0002-8524-0569"
+      }
+    ],
+    "description": "This is a description",
+    "keywords": [
+      "Keyword 1",
+      "Keyword 2"
+    ],
+    "related_identifiers": [
+      {
+        "identifier": "https://doi.org/10.2342/nice_publication",
+        "relation": "IsCitedBy",
+        "resource_type": "publication-article",
+        "scheme": "doi"
+      }
+    ],
+    "subjects": [
+      {
+        "term": "Keyword 1"
+      },
+      {
+        "term": "Keyword 2"
+      }
+    ],
+    "title": "Some longer and meaningful title",
+    "upload_type": "dataset"
+  }
+}

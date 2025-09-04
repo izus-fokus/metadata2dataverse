@@ -1,0 +1,37 @@
+{
+    "title": "Some longer and meaningful title",
+    "description": "This is a description",
+    "contributors": [
+        {
+            "contributorName": "Nice, Person1",
+            "contributorRole": "Data Curator",
+            "contributorId": "0000-0002-8524-0569",
+            "contributorAffiliation": "University of Stuttgart"
+        },
+        {
+            "contributorName": "Nice, Person2",
+            "contributorRole": "Data Curator",
+            "contributorId": "11111-0002-8524-0569",
+            "contributorAffiliation": "University of Birmingham"
+        }
+    ],
+    "contact": [
+        {
+            "contributorName": "Dorothea Iglezakis",
+            "contributorRole": "contactPerson"
+        }
+    ],
+    "creationDate": "2029-04-21",
+    "keywords": [
+        "Keyword 1",
+        "Keyword 2"
+    ],
+    "relatedId": [
+        {
+            "scheme": "doi",
+            "resourceType": "publication-article",
+            "relationType": "IsCitedBy",
+            "id": "https://doi.org/10.2342/nice_publication"
+        }
+    ]
+}
