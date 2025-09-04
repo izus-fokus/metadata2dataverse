@@ -30,10 +30,14 @@ mapping:
    - target_key: //keywords
      source_key: keywords[*]
      priority: 2
-   - target_key: //related_identifiers/0/resource_type
-     source_key: relatedId[*].relationType
+   - target_key: //related_identifiers/0/scheme
+     source_key: relatedId[*].scheme
    - target_key: //related_identifiers/0/identifier
      source_key: relatedId[*].id
+   - target_key: //related_identifiers/0/relation
+     source_key: relatedId[*].relationType
+   - target_key: //related_identifiers/0/resource_type
+     source_key: relatedId[*].resourceType
    - target_key: //contributors/0/name
      source_key: contributors[*].contributorName
    - target_key: //contributors/0/type
