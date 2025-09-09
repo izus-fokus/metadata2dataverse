@@ -679,6 +679,7 @@ def create_app():
         if request.content_type == 'application/json':
             inputData = str(request.data).replace("b'{","'{")
             replacedData = re.sub('\\s{3,}', '', inputData)
+            replacedData = re.sub('\\\\n', '', replacedData)
             replacedData = replacedData.replace("'{", "{")
             replacedData = replacedData.replace("}'", "}")
             isValid = is_json(replacedData)
@@ -833,6 +834,11 @@ def create_app():
         formatSetting = request.args.get('formatSetting', default=None)
         inputData = str(request.data)
         replacedData = re.sub('b', '', inputData)
+        inputData = replacedData.replace("b'{", "'{")
+        replacedData = re.sub('\\s{3,}', '', inputData)
+        replacedData = re.sub('\\\\n', '', replacedData)
+        replacedData = replacedData.replace("'{", "{")
+        replacedData = replacedData.replace("}'", "}")
         if is_json(replacedData):
             new_mapping = request.data
             try:
