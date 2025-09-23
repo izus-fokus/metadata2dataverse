@@ -802,8 +802,8 @@ def create_app():
         inputData = request.data.decode("utf-8")
         replacedData = re.sub('b', '', inputData)
         if is_yaml(replacedData):
-            new_mapping = request.data
-            config = read_config(request.data)
+            new_mapping = request.data.decode("utf-8")
+            config = read_config(request.data.decode("utf-8"))
             # check if yaml file was correct
             if len(g.warnings) > 0:
                 warnings = ' '.join(g.warnings)
@@ -834,13 +834,8 @@ def create_app():
         formatSetting = request.args.get('formatSetting', default=None)
         inputData = request.data.decode("utf-8")
         replacedData = re.sub('b', '', inputData)
-        inputData = replacedData.replace("b'{", "'{")
-        replacedData = re.sub('\\s{3,}', '', inputData)
-        replacedData = re.sub('\\\\n', '', replacedData)
-        replacedData = replacedData.replace("'{", "{")
-        replacedData = replacedData.replace("}'", "}")
-        if is_json(replacedData):
-            new_mapping = request.data
+        if is_yaml(replacedData):
+            new_mapping = request.data.decode("utf-8")
             try:
                 mappings = MAPPINGS[scheme]
             except KeyError as e:

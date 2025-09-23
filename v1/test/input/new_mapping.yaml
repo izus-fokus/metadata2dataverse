@@ -7,13 +7,13 @@ rules:
   - trigger: title.titleType
     type: rule
     priority: 1
-    trigger_values: [Title, AlternativeTitle, Subtitle]
-    Title: [{target_key: title}] 
-    AlternativeTitle: [{source_key: title, target_key: alternativeTitle}]
-    Subtitle: [{source_key: title, target_key: subtitle}]
-    
+    trigger_values: [ Title, AlternativeTitle, Subtitle ]
+    Title: [ { target_key: title } ]
+    AlternativeTitle: [ { source_key: title, target_key: alternativeTitle } ]
+    Subtitle: [ { source_key: title, target_key: subtitle } ]
+
 mapping:
-  - source_key: [creator.givenName, creator.familyName]
+  - source_key: [ creator.givenName, creator.familyName ]
     target_key: authorName
     type: merge
     join_symbol: ' '
