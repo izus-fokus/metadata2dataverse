@@ -2,7 +2,7 @@
 Flask==3.1.2
 jsonpath-python==1.0.6
 #lxml==4.9.2
-lxml==6.0.1
+lxml==6.0.2
 #marshmallow==3.19.0
 marshmallow
 marshmallow-oneofschema @ git+https://github.com/doigl/marshmallow-oneofschema.git@type_field_remove#eeg=marshmallow-oneofschema
@@ -16,7 +16,7 @@ requests
 #validators==0.20.0
 validators==0.35.0
 chevron==0.14.0
-rdflib==7.1.4
+rdflib==7.2.1
 python-dateutil==2.9.0.post0
 gunicorn
 pytest
