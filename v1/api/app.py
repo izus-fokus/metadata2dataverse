@@ -677,14 +677,14 @@ def create_app():
         replacedData = None
         isValid = False
         if request.content_type == 'application/json':
-            inputData = str(request.data).replace("b'{","'{")
+            inputData = request.data.decode("utf-8").replace("b'{","'{")
             replacedData = re.sub('\\s{3,}', '', inputData)
             replacedData = re.sub('\\\\n', '', replacedData)
             replacedData = replacedData.replace("'{", "{")
             replacedData = replacedData.replace("}'", "}")
             isValid = is_json(replacedData)
         elif request.content_type == 'text/xml':
-            inputData = str(request.data).replace("b'", "")
+            inputData = request.data.decode("utf-8").replace("b'", "")
             replacedData = inputData.replace("'", "")
             replacedData = re.sub('\\\\n', '', replacedData)
             isValid = is_xml(replacedData)
@@ -799,7 +799,7 @@ def create_app():
     @app.route('/mapping', methods=["POST"])
     def createSchemaMapping():
         """ Adds a new mapping. Aborts if target keys do not exist in DV_FIELDS. """
-        inputData = str(request.data)
+        inputData = request.data.decode("utf-8")
         replacedData = re.sub('b', '', inputData)
         if is_yaml(replacedData):
             new_mapping = request.data
@@ -832,7 +832,7 @@ def create_app():
         response : json
         """
         formatSetting = request.args.get('formatSetting', default=None)
-        inputData = str(request.data)
+        inputData = request.data.decode("utf-8")
         replacedData = re.sub('b', '', inputData)
         inputData = replacedData.replace("b'{", "'{")
         replacedData = re.sub('\\s{3,}', '', inputData)
