@@ -34,7 +34,8 @@ class Config(object):
         return self.targetSystem
 
     def __repr__(self):
-        return "scheme: " + self.scheme + ", description: " + self.description + ", formatSetting: " + self.format + ", translators: " + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict)
+        return "scheme: " + self.scheme + ", description: " + self.description + ", formatSetting: " + self.formatSetting + (
+            "translators: ") + str(self.translators_dict) + ", rules dict: " + str(self.rules_dict)
        
        
     def pretty_yaml(self):
@@ -72,7 +73,6 @@ class Config(object):
         target_key = translator.get_target_key()
         target_key = [target_key] if not isinstance(target_key, list) else target_key
         source_key = [source_key] if not isinstance(source_key, list) else source_key
-        fields = {}
         if self.get_targetSystem() == "zenodo":
             fields = DV_FIELD_ZENODO
         else:
