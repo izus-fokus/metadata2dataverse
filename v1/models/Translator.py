@@ -9,10 +9,11 @@ class Translator(metaclass=ABCMeta):
     """ Factory-Class """
 
 class BaseTranslator(Translator):
-    def __init__(self, source_key, target_key, priority = 1):
+    def __init__(self, source_key, target_key, target_key_values, priority = 1):
         self.source_key = source_key
         self.target_key = target_key
         self.priority = priority
+        self.target_key_values = target_key_values
 
     def __repr__(self):
         return "source key: " + str(self.source_key) + ", target key: " + str(self.target_key)

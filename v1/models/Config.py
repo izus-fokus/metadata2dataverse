@@ -115,7 +115,8 @@ class Config(object):
                 source_key = translator.get('source_key', None)
                 self.source_keys.append(source_key)
                 target_key = translator.get('target_key', None)
-                translators.append(BaseTranslator(source_key, target_key))
+                target_key_values = translator.get('target_key_values', None)
+                translators.append(BaseTranslator(source_key, target_key, target_key_values))
             t[trigger_value] = translators            # fill inner dictionary with trigger_value and list_of_translators
             self.rules_dict[trigger] = t
             

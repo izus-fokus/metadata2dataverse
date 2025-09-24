@@ -16,6 +16,7 @@ mapping:
    - target_key: //contributors/0/affiliation
      source_key: contributors[*].contributorAffiliation
    - target_key: //contributors/0/type
+     target_key_values: [ "ContactPerson", "DataCollector", "DataCurator", "DataManager","Distributor", "Editor", "HostingInstitution", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RegistrationAgency", "RegistrationAuthority", "RelatedPerson", "Researcher", "ResearchGroup", "RightsHolder","Supervisor", "Sponsor", "WorkPackageLeader", "Other" ]
      source_key: contact[*].contributorRole   
    - target_key: //creators/0/name
      source_key: contributors[*].contributorName
