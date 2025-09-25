@@ -928,7 +928,7 @@ def create_app():
             with app.app_context():
                 read_zenodo_scheme()
                 read_all_scheme_files()
-                read_all_config_files()
+                read_all_config_files(update=True)
 
             response = {"reading config": "done"}
             return jsonify(response), 200

@@ -17,7 +17,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 
-def read_all_config_files(): 
+def read_all_config_files(update=False):
     """ Opens all config files located in './resources/config'  and gives them to read_config() method.
     
     If config file has no errors, it is transferred to fill_MAPPINGS() method. 
@@ -34,8 +34,17 @@ def read_all_config_files():
             # check if yaml file was correct    
             if len(g.warnings) > 0:
                 warnings = ' '.join(g.warnings)
-                abort(500, warnings)            
-            fill_MAPPINGS(config)
+                abort(500, warnings)
+            if not update:
+                fill_MAPPINGS(config)
+            else:
+                scheme = config.scheme
+                if scheme in MAPPINGS:
+                    # check if mapping-formatSetting already exists
+                    for mapping in MAPPINGS[scheme]:
+                        if mapping.formatSetting == config.formatSetting:
+                            del MAPPINGS[scheme]
+                            MAPPINGS[scheme] = [config]
             
 
 # Read schema tsv files (metadatablocks nesting)      
