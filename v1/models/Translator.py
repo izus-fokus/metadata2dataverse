@@ -32,10 +32,16 @@ class BaseTranslator(Translator):
     def get_value(self,source_key_values):
         v = source_key_values.get(self.source_key)
         if self.target_key_values is not None:
-            if v[0] in self.target_key_values:
-                return v
-            else:
-                abort(400, ("No matching target key value for '" + v[0] + "' in " + str(self.target_key_values)))
+            if len(v) == 1:
+                v = v[0]
+                if v in self.target_key_values:
+                    return v
+                else:
+                    abort(400, ("No matching target key value for '" + v + "' in " + str(self.target_key_values)))
+            if len(v) > 1:
+                for value in v:
+                    if not value in self.target_key_values:
+                        abort(400, ("No matching target key value for '" + value + "' in " + str(self.target_key_values)))
         return v
 
     def get_priority(self):
