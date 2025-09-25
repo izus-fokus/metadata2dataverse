@@ -925,9 +925,10 @@ def create_app():
     @app.route('/reading-config', methods=["GET"])
     def readingconfig():
         try:
-            read_all_scheme_files()
-            read_all_config_files()
-            read_zenodo_scheme()
+            with app.app_context():
+                read_zenodo_scheme()
+                read_all_scheme_files()
+                read_all_config_files()
 
             response = {"reading config": "done"}
             return jsonify(response), 200
