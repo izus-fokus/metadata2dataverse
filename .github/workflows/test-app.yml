@@ -2,9 +2,9 @@ name: Test Python metadata2dataverse application
 
 on:
   push:
-    branches: [ "zenodo-validator" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "zenodo-validator" ]
+    branches: [ "main" ]
 
 jobs:
   build:
