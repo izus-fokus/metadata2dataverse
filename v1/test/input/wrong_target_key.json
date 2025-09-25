@@ -1,0 +1,22 @@
+{
+  "contributors": [
+    {
+      "contributorName": "Iglezakis, Dorothea",
+      "contributorRole": "Data Collector",
+      "contributorId": "1232-2313-2311-1221",
+      "contributorAffiliation": "University of Stuttgart"
+    }
+  ],
+  "contact": [
+    {
+      "contactName": "Selent, Bjoern",
+      "contactEmail": "bjoern.selent@tik.uni-stuttgart.de"
+    }
+  ],
+  "creationDate": "2025-09-22",
+  "keywords": [
+    "Simulation",
+    "Testproject",
+    "bwSFS2"
+  ]
+}

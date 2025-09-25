@@ -4,13 +4,13 @@
     "contributors": [
         {
             "contributorName": "Nice, Person1",
-            "contributorRole": "Data Curator",
+            "contributorRole": "DataCurator",
             "contributorId": "0000-0002-8524-0569",
             "contributorAffiliation": "University of Stuttgart"
         },
         {
             "contributorName": "Nice, Person2",
-            "contributorRole": "Data Curator",
+            "contributorRole": "DataCurator",
             "contributorId": "11111-0002-8524-0569",
             "contributorAffiliation": "University of Birmingham"
         }

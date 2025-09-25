@@ -19,6 +19,7 @@ class Config(object):
         self.addition_translators_dict = {}
         self.source_keys = []
         self.namespaces = {}
+        self.target_key_values = None
         self.yaml_file = yaml_file
 
     def get_scheme(self):

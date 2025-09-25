@@ -1,0 +1,36 @@
+{
+  "metadata": {
+    "contributors": [
+      {
+        "affiliation": "University of Stuttgart",
+        "name": "Iglezakis, Dorothea",
+        "orcid": "1232-2313-2311-1221",
+        "type": "DataCollector"
+      }
+    ],
+    "creators": [
+      {
+        "affiliation": "University of Stuttgart",
+        "name": "Iglezakis, Dorothea",
+        "orcid": "1232-2313-2311-1221"
+      }
+    ],
+    "keywords": [
+      "Simulation",
+      "Testproject",
+      "bwSFS2"
+    ],
+    "subjects": [
+      {
+        "term": "Simulation"
+      },
+      {
+        "term": "Testproject"
+      },
+      {
+        "term": "bwSFS2"
+      }
+    ],
+    "upload_type": "dataset"
+  }
+}

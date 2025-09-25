@@ -1,6 +1,7 @@
 from abc import ABCMeta
 
 from dateutil import parser
+from flask import abort
 
 from models.AdditionTranslators import main
 
@@ -16,7 +17,8 @@ class BaseTranslator(Translator):
         self.target_key_values = target_key_values
 
     def __repr__(self):
-        return "source key: " + str(self.source_key) + ", target key: " + str(self.target_key)
+        return ("source key: " + str(self.source_key) + ", target key: " + str(self.target_key) + ", target key values: " +
+                str(self.target_key_values))
 
     def get_source_key(self):
         return self.source_key
@@ -24,8 +26,16 @@ class BaseTranslator(Translator):
     def get_target_key(self):
         return self.target_key
 
+    def get_target_key_values(self):
+        return self.target_key_values
+
     def get_value(self,source_key_values):
         v = source_key_values.get(self.source_key)
+        if self.target_key_values is not None:
+            if v[0] in self.target_key_values:
+                return v
+            else:
+                abort(400, ("No matching target key value for '" + v[0] + "' in " + str(self.target_key_values)))
         return v
 
     def get_priority(self):
