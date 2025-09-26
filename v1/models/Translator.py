@@ -51,9 +51,10 @@ class BaseTranslator(Translator):
                             if mylevenshtein > distance(myvalue, value):
                                 mylevenshtein = distance(myvalue, value)
                                 topValue = value
-                    myarray.append(topValue)
                     if not found:
                         g.warnings.append("No matching target key value for '" + myvalue + "' in " + str(self.target_key_values))
+                    else:
+                        myarray.append(topValue)
                 return myarray
         return v
 
