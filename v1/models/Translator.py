@@ -2,6 +2,7 @@ from abc import ABCMeta
 
 from dateutil import parser
 from flask import abort
+from flask import g
 
 from models.AdditionTranslators import main
 
@@ -36,11 +37,12 @@ class BaseTranslator(Translator):
                 if v[0] in self.target_key_values:
                     return v
                 else:
-                    abort(400, ("No matching target key value for '" + v[0] + "' in " + str(self.target_key_values)))
+                    g.warnings("No matching target key value for '" + v[0] + "' in " + str(self.target_key_values))
+                    return v
             if len(v) > 1:
                 for value in v:
                     if not value in self.target_key_values:
-                        abort(400, ("No matching target key value for '" + value + "' in " + str(self.target_key_values)))
+                        g.warnings("No matching target key value for '" + value + "' in " + str(self.target_key_values))
         return v
 
     def get_priority(self):
