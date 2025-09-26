@@ -1,8 +1,8 @@
 from abc import ABCMeta
 
 from dateutil import parser
-from flask import abort
 from flask import g
+from Levenshtein import distance
 
 from models.AdditionTranslators import main
 
@@ -34,15 +34,23 @@ class BaseTranslator(Translator):
         v = source_key_values.get(self.source_key)
         if self.target_key_values is not None:
             if len(v) == 1:
-                if v[0] in self.target_key_values:
-                    return v
-                else:
-                    g.warnings("No matching target key value for '" + v[0] + "' in " + str(self.target_key_values))
-                    return v
+                for value in self.target_key_values:
+                    if distance(v[0], value) < 3:
+                        return [value]
+                g.warnings.append("No matching target key value for '" + v[0] + "' in " + str(self.target_key_values))
+                return v
             if len(v) > 1:
-                for value in v:
-                    if not value in self.target_key_values:
-                        g.warnings("No matching target key value for '" + value + "' in " + str(self.target_key_values))
+                myarray = []
+                for myvalue in v:
+                    found = False
+                    for value in self.target_key_values:
+                        if distance(myvalue, value) < 3:
+                            found = True
+                            myarray.append(value)
+                    if not found:
+                        myarray.append(myvalue)
+                        g.warnings.append("No matching target key value for '" + myvalue + "' in " + str(self.target_key_values))
+                return myarray
         return v
 
     def get_priority(self):
