@@ -1,4 +1,4 @@
-FROM python:3.13.6-alpine3.22
+FROM python:3.13.8-alpine3.22
 RUN apk update && apk upgrade && apk add bash
 
 LABEL maintainer="florian.fritze@ub.uni-stuttgart.de"
