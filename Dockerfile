@@ -2,6 +2,8 @@ FROM python:3.13.11-trixie AS builder
 
 LABEL maintainer="florian.fritze@ub.uni-stuttgart.de"
 
+SHELL ["/bin/bash", "-c"]
+
 WORKDIR /app
 COPY . /app
 
@@ -12,6 +14,7 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 FROM python:3.13.11-slim-trixie
+SHELL ["/bin/bash", "-c"]
 WORKDIR /app
 COPY --from=builder /app /app
 RUN source /app/venv/bin/activate
