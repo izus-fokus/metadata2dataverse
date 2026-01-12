@@ -1,5 +1,4 @@
-FROM python:3.13.8-alpine3.22
-RUN apk update && apk upgrade && apk add bash
+FROM python:3.13.11-slim-trixie
 
 LABEL maintainer="florian.fritze@ub.uni-stuttgart.de"
 
