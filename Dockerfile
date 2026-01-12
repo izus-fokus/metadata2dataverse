@@ -26,4 +26,4 @@ EXPOSE $PORT
 
 ENV URL_PATH="/"
 
-ENTRYPOINT exec gunicorn -b $ADDRESS:$PORT '__init__:app' --chdir v1 --env "SCRIPT_NAME=$URL_PATH"
+ENTRYPOINT gunicorn -b $ADDRESS:$PORT '__init__:app' --chdir v1 --env "SCRIPT_NAME=$URL_PATH"
