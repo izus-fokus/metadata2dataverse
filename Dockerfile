@@ -17,6 +17,7 @@ FROM python:3.13.11-slim-trixie
 SHELL ["/bin/bash", "-c"]
 WORKDIR /app
 COPY --from=builder /app /app
+ENV PATH=/app/venv/bin:/usr/local/bin:$PATH
 RUN source /app/venv/bin/activate
 ENV PORT=5055
 
