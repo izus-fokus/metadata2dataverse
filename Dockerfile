@@ -1,4 +1,4 @@
-FROM python:3.13.11-slim-trixie
+FROM python:3.13.11-trixie AS builder
 
 LABEL maintainer="florian.fritze@ub.uni-stuttgart.de"
 
@@ -8,11 +8,13 @@ COPY . /app
 RUN python3 -m venv /app/venv
 ENV PATH=/app/venv/bin:$PATH
 RUN source /app/venv/bin/activate
-RUN apk add --no-cache --virtual .build-deps git
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt && apk del --no-network .build-deps
+RUN pip install -r requirements.txt
 
-
+FROM python:3.13.11-slim-trixie
+WORKDIR /app
+COPY --from=builder /app /app
+RUN source /app/venv/bin/activate
 ENV PORT=5055
 
 ENV ADDRESS=127.0.0.1
