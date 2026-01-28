@@ -1,4 +1,4 @@
-# Metadata To Dataverse (update)
+# Metadata To Dataverse (test)
 
 Metadata2Dataverse is a small REST tool that aims to accomplish the following tasks:
 - Conversion of structured metadata into a Dataverse-compliant JSON file
