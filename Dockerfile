@@ -6,6 +6,7 @@ LABEL maintainer="florian.fritze@ub.uni-stuttgart.de"
 WORKDIR /app
 COPY . /app
 
+RUN rm -fr /app/.venv
 RUN python3 -m venv /app/venv
 ENV PATH=/app/venv/bin:$PATH
 RUN source /app/venv/bin/activate
