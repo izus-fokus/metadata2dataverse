@@ -17,7 +17,7 @@ requests
 validators==0.36.0
 chevron==0.14.0
 rdflib==7.6.0
-python-dateutil==2.9.0.post0
+python-dateutil==3.0.0
 gunicorn
 pytest
 levenshtein
